@@ -2,6 +2,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const db = require('./db');
 const authRoutes = require('./routes/auth');
 const { authenticateToken, requireAdmin } = require('./auth');
@@ -11,13 +12,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve static files if you have a front-end
+// Uncomment the next line and place your static files in the 'public' directory
+// app.use(express.static(path.join(__dirname, 'public')));
+
+// Root route to handle requests to '/'
+app.get('/', (req, res) => {
+    res.send('<h1>Welcome to NotSus Landing Page</h1><p>This is the root route.</p>');
+});
+
 // Auth routes
 app.use('/auth', authRoutes);
 
 // Validation middleware
 const validateFeedback = (req, res, next) => {
     const { email, concerns } = req.body;
-    
+
     if (!email) {
         return res.status(400).json({
             success: false,
@@ -99,19 +109,19 @@ app.post('/api/feedback', validateFeedback, async (req, res, next) => {
 app.get('/api/admin/feedback', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const dateFilter = req.query.date;
-        
+
         // Get submissions
         let query = `
             SELECT *
             FROM user_feedback
         `;
-        
+
         if (dateFilter) {
             query += ` WHERE DATE(created_at) = $1`;
         }
-        
+
         query += ` ORDER BY created_at DESC`;
-        
+
         const result = await db.query(query, dateFilter ? [dateFilter] : []);
 
         // Get statistics
@@ -126,7 +136,7 @@ app.get('/api/admin/feedback', authenticateToken, requireAdmin, async (req, res)
                 END as top_concern
             FROM user_feedback;
         `;
-        
+
         const statsResult = await db.query(statsQuery);
 
         res.json({
@@ -160,7 +170,7 @@ app.get('/health', async (req, res) => {
 // Error handling middleware - must be last
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    
+
     if (err instanceof db.DatabaseError) {
         return res.status(500).json({
             success: false,
@@ -169,7 +179,7 @@ app.use((err, req, res, next) => {
             code: err.code
         });
     }
-    
+
     res.status(500).json({
         success: false,
         error: 'Server error',
