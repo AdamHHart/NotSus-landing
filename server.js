@@ -159,6 +159,10 @@ app.get('/api/admin/feedback', authenticateToken, requireAdmin, async (req, res)
     }
 });
 
+app.get('/admin', authenticateToken, requireAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
 // Health check endpoint
 app.get('/health', async (req, res) => {
     try {
