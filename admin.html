@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotSus.net Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #17104D;
+            color: #ffffff;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background-color: #7169C9;
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: #7169C9;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #7169C9;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #17104D;
+        }
+
+        th {
+            background-color: #9dcfd0;
+            color: #17104D;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #8b84d9;
+        }
+
+        .concern-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background-color: #9dcfd0;
+            color: #17104D;
+            border-radius: 0.5rem;
+            margin: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .refresh-button {
+            padding: 0.5rem 1rem;
+            background-color: #9dcfd0;
+            color: #17104D;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .refresh-button:hover {
+            background-color: #8bbabb;
+        }
+
+        .date-filter {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            margin-right: 1rem;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 2rem;
+            background-color: #7169C9;
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            background-color: #9dcfd0;
+            color: #17104D;
+            font-size: 1rem;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            background-color: #9dcfd0;
+            color: #17104D;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-form button:hover {
+            background-color: #8bbabb;
+        }
+
+        .error-message {
+            color: #ff4444;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background-color: rgba(255, 68, 68, 0.1);
+            border-radius: 0.5rem;
+            display: none;
+        }
+
+        .dashboard-container {
+            display: none;
+        }
+
+        .logout-button {
+            padding: 0.5rem 1rem;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+        .export-button {
+        padding: 0.5rem 1rem;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        margin-left: 1rem;
+        font-weight: bold;
+    }
+
+    .export-button:hover {
+        background-color: #45a049;
+    }
+    </style>
+</head>
+<body>
+    <div id="loginContainer" class="login-container">
+        <h2>🧐 NotSus.net Admin</h2>
+        <p style="margin-bottom: 2rem;">Please login to access the dashboard</p>
+        <div id="errorMessage" class="error-message"></div>
+        <form id="loginForm" class="login-form">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <div id="dashboardContainer" class="dashboard-container">
+    <div class="container">
+      <div class="header">
+        <div class="logo">🧐 NotSus.net Admin Dashboard</div>
+        <div>
+            <input type="date" class="date-filter" id="dateFilter">
+            <button class="refresh-button" onclick="refreshData()">Refresh Data</button>
+            <button class="export-button" onclick="exportToCSV()">Export CSV</button>
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalSubmissions">-</div>
+                <div>Total Submissions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="topConcern">-</div>
+                <div>Top Concern</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="todaySubmissions">-</div>
+                <div>Today's Submissions</div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Concerns</th>
+                    <th>Other Description</th>
+                </tr>
+            </thead>
+            <tbody id="submissionsTable">
+                <!-- Data will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+      let authToken = localStorage.getItem('adminToken');
+      let currentSubmissions = []; // Added for CSV export
+  
+      // Login handling
+      document.getElementById('loginForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+          const errorMessage = document.getElementById('errorMessage');
+  
+          try {
+              const response = await fetch('http://localhost:3000/auth/login', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ email, password })
+              });
+  
+              const data = await response.json();
+  
+              if (data.success && data.user.is_admin) {
+                  authToken = data.token;
+                  localStorage.setItem('adminToken', authToken);
+                  showDashboard();
+                  refreshData();
+              } else {
+                  throw new Error('Admin access required');
+              }
+          } catch (err) {
+              errorMessage.textContent = 'Invalid credentials or insufficient permissions';
+              errorMessage.style.display = 'block';
+          }
+      });
+  
+      function logout() {
+          localStorage.removeItem('adminToken');
+          authToken = null;
+          showLogin();
+      }
+  
+      function showLogin() {
+          document.getElementById('loginContainer').style.display = 'block';
+          document.getElementById('dashboardContainer').style.display = 'none';
+      }
+  
+      function showDashboard() {
+          document.getElementById('loginContainer').style.display = 'none';
+          document.getElementById('dashboardContainer').style.display = 'block';
+      }
+  
+      // Utility function to convert data to CSV
+      function convertToCSV(submissions) {
+          const headers = [
+              'Date',
+              'Name',
+              'Email',
+              'Screen Time Addiction',
+              'Consumptive Habits',
+              'Inappropriate Content',
+              'Bad Influences',
+              'Safety',
+              'False Information',
+              'Social Distortion',
+              'Other Concern',
+              'Other Description'
+          ];
+  
+          const csvRows = [];
+          csvRows.push(headers.join(','));
+  
+          submissions.forEach(submission => {
+              const row = [
+                  new Date(submission.created_at).toLocaleString(),
+                  submission.name?.replace(/,/g, ';'),
+                  submission.email?.replace(/,/g, ';'),
+                  submission.screen_time_addiction ? 'Yes' : 'No',
+                  submission.consumptive_habits ? 'Yes' : 'No',
+                  submission.inappropriate_content ? 'Yes' : 'No',
+                  submission.bad_influences ? 'Yes' : 'No',
+                  submission.safety ? 'Yes' : 'No',
+                  submission.false_information ? 'Yes' : 'No',
+                  submission.social_distortion ? 'Yes' : 'No',
+                  submission.other_concern ? 'Yes' : 'No',
+                  submission.other_description?.replace(/,/g, ';').replace(/\n/g, ' ')
+              ];
+              csvRows.push(row.join(','));
+          });
+  
+          return csvRows.join('\n');
+      }
+  
+      // Function to trigger CSV download
+      async function exportToCSV() {
+          try {
+              if (currentSubmissions.length === 0) {
+                  alert('No data to export');
+                  return;
+              }
+  
+              const csvContent = convertToCSV(currentSubmissions);
+              const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+              const link = document.createElement('a');
+              
+              if (link.download !== undefined) {
+                  const url = URL.createObjectURL(blob);
+                  link.setAttribute('href', url);
+                  link.setAttribute('download', `notsus_feedback_${new Date().toISOString().split('T')[0]}.csv`);
+                  link.style.visibility = 'hidden';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+              }
+          } catch (err) {
+              console.error('Error exporting data:', err);
+              alert('Failed to export data. Please try again.');
+          }
+      }
+  
+      async function refreshData() {
+          if (!authToken) {
+              showLogin();
+              return;
+          }
+  
+          try {
+              const dateFilter = document.getElementById('dateFilter').value;
+              const response = await fetch(
+                  `http://localhost:3000/api/admin/feedback${dateFilter ? `?date=${dateFilter}` : ''}`,
+                  {
+                      headers: {
+                          'Authorization': `Bearer ${authToken}`
+                      }
+                  }
+              );
+  
+              if (response.status === 401 || response.status === 403) {
+                  throw new Error('Authentication failed');
+              }
+  
+              const data = await response.json();
+  
+              if (data.success) {
+                  // Store current submissions for CSV export
+                  currentSubmissions = data.submissions;
+  
+                  // Update stats
+                  document.getElementById('totalSubmissions').textContent = data.stats.total;
+                  document.getElementById('topConcern').textContent = data.stats.topConcern;
+                  document.getElementById('todaySubmissions').textContent = data.stats.today;
+  
+                  // Update table
+                  const tbody = document.getElementById('submissionsTable');
+                  tbody.innerHTML = '';
+  
+                  data.submissions.forEach(submission => {
+                      const concerns = [
+                          submission.screen_time_addiction && 'Screen Time',
+                          submission.consumptive_habits && 'Consumptive Habits',
+                          submission.inappropriate_content && 'Inappropriate Content',
+                          submission.bad_influences && 'Bad Influences',
+                          submission.safety && 'Safety',
+                          submission.false_information && 'False Information',
+                          submission.social_distortion && 'Social Distortion',
+                          submission.other_concern && 'Other'
+                      ].filter(Boolean);
+  
+                      const row = tbody.insertRow();
+                      row.innerHTML = `
+                          <td>${new Date(submission.created_at).toLocaleString()}</td>
+                          <td>${submission.name}</td>
+                          <td>${submission.email}</td>
+                          <td>${concerns.map(c => `<span class="concern-tag">${c}</span>`).join('')}</td>
+                          <td>${submission.other_description || ''}</td>
+                      `;
+                  });
+              }
+          } catch (err) {
+              console.error('Error fetching data:', err);
+              if (err.message === 'Authentication failed') {
+                  logout();
+              }
+          }
+      }
+  
+      // Check auth status on page load
+      if (authToken) {
+          showDashboard();
+          refreshData();
+      } else {
+          showLogin();
+      }
+  
+      // Initial load
+      refreshData();
+  
+      // Refresh every 5 minutes
+      setInterval(refreshData, 300000);
+  </script>
+</body>
+</html>

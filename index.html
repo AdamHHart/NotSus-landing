@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotSus.net</title>
+    <link rel="stylesheet" href="styles.css">
+    
+    <style>
+      
+    </style>
+</head>
+<body>
+  <body>
+    <div class="page-first">
+      <div class="logo">🧐NotSus.net</div>
+      <h4 class="tagline">The better browser for kids.</h4>
+  </div>
+  <header>
+    <div class="logo">🧐NotSus.net</div>
+    <h6 class="logo-tagline">The better browser for kids.</h6>
+</header>
+    <!-- <div class="fixed-header">
+        <div class="logo">🧐NotSus.net</div>
+        <h4 class="tagline">The better browser for kids.</h4>
+    </div> -->
+
+    <div class="scrollable-content">
+        <!-- All your pages go here -->
+
+    <div class="page">
+        <div class="logo">🧐NotSus.net</div>
+        <h4 class="tagline">The better browser for kids.</h4>
+        <p class="concern-text">Are you concerned of the influence that technology and media will have on your kids? You should be.</p>
+    </div>
+
+    <div class="page">
+        <div class="logo">🧐NotSus.net</div>
+        <h4 class="tagline">The better browser for kids.</h4>
+        <p class="concern-text">Kids deserve productive, explorative, creative tools.<br>
+        They should not be influenced by biased media, consumptive habits,<br>
+        and algorithms designed to maximize attention and engagement.<br>
+        NotSus is a bowser that only allows access<br>
+        to tools we believe will help them<br>
+        develop knowledge, curiosity, skills, and individuality.</p>
+    </div>
+
+    <div class="page">
+        <!-- <div class="logo">🧐NotSus.net</div> -->
+        <!-- <h4 class="tagline">The better browser for kids.</h4> -->
+        
+        <div class="two-column">
+            <div class="column">
+                <h2>Why we exist</h2>
+                <p>In today's world, children are bombarded with biased media and distractions competing for their attention. These influences can become unintended teachers, shaping young minds in unhealthy ways. NotSus.net exists to counteract this by providing a safe digital environment where children's screen time is productive and enriching.</p>
+            </div>
+            <div class="column">
+                <h2>How it works</h2>
+                <p>NotSus.net is a browser designed specifically for kids, emphasizing productivity, curiosity, and creativity. It only grants access to carefully selected educational content and creative tools that help children develop knowledge, skills, individuality, and critical thinking.</p>
+                <p>By eliminating biased media and manipulative algorithms, NotSus.net gives authority back to children and their parents. The browser features user-friendly interfaces with engaging resources under "Learn" and "Create" menus, empowering kids to make choices aligned with their goals and values.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <!-- <div class="logo">🧐NotSus.net</div> -->
+        <!-- <h4 class="tagline">The better browser for kids.</h4> -->
+        
+        <div class="mission-vision">
+            <h2>Our Mission</h2>
+            <p>To provide a safe, empowering online platform that nurtures children's curiosity and creativity, free from biased influences, enabling them to develop valuable skills and a love for learning.</p>
+            
+            <h2>Our Vision</h2>
+            <p>To revolutionize the digital experience for children by fostering a secure space where they can explore, create, and grow into knowledgeable, independent thinkers.</p>
+        </div>
+    </div>
+
+    <div class="page">
+        <!-- <div class="logo">🧐NotSus.net</div> -->
+        <!-- <h4 class="tagline">The better browser for kids.</h4> -->
+        
+        <h2>Our Values</h2>
+        <div class="values-grid">
+            <div class="value-card">
+                <h3>Curiosity</h3>
+                <p>Encouraging endless exploration and a passion for discovery.</p>
+            </div>
+            <div class="value-card">
+                <h3>Creativity</h3>
+                <p>Inspiring imagination through access to innovative tools.</p>
+            </div>
+            <div class="value-card">
+                <h3>Productivity</h3>
+                <p>Promoting active engagement over passive consumption.</p>
+            </div>
+            <div class="value-card">
+                <h3>Skepticism</h3>
+                <p>Cultivating critical thinking to question and understand the world.</p>
+            </div>
+            <div class="value-card">
+                <h3>Safety</h3>
+                <p>Ensuring a secure environment devoid of inappropriate content.</p>
+            </div>
+            <div class="value-card">
+                <h3>Empowerment</h3>
+                <p>Returning control to users to make healthy, value-driven choices.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="auth-section">
+        <form id="loginForm" style="display: none;">
+            <input type="email" placeholder="Email" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+            <button type="button" onclick="toggleAuth('register')">Need to register?</button>
+        </form>
+
+        <form id="registerForm" style="display: none;">
+            <input type="email" placeholder="Email" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit">Register</button>
+            <button type="button" onclick="toggleAuth('login')">Already registered?</button>
+        </form>
+    </div>
+
+    <script>
+    let authToken = localStorage.getItem('authToken');
+
+    function toggleAuth(form) {
+        document.getElementById('loginForm').style.display = form === 'login' ? 'block' : 'none';
+        document.getElementById('registerForm').style.display = form === 'register' ? 'block' : 'none';
+    }
+
+    async function handleAuth(endpoint, formData) {
+        try {
+            const response = await fetch(`http://localhost:3000/auth/${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                authToken = data.token;
+                localStorage.setItem('authToken', authToken);
+                return true;
+            } else {
+                alert(data.error || 'Authentication failed');
+                return false;
+            }
+        } catch (err) {
+            console.error('Auth error:', err);
+            alert('Authentication failed');
+            return false;
+        }
+    }
+
+    // Update your existing form submission code
+    document.querySelector(' -form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!authToken) {
+            alert('Please login first');
+            toggleAuth('login');
+            return;
+        }
+
+        const form = e.target;
+        const formData = {
+            email: form.querySelector('input[type="email"]').value,
+            concerns: Array.from(form.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(checkbox => checkbox.value),
+            otherDescription: form.querySelector('input[type="text"]').value
+        };
+
+        try {
+            const response = await fetch('http://localhost:3000/api/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('Thank you for your feedback!');
+                form.reset();
+            } else {
+                alert('There was an error submitting your feedback. Please try again.');
+            }
+        } catch (err) {
+            console.error('Error:', err);
+            alert('There was an error submitting your feedback. Please try again.');
+        }
+    });
+
+    // Add event listeners for auth forms
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const success = await handleAuth('login', {
+            email: form.querySelector('input[type="email"]').value,
+            password: form.querySelector('input[type="password"]').value
+        });
+        if (success) {
+            form.style.display = 'none';
+            form.reset();
+        }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const success = await handleAuth('register', {
+            email: form.querySelector('input[type="email"]').value,
+            password: form.querySelector('input[type="password"]').value
+        });
+        if (success) {
+            form.style.display = 'none';
+            form.reset();
+        }
+    });
+
+    // Check auth status on page load
+    if (!authToken) {
+        toggleAuth('login');
+    }
+    </script>
+
+    <div class="page">
+        <div class="logo">🧐NotSus.net</div>
+        <h4 class="tagline">The better browser for kids.</h4>
+        
+        <h2>Parents, help us build your browser.</h2>
+        <form class="feedback-form">
+          <input type="text" placeholder="Your name" name="name" required class="name-input">
+          <input type="email" placeholder="email@example.com" name="email" required>
+          <p>What concerns you most about how your kids will interact with tech?</p>
+          <div class="checkbox-group">
+              <label><input type="checkbox" name="concern" value="screen-time"> screen-time addiction</label>
+              <label><input type="checkbox" name="concern" value="consumptive"> consumptive habits</label>
+              <label><input type="checkbox" name="concern" value="inappropriate"> inappropriate content</label>
+              <label><input type="checkbox" name="concern" value="influences"> bad influences</label>
+              <label><input type="checkbox" name="concern" value="safety"> safety</label>
+              <label><input type="checkbox" name="concern" value="false-info"> false information</label>
+              <label><input type="checkbox" name="concern" value="social"> social distortion</label>
+              <label><input type="checkbox" name="concern" value="other"> other</label>
+          </div>
+          <input type="text" placeholder="What else?  _______" name="otherDescription">
+          <button type="submit" class="submit-button">Submit Feedback</button>
+      </form>
+    </div>
+
+    <div class="page">
+        <div class="logo">🧐NotSus.net</div>
+        <h4 class="tagline">The better browser for kids.</h4>
+        
+        <h2>We're looking for help!</h2>
+        <p class="concern-text">Donors, designers, programmers, parents, and teachers,<br>
+        let us know how we can improve the learning environment for our children.</p>
+        <div class="contact-info">
+            <a href="mailto:contact@notsus.net">contact@notsus.net</a>
+        </div>
+    </div>
+
+    
+    <script>
+      document.querySelector('.feedback-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const form = e.target;
+          const submitButton = form.querySelector('.submit-button');
+          const originalButtonText = submitButton.textContent;
+      
+          // Add visual feedback
+          form.classList.add('submitting');
+          submitButton.textContent = 'Submitting...';
+      
+          try {
+              const formData = {
+                  name: form.querySelector('input[name="name"]').value,
+                  email: form.querySelector('input[name="email"]').value,
+                  concerns: Array.from(form.querySelectorAll('input[type="checkbox"]:checked'))
+                      .map(checkbox => checkbox.value),
+                  otherDescription: form.querySelector('input[name="otherDescription"]').value
+              };
+      
+              const response = await fetch('http://localhost:3000/api/feedback', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(formData)
+              });
+      
+              const data = await response.json();
+              
+              if (data.success) {
+                  // Success feedback
+                  form.classList.remove('submitting');
+                  form.classList.add('success');
+                  submitButton.textContent = 'Submitted Successfully!';
+                  form.reset();
+                  
+                  // Reset button after 2 seconds
+                  setTimeout(() => {
+                      form.classList.remove('success');
+                      submitButton.textContent = originalButtonText;
+                  }, 2000);
+              } else {
+                  throw new Error(data.error || 'Submission failed');
+              }
+          } catch (err) {
+              // Error feedback
+              console.error('Error:', err);
+              form.classList.remove('submitting');
+              form.classList.add('error');
+              submitButton.textContent = 'Error - Try Again';
+              
+              // Reset button after 2 seconds
+              setTimeout(() => {
+                  form.classList.remove('error');
+                  submitButton.textContent = originalButtonText;
+              }, 2000);
+          }
+      });
+      </script>
+</body>
+</html>
