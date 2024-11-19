@@ -14,23 +14,19 @@ class DatabaseError extends Error {
 class Database {
     constructor() {
         this.pool = new Pool({
-            user: process.env.DB_USER,
-            host: process.env.DB_HOST,
-            database: process.env.DB_NAME,
-            password: process.env.DB_PASSWORD,
-            port: process.env.DB_PORT,
-            // Add some reasonable defaults for production
-            max: 20, // Maximum number of clients in the pool
-            idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-            connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection not established
+            connectionString: process.env.DATABASE_URL,
+            ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+            max: 20,
+            idleTimeoutMillis: 30000,
+            connectionTimeoutMillis: 2000,
         });
 
-        // Error handling for the pool itself
         this.pool.on('error', (err, client) => {
             console.error('Unexpected error on idle client', err);
         });
     }
 
+    // Rest of your methods remain exactly the same...
     async query(text, params, retries = 3) {
         const client = await this.pool.connect();
         
@@ -40,7 +36,7 @@ class Database {
         } catch (err) {
             if (retries > 0 && this.isRetryableError(err)) {
                 console.log(`Retrying query, ${retries} attempts remaining`);
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 return this.query(text, params, retries - 1);
             }
             throw new DatabaseError(
@@ -75,11 +71,11 @@ class Database {
 
     isRetryableError(err) {
         const retryableCodes = [
-            '40001', // serialization failure
-            '40P01', // deadlock detected
-            '55P03', // lock not available
-            'XX000', // internal error
-            '08006', // connection failure
+            '40001',
+            '40P01',
+            '55P03',
+            'XX000',
+            '08006',
         ];
         return retryableCodes.includes(err.code);
     }
