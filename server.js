@@ -12,13 +12,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve static files if you have a front-end
-// Uncomment the next line and place your static files in the 'public' directory
-// app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Root route to handle requests to '/'
+// Root route to serve the index.html page
 app.get('/', (req, res) => {
-    res.send('<h1>Welcome to NotSus Landing Page</h1><p>This is the root route.</p>');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Auth routes
