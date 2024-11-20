@@ -229,184 +229,190 @@
         </div>
     </div>
 
-    <script>
-        // JavaScript code for handling authentication, data fetching, and exporting
-        let authToken = localStorage.getItem('adminToken');
-        let currentSubmissions = [];
+    // Replace the entire script section in your admin.html with this version:
 
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
+<script>
+    let authToken = localStorage.getItem('adminToken');
+    let currentSubmissions = [];
 
-            try {
-                const response = await fetch('https://www.notsus.net/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
-                });
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorMessage = document.getElementById('errorMessage');
 
-                const data = await response.json();
-
-                if (data.success && data.user.is_admin) {
-                    authToken = data.token;
-                    localStorage.setItem('adminToken', authToken);
-                    showDashboard();
-                    refreshData();
-                } else {
-                    throw new Error('Admin access required');
-                }
-            } catch (err) {
-                errorMessage.textContent = 'Invalid credentials or insufficient permissions';
-                errorMessage.style.display = 'block';
-            }
-        });
-
-        function logout() {
-            localStorage.removeItem('adminToken');
-            authToken = null;
-            showLogin();
-        }
-
-        function showLogin() {
-            document.getElementById('loginContainer').style.display = 'block';
-            document.getElementById('dashboardContainer').style.display = 'none';
-        }
-
-        function showDashboard() {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('dashboardContainer').style.display = 'block';
-        }
-
-        async function refreshData() {
-            if (!authToken) {
-                showLogin();
-                return;
-            }
-
-            try {
-                const dateFilter = document.getElementById('dateFilter').value;
-                const response = await fetch(
-                    `https://www.notsus.net/api/admin/feedback${dateFilter ? `?date=${dateFilter}` : ''}`,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${authToken}`
-                        }
-                    }
-                );
-
-                if (response.status === 401 || response.status === 403) {
-                    throw new Error('Authentication failed');
-                }
-
-                const data = await response.json();
-
-                if (data.success) {
-                    currentSubmissions = data.data;
-
-                    // Update stats
-                    document.getElementById('totalSubmissions').textContent = data.data.length;
-                    document.getElementById('topConcern').textContent = data.data[0]?.topConcern || '-';
-                    document.getElementById('todaySubmissions').textContent = data.data.filter(submission => {
-                        const createdAt = new Date(submission.created_at);
-                        const today = new Date();
-                        return createdAt.getDate() === today.getDate() &&
-                            createdAt.getMonth() === today.getMonth() &&
-                            createdAt.getFullYear() === today.getFullYear();
-                    }).length;
-
-                    // Update table
-                    const tbody = document.getElementById('submissionsTable');
-                    tbody.innerHTML = '';
-
-                    data.data.forEach(submission => {
-                        const concerns = [
-                            submission.screen_time_addiction && 'Screen Time',
-                            submission.consumptive_habits && 'Consumptive Habits',
-                            submission.inappropriate_content && 'Inappropriate Content',
-                            submission.bad_influences && 'Bad Influences',
-                            submission.safety && 'Safety',
-                            submission.false_information && 'False Information',
-                            submission.social_distortion && 'Social Distortion',
-                            submission.other_concern && 'Other'
-                        ].filter(Boolean);
-
-                        const row = tbody.insertRow();
-                        row.innerHTML = `
-                            <td>${new Date(submission.created_at).toLocaleString()}</td>
-                            <td>${submission.name}</td>
-                            <td>${submission.user_email}</td>
-                            <td>${concerns.map(c => `<span class="concern-tag">${c}</span>`).join('')}</td>
-                            <td>${submission.other_description || ''}</td>
-                        `;
-                    });
-                }
-            } catch (err) {
-                console.error('Error fetching data:', err);
-                if (err.message === 'Authentication failed') {
-                    logout();
-                }
-            }
-        }
-
-        async function exportToCSV() {
-            if (currentSubmissions.length === 0) {
-                alert('No data to export');
-                return;
-            }
-
-            const headers = ['Date', 'Name', 'Email', 'Concerns', 'Other Description'];
-            const csvRows = [headers.join(',')];
-
-            currentSubmissions.forEach(submission => {
-                const concerns = [
-                    submission.screen_time_addiction && 'Screen Time',
-                    submission.consumptive_habits && 'Consumptive Habits',
-                    submission.inappropriate_content && 'Inappropriate Content',
-                    submission.bad_influences && 'Bad Influences',
-                    submission.safety && 'Safety',
-                    submission.false_information && 'False Information',
-                    submission.social_distortion && 'Social Distortion',
-                    submission.other_concern && 'Other'
-                ].filter(Boolean);
-
-                const row = [
-                    new Date(submission.created_at).toLocaleString(),
-                    submission.name?.replace(/,/g, ';'),
-                    submission.user_email?.replace(/,/g, ';'),
-                    concerns.join('; '),
-                    submission.other_description?.replace(/,/g, ';').replace(/\n/g, ' ')
-                ];
-
-                csvRows.push(row.join(','));
+        try {
+            console.log('Attempting login...');
+            const response = await fetch('https://www.notsus.net/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
             });
 
-            const csvContent = csvRows.join('\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
+            const data = await response.json();
+            console.log('Login response:', data);
 
-            if (link.download !== undefined) {
-                const url = URL.createObjectURL(blob);
-                link.setAttribute('href', url);
-                link.setAttribute('download', `notsus_feedback_${new Date().toISOString().split('T')[0]}.csv`);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+            if (data.success && data.user.is_admin) {
+                authToken = data.token;
+                localStorage.setItem('adminToken', authToken);
+                showDashboard();
+                refreshData();
+            } else {
+                throw new Error('Admin access required');
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            errorMessage.textContent = 'Invalid credentials or insufficient permissions';
+            errorMessage.style.display = 'block';
+        }
+    });
+
+    function logout() {
+        localStorage.removeItem('adminToken');
+        authToken = null;
+        showLogin();
+    }
+
+    function showLogin() {
+        document.getElementById('loginContainer').style.display = 'block';
+        document.getElementById('dashboardContainer').style.display = 'none';
+    }
+
+    function showDashboard() {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('dashboardContainer').style.display = 'block';
+    }
+
+    async function refreshData() {
+        if (!authToken) {
+            showLogin();
+            return;
+        }
+
+        try {
+            console.log('Fetching feedback data...');
+            const dateFilter = document.getElementById('dateFilter').value;
+            const response = await fetch(
+                `https://www.notsus.net/api/admin/feedback${dateFilter ? `?date=${dateFilter}` : ''}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                }
+            );
+
+            if (response.status === 401 || response.status === 403) {
+                throw new Error('Authentication failed');
+            }
+
+            const data = await response.json();
+            console.log('Received data:', data);
+
+            if (data.success && data.submissions) {
+                currentSubmissions = data.submissions;  // Store submissions
+
+                // Update stats
+                document.getElementById('totalSubmissions').textContent = data.stats.total || '-';
+                document.getElementById('topConcern').textContent = data.stats.topConcern || '-';
+                document.getElementById('todaySubmissions').textContent = data.stats.today || '-';
+
+                // Update table
+                const tbody = document.getElementById('submissionsTable');
+                tbody.innerHTML = '';
+
+                data.submissions.forEach(submission => {
+                    console.log('Processing submission:', submission);
+                    const concerns = [
+                        submission.screen_time_addiction && 'Screen Time',
+                        submission.consumptive_habits && 'Consumptive Habits',
+                        submission.inappropriate_content && 'Inappropriate Content',
+                        submission.bad_influences && 'Bad Influences',
+                        submission.safety && 'Safety',
+                        submission.false_information && 'False Information',
+                        submission.social_distortion && 'Social Distortion',
+                        submission.other_concern && 'Other'
+                    ].filter(Boolean);
+
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${new Date(submission.created_at).toLocaleString()}</td>
+                        <td>${submission.name || ''}</td>
+                        <td>${submission.email || ''}</td>
+                        <td>${concerns.map(c => `<span class="concern-tag">${c}</span>`).join('')}</td>
+                        <td>${submission.other_description || ''}</td>
+                    `;
+                });
+            } else {
+                console.error('Invalid data format:', data);
+                throw new Error('Invalid data format received');
+            }
+        } catch (err) {
+            console.error('Error fetching data:', err);
+            if (err.message === 'Authentication failed') {
+                logout();
             }
         }
+    }
 
-        if (authToken) {
-            showDashboard();
-            refreshData();
-        } else {
-            showLogin();
+    async function exportToCSV() {
+        if (currentSubmissions.length === 0) {
+            alert('No data to export');
+            return;
         }
 
-        setInterval(refreshData, 300000);
-    </script>
+        const headers = ['Date', 'Name', 'Email', 'Concerns', 'Other Description'];
+        const csvRows = [headers.join(',')];
+
+        currentSubmissions.forEach(submission => {
+            const concerns = [
+                submission.screen_time_addiction && 'Screen Time',
+                submission.consumptive_habits && 'Consumptive Habits',
+                submission.inappropriate_content && 'Inappropriate Content',
+                submission.bad_influences && 'Bad Influences',
+                submission.safety && 'Safety',
+                submission.false_information && 'False Information',
+                submission.social_distortion && 'Social Distortion',
+                submission.other_concern && 'Other'
+            ].filter(Boolean);
+
+            const row = [
+                new Date(submission.created_at).toLocaleString(),
+                submission.name?.replace(/,/g, ';'),
+                submission.email?.replace(/,/g, ';'),
+                concerns.join('; '),
+                submission.other_description?.replace(/,/g, ';').replace(/\n/g, ' ')
+            ];
+
+            csvRows.push(row.join(','));
+        });
+
+        const csvContent = csvRows.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `notsus_feedback_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+
+    // Initialize the dashboard
+    if (authToken) {
+        showDashboard();
+        refreshData();
+    } else {
+        showLogin();
+    }
+
+    // Refresh data every 5 minutes
+    setInterval(refreshData, 300000);
+</script>
 </body>
 </html>
