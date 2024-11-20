@@ -9,7 +9,14 @@ const { authenticateToken, requireAdmin } = require('./auth');
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+    origin: ['https://www.notsus.net', 'https://notsus.net'],
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Serve static files from the root directory
