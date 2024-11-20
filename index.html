@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NotSus.net</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     
     <style>
       
@@ -278,78 +279,81 @@
 
     
     <script>
-        // Wait for DOM to be fully loaded
+        // Single event listener for DOM loaded
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Form script loaded');
-            const form = document.querySelector('.feedback-form');
+            console.log('DOM fully loaded');
             
-            if (form) {
-                console.log('Found feedback form');
-                
-                form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const submitButton = form.querySelector('.submit-button');
-                    const originalButtonText = submitButton.textContent;
-        
-                    // Add visual feedback
-                    form.classList.add('submitting');
-                    submitButton.textContent = 'Submitting...';
-        
-                    try {
-                        const formData = {
-                            name: form.querySelector('input[name="name"]').value,
-                            email: form.querySelector('input[name="email"]').value,
-                            concerns: Array.from(form.querySelectorAll('input[type="checkbox"]:checked'))
-                                .map(checkbox => checkbox.value),
-                            otherDescription: form.querySelector('input[name="otherDescription"]').value
-                        };
-        
-                        console.log('Submitting form data:', formData); // Debug log
-        
-                        const response = await fetch('https://www.notsus.net/api/feedback', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(formData)
-                        });
-        
-                        const data = await response.json();
-                        console.log('Server response:', data); // Debug log
-                        
-                        if (data.success) {
-                            // Success feedback
-                            form.classList.remove('submitting');
-                            form.classList.add('success');
-                            submitButton.textContent = 'Submitted Successfully!';
-                            form.reset();
-                            
-                            // Reset button after 2 seconds
-                            setTimeout(() => {
-                                form.classList.remove('success');
-                                submitButton.textContent = originalButtonText;
-                            }, 2000);
-                        } else {
-                            throw new Error(data.error || 'Submission failed');
-                        }
-                    } catch (err) {
-                        // Error feedback
-                        console.error('Submission error:', err);
+            // Find the form
+            const form = document.querySelector('.feedback-form');
+            if (!form) {
+                console.error('Could not find feedback form');
+                return;
+            }
+            
+            console.log('Found feedback form');
+            
+            // Handle form submission
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitButton = form.querySelector('.submit-button');
+                const originalButtonText = submitButton.textContent;
+
+                // Add visual feedback
+                form.classList.add('submitting');
+                submitButton.textContent = 'Submitting...';
+
+                try {
+                    const formData = {
+                        name: form.querySelector('input[name="name"]').value,
+                        email: form.querySelector('input[name="email"]').value,
+                        concerns: Array.from(form.querySelectorAll('input[type="checkbox"]:checked'))
+                            .map(checkbox => checkbox.value),
+                        otherDescription: form.querySelector('input[name="otherDescription"]').value
+                    };
+
+                    console.log('Submitting form data:', formData);
+
+                    const response = await fetch('https://www.notsus.net/api/feedback', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const data = await response.json();
+                    console.log('Server response:', data);
+                    
+                    if (data.success) {
+                        // Success feedback
                         form.classList.remove('submitting');
-                        form.classList.add('error');
-                        submitButton.textContent = 'Error - Try Again';
+                        form.classList.add('success');
+                        submitButton.textContent = 'Submitted Successfully!';
+                        form.reset();
                         
                         // Reset button after 2 seconds
                         setTimeout(() => {
-                            form.classList.remove('error');
+                            form.classList.remove('success');
                             submitButton.textContent = originalButtonText;
                         }, 2000);
+                    } else {
+                        throw new Error(data.error || 'Submission failed');
                     }
-                });
-            } else {
-                console.error('Could not find feedback form');
-            }
+                } catch (err) {
+                    // Error feedback
+                    console.error('Submission error:', err);
+                    form.classList.remove('submitting');
+                    form.classList.add('error');
+                    submitButton.textContent = 'Error - Try Again';
+                    
+                    // Reset button after 2 seconds
+                    setTimeout(() => {
+                        form.classList.remove('error');
+                        submitButton.textContent = originalButtonText;
+                    }, 2000);
+                }
+            });
         });
-        </script>
+    </script>
 </body>
 </html>
