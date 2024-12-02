@@ -5,10 +5,20 @@
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+html, body {
+  overflow: hidden;
+  height: 100%;
+}
+
 body {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  height: 100vh;
   background-color: #17104D;
   color: #ffffff;
 }
+
+
 
 .page {
   min-height: 100vh;
@@ -65,10 +75,10 @@ h4.tagline {
 .concern-text {
   font-size: 1.5rem;
   max-width: 800px;
-  margin: 2rem auto;
+  margin: 1rem auto;
   line-height: 1.6;
   background-color: #7169C9;
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 1.5rem;
 }
 
@@ -334,11 +344,21 @@ header {
 }
 
 .concern-text-header {
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   line-height: 1.4;
-  margin-top: 2rem;
+  margin-bottom: 1.5rem;
   background-color: #7169C9;
-  padding: 2rem;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+}
+
+/* Add new style for browser description */
+.browser-description {
+  font-size: 1.5rem;
+  line-height: 1.4;
+  margin-top: 1rem;
+  background-color: #9dcfd0;
+  padding: 1.5rem;
   border-radius: 1.5rem;
 }
 
@@ -347,6 +367,8 @@ header {
   width: 100%;
   max-width: 500px;
 }
+
+
 
 /* Update existing styles */
 .page-first {
@@ -453,6 +475,35 @@ header {
   transform: translateY(0);
 }
 
+.scroll-nav {
+  position: fixed;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+}
+
+.scroll-nav,
+.scroll-nav__dot {
+    display: none;
+}
+
+.scroll-nav__dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  margin: 1rem 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.scroll-nav__dot.active {
+  background: #ffffff;
+  transform: scale(1.5);
+}
+
 /* Add responsive styles */
 @media (max-width: 768px) {
   .contact-heading {
@@ -466,5 +517,75 @@ header {
   .contact-button {
       padding: 0.8rem 2rem;
       font-size: 1rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .concern-text-header {
+      font-size: 1.75rem;
+      padding: 1.25rem;
+  }
+  
+  .browser-description {
+      font-size: 1.25rem;
+      padding: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .concern-text-header {
+      font-size: 1.5rem;
+      padding: 1rem;
+  }
+  
+  .browser-description {
+      font-size: 1.125rem;
+      padding: 1rem;
+  }
+}
+
+/* Video section styles */
+.video-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.video-heading {
+  font-size: 2.5rem;
+  color: #ffffff;
+  margin-bottom: 2rem;
+}
+
+.video-container {
+  position: relative;
+  height: 75vh; /* Set height to 80% of viewport height */
+  width: calc(80vh * 16/9); /* Calculate width based on 16:9 aspect ratio */
+  margin: 0 auto;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .video-container {
+      height: 60vh; /* Slightly smaller for mobile */
+      width: calc(60vh * 16/9);
+  }
+  
+  .video-heading {
+      font-size: 2rem;
   }
 }
