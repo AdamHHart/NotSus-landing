@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "migrate": "node migrations/runner.js"
+    "migrate": "node migrations/runner.js",
+    "dev": "nodemon server.js",
+    "migrate:dev": "NODE_ENV=development node migrations/runner.js",
+    "migrate:prod": "NODE_ENV=production node migrations/runner.js",
+    "postinstall": "npm run migrate"
   },
   "engines": {
     "node": ">=14.0.0"

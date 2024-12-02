@@ -1,4 +1,4 @@
-// migrations/runner.js
+// File: migrations/runner.js
 require('dotenv').config();
 const { Pool } = require('pg');
 const fs = require('fs').promises;
@@ -11,6 +11,10 @@ async function runMigrations() {
     });
 
     try {
+        // Test database connection
+        await pool.query('SELECT NOW()');
+        console.log('Database connection successful');
+
         // Create migrations table if it doesn't exist
         await pool.query(`
             CREATE TABLE IF NOT EXISTS migrations (
@@ -19,6 +23,7 @@ async function runMigrations() {
                 executed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             );
         `);
+        console.log('Migrations table checked/created');
 
         // Get all migration files
         const migrationFiles = await fs.readdir(__dirname);
@@ -26,9 +31,11 @@ async function runMigrations() {
             .filter(f => f.endsWith('.js') && f !== 'runner.js')
             .sort();
 
+        console.log('Found migrations:', migrations);
+
         // Run migrations in order
         for (const migrationFile of migrations) {
-            const { up } = require(path.join(__dirname, migrationFile));
+            console.log(`Checking migration: ${migrationFile}`);
             
             const result = await pool.query(
                 'SELECT id FROM migrations WHERE name = $1',
@@ -37,21 +44,38 @@ async function runMigrations() {
 
             if (result.rows.length === 0) {
                 console.log(`Running migration: ${migrationFile}`);
-                await up(pool);
+                const migration = require(path.join(__dirname, migrationFile));
+                
+                if (typeof migration.up !== 'function') {
+                    throw new Error(`Migration ${migrationFile} does not export an 'up' function`);
+                }
+
+                await migration.up(pool);
                 await pool.query(
                     'INSERT INTO migrations (name) VALUES ($1)',
                     [migrationFile]
                 );
+                console.log(`Completed migration: ${migrationFile}`);
+            } else {
+                console.log(`Skipping already executed migration: ${migrationFile}`);
             }
         }
 
-        console.log('Migrations completed successfully');
+        console.log('All migrations completed successfully');
     } catch (err) {
-        console.error('Migration failed:', err);
+        console.error('Migration failed:', {
+            message: err.message,
+            stack: err.stack,
+            code: err.code,
+            detail: err.detail
+        });
         process.exit(1);
     } finally {
         await pool.end();
     }
 }
 
-runMigrations().catch(console.error);
+runMigrations().catch(err => {
+    console.error('Unhandled error in migrations:', err);
+    process.exit(1);
+});
