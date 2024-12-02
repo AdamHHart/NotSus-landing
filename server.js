@@ -10,7 +10,12 @@ const { authenticateToken, requireAdmin } = require('./auth');
 const app = express();
 
 const corsOptions = {
-    origin: ['https://www.notsus.net', 'https://notsus.net'],
+    origin: [
+        'https://www.notsus.net', 
+        'https://notsus.net',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000'
+    ],
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
@@ -35,7 +40,7 @@ app.use('/auth', authRoutes);
 
 // Validation middleware
 const validateFeedback = (req, res, next) => {
-    const { email, concerns } = req.body;
+    const { email, concerns, step } = req.body;
 
     if (!email) {
         return res.status(400).json({
@@ -45,7 +50,8 @@ const validateFeedback = (req, res, next) => {
         });
     }
 
-    if (!Array.isArray(concerns)) {
+    // Only validate concerns array for step 2
+    if (step === 2 && !Array.isArray(concerns)) {
         return res.status(400).json({
             success: false,
             error: 'Validation error',
@@ -57,8 +63,11 @@ const validateFeedback = (req, res, next) => {
 };
 
 // API endpoint for submitting feedback
+// Add this logging to your feedback endpoint in server.js
 app.post('/api/feedback', validateFeedback, async (req, res, next) => {
     try {
+        console.log('Received feedback submission:', req.body);
+        
         const result = await db.transaction(async (client) => {
             const {
                 name,
@@ -66,6 +75,13 @@ app.post('/api/feedback', validateFeedback, async (req, res, next) => {
                 concerns,
                 otherDescription
             } = req.body;
+
+            console.log('Processing values:', {
+                name,
+                email,
+                concerns,
+                otherDescription
+            });
 
             const query = `
                 INSERT INTO user_feedback (
@@ -98,18 +114,41 @@ app.post('/api/feedback', validateFeedback, async (req, res, next) => {
                 otherDescription
             ];
 
-            return client.query(query, values);
+            console.log('Executing query with values:', values);
+            
+            try {
+                const queryResult = await client.query(query, values);
+                console.log('Query result:', queryResult);
+                return queryResult;
+            } catch (dbError) {
+                console.error('Database error details:', {
+                    code: dbError.code,
+                    message: dbError.message,
+                    detail: dbError.detail,
+                    table: dbError.table,
+                    constraint: dbError.constraint
+                });
+                throw dbError;
+            }
         });
+
+        console.log('Transaction completed successfully:', result);
 
         res.json({
             success: true,
             id: result.rows[0].id
         });
     } catch (err) {
-        console.error('Error saving feedback:', err);
+        console.error('Full error details:', {
+            message: err.message,
+            stack: err.stack,
+            code: err.code,
+            detail: err.detail
+        });
         res.status(500).json({
             success: false,
-            error: 'Failed to save feedback'
+            error: 'Failed to save feedback',
+            detail: err.message
         });
     }
 });

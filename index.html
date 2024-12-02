@@ -14,9 +14,44 @@
 <body>
   <body>
     <div class="page-first">
-      <div class="logo">🧐NotSus.net</div>
-      <h4 class="tagline">The better browser for kids.</h4>
-  </div>
+        <div class="split-container">
+          <div class="left-content">
+            <p class="concern-text-header">Are you concerned of the influence that technology and media will have on your kids? You should be.</p>
+          </div>
+          
+          <div class="right-content">
+            <!-- Initial button -->
+            <button id="showFormButton" class="waitlist-button">Join the Waitlist</button>
+            
+            <!-- Multi-step form -->
+            <form class="feedback-form header-form" style="display: none;">
+              <!-- Step 1: Name and Email -->
+              <div class="form-step" id="step1">
+                <input type="text" placeholder="Your name" name="name" required class="name-input">
+                <input type="email" placeholder="email@example.com" name="email" required>
+                <button type="button" class="submit-button" id="submitStep1">Join Waitlist</button>
+              </div>
+              
+              <!-- Step 2: Concerns -->
+              <div class="form-step" id="step2" style="display: none;">
+                <p>What concerns you most about how your kids will interact with tech?</p>
+                <div class="checkbox-group">
+                  <label><input type="checkbox" name="concern" value="screen-time"> screen-time addiction</label>
+                  <label><input type="checkbox" name="concern" value="consumptive"> consumptive habits</label>
+                  <label><input type="checkbox" name="concern" value="inappropriate"> inappropriate content</label>
+                  <label><input type="checkbox" name="concern" value="influences"> bad influences</label>
+                  <label><input type="checkbox" name="concern" value="safety"> safety</label>
+                  <label><input type="checkbox" name="concern" value="false-info"> false information</label>
+                  <label><input type="checkbox" name="concern" value="social"> social distortion</label>
+                  <label><input type="checkbox" name="concern" value="other"> other</label>
+                </div>
+                <input type="text" placeholder="What else?  _______" name="otherDescription">
+                <button type="submit" class="submit-button">Submit Feedback</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
   <header>
     <div class="logo">🧐NotSus.net</div>
     <h6 class="logo-tagline">The better browser for kids.</h6>
@@ -131,7 +166,7 @@
         </form>
     </div>
 
-    <script>
+    <!-- <script>
     let authToken = localStorage.getItem('authToken');
 
     function toggleAuth(form) {
@@ -354,6 +389,7 @@
                 }
             });
         });
-    </script>
+    </script> -->
+    <script src="scripts.js"></script>
 </body>
 </html>

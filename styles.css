@@ -307,3 +307,103 @@ header {
   padding-top: 200px; /* Adjust this value based on your header height */
   overflow-y: auto;
 }
+
+.split-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.left-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+}
+
+.right-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.concern-text-header {
+  font-size: 2.5rem;
+  line-height: 1.4;
+  margin-top: 2rem;
+  background-color: #7169C9;
+  padding: 2rem;
+  border-radius: 1.5rem;
+}
+
+.header-form {
+  margin: 0;
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Update existing styles */
+.page-first {
+  min-height: 100vh;
+  border-bottom: 1px solid #7169C9;
+  padding: 0; /* Remove padding to accommodate split container */
+}
+
+/* Media query for responsive design */
+@media (max-width: 1024px) {
+  .split-container {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  
+  .left-content, .right-content {
+    padding: 1rem;
+  }
+  
+  .concern-text-header {
+    font-size: 2rem;
+    padding: 1.5rem;
+  }
+}
+
+/* Add these new styles */
+.waitlist-button {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: #9dcfd0;
+  color: #17104D;
+  border: none;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.waitlist-button:hover {
+  background-color: #8bbabb;
+  transform: translateY(-2px);
+}
+
+.waitlist-button:active {
+  transform: translateY(0);
+}
+
+.form-step {
+  transition: opacity 0.3s ease;
+}
+
+/* Update existing feedback-form class */
+.feedback-form {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.feedback-form.visible {
+  opacity: 1;
+}

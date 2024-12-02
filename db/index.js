@@ -13,9 +13,22 @@ class DatabaseError extends Error {
 
 class Database {
     constructor() {
-        this.pool = new Pool({
+        const isProduction = process.env.NODE_ENV === 'production';
+        
+        // Configure connection based on environment
+        const connectionConfig = isProduction ? {
             connectionString: process.env.DATABASE_URL,
-            ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+            ssl: { rejectUnauthorized: false }
+        } : {
+            user: process.env.DB_USER,
+            host: process.env.DB_HOST,
+            database: process.env.DB_NAME,
+            password: process.env.DB_PASSWORD,
+            port: process.env.DB_PORT
+        };
+
+        this.pool = new Pool({
+            ...connectionConfig,
             max: 20,
             idleTimeoutMillis: 30000,
             connectionTimeoutMillis: 2000,
@@ -26,7 +39,7 @@ class Database {
         });
     }
 
-    // Rest of your methods remain exactly the same...
+    // Rest of your methods remain the same
     async query(text, params, retries = 3) {
         const client = await this.pool.connect();
         
