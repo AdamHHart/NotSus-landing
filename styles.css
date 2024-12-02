@@ -407,3 +407,64 @@ header {
 .feedback-form.visible {
   opacity: 1;
 }
+
+/* Add to your styles.css file */
+.contact-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: #17104D;
+  padding: 2rem;
+}
+
+.contact-heading {
+  font-size: 2.5rem;
+  color: #ffffff;
+  margin-bottom: 2rem;
+}
+
+.contact-text {
+  font-size: 1.5rem;
+  color: #ffffff;
+  line-height: 1.6;
+  margin-bottom: 3rem;
+}
+
+.contact-button {
+  display: inline-block;
+  padding: 1rem 3rem;
+  background-color: #7169C9;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 2rem;
+  font-size: 1.2rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.contact-button:hover {
+  background-color: #8b84d9;
+  transform: translateY(-2px);
+}
+
+.contact-button:active {
+  transform: translateY(0);
+}
+
+/* Add responsive styles */
+@media (max-width: 768px) {
+  .contact-heading {
+      font-size: 2rem;
+  }
+  
+  .contact-text {
+      font-size: 1.2rem;
+  }
+  
+  .contact-button {
+      padding: 0.8rem 2rem;
+      font-size: 1rem;
+  }
+}
