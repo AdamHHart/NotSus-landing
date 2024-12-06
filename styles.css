@@ -23,6 +23,7 @@ body {
 .page {
   min-height: 100vh;
   padding: 2rem;
+  
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -322,44 +323,97 @@ header {
   display: flex;
   width: 100%;
   min-height: 100vh;
-  padding: 2rem;
-  gap: 2rem;
+  padding: 4rem;
+  gap: 4rem;
+  align-items: center;
 }
 
-.left-content {
+.left-content, .right-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 2rem;
+  gap: 2rem;
+  text-align: left;
+  height: 60vh; /* Fixed height for both sides */
 }
 
-.right-content {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
+.main-heading {
+  font-size: 3.5rem;
+  line-height: 1.2;
+  color: #ffffff;
+  font-weight: bold;
 }
 
-.concern-text-header {
-  font-size: 1.5rem;
-  line-height: 1.4;
-  margin-bottom: 1.5rem;
-  background-color: #7169C9;
-  padding: 1.5rem;
-  border-radius: 1.5rem;
-}
-
-/* Add new style for browser description */
 .browser-description {
   font-size: 1.5rem;
-  line-height: 1.4;
-  margin-top: 1rem;
+  line-height: 1.5;
+  color: #ffffff;
+  max-width: 500px;
+}
+
+.concern-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Make all right-side text the same size */
+.concern-heading,
+.concern-subheading {
+  font-size: 2.5rem;
+  line-height: 1.3;
+  color: #ffffff;
+}
+
+/* Make button match input width */
+.waitlist-button,
+.name-input,
+.feedback-form input[type="email"] {
+  width: 100%;
+  max-width: 500px;
+}
+
+.waitlist-button {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: bold;
   background-color: #9dcfd0;
-  padding: 1.5rem;
-  border-radius: 1.5rem;
+  color: #17104D;
+  border: none;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.waitlist-button:hover {
+  background-color: #8bbabb;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 1024px) {
+  .split-container {
+      flex-direction: column;
+      padding: 2rem;
+      gap: 2rem;
+  }
+
+  .left-content, .right-content {
+      width: 100%;
+      height: auto; /* Allow height to be flexible on mobile */
+  }
+
+  .main-heading {
+      font-size: 2.5rem;
+  }
+
+  .browser-description {
+      font-size: 1.25rem;
+  }
+
+  .concern-heading,
+  .concern-subheading {
+      font-size: 2rem;
+  }
 }
 
 .header-form {
@@ -552,18 +606,19 @@ header {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 0rem 2rem;
+  margin-bottom: 0rem;
 }
 
 .video-heading {
   font-size: 2.5rem;
   color: #ffffff;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem; 
 }
 
 .video-container {
   position: relative;
-  height: 75vh; /* Set height to 80% of viewport height */
+  height: 70vh; /* Set height to 80% of viewport height */
   width: calc(80vh * 16/9); /* Calculate width based on 16:9 aspect ratio */
   margin: 0 auto;
 }

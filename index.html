@@ -7,50 +7,69 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     
-    <style>
-      
-    </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JP7D4XPL7X"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-JP7D4XPL7X');
+    </script>
+    <!-- Hotjar Tracking Code for https://www.notsus.net -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:5232697,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
 </head>
 <body>
   <body>
     <div class="page-first">
         <div class="split-container">
             <div class="left-content">
-                <p class="concern-text-header">Are you concerned of the influence that technology and media will have on your kids? You should be.</p>
-                <p class="browser-description">NotSus Browser gets rid of the bad influences of the internet, and promotes learning and skills development.</p>
+                <h1 class="main-heading">Kids deserve productive, explorative, creative tools.</h1>
+                <p class="browser-description">NotSus promotes learning and skills development. We get rid of the other stuff.</p>
             </div>
-          
-          <div class="right-content">
-            <!-- Initial button -->
-            <button id="showFormButton" class="waitlist-button">Join the Waitlist</button>
             
-            <!-- Multi-step form -->
-            <form class="feedback-form header-form" style="display: none;">
-              <!-- Step 1: Name and Email -->
-              <div class="form-step" id="step1">
-                <input type="text" placeholder="Your name" name="name" required class="name-input">
-                <input type="email" placeholder="email@example.com" name="email" required>
-                <button type="button" class="submit-button" id="submitStep1">Join Waitlist</button>
-              </div>
-              
-              <!-- Step 2: Concerns -->
-              <div class="form-step" id="step2" style="display: none;">
-                <p>What concerns you most about how your kids will interact with tech?</p>
-                <div class="checkbox-group">
-                  <label><input type="checkbox" name="concern" value="screen-time"> screen-time addiction</label>
-                  <label><input type="checkbox" name="concern" value="consumptive"> consumptive habits</label>
-                  <label><input type="checkbox" name="concern" value="inappropriate"> inappropriate content</label>
-                  <label><input type="checkbox" name="concern" value="influences"> bad influences</label>
-                  <label><input type="checkbox" name="concern" value="safety"> safety</label>
-                  <label><input type="checkbox" name="concern" value="false-info"> false information</label>
-                  <label><input type="checkbox" name="concern" value="social"> social distortion</label>
-                  <label><input type="checkbox" name="concern" value="other"> other</label>
+            <div class="right-content">
+                <div class="concern-section">
+                    <h2 class="concern-heading">Are you concerned of the influence that technology and media will have on your kids?</h2>
+                    <p class="concern-subheading">You should be.</p>
+                    <button id="showFormButton" class="waitlist-button">Join the Waitlist</button>
                 </div>
-                <input type="text" placeholder="What else?  _______" name="otherDescription">
-                <button type="submit" class="submit-button">Submit Feedback</button>
-              </div>
-            </form>
-          </div>
+        
+                <!-- Multi-step form -->
+                <form class="feedback-form header-form" style="display: none;">
+                    <!-- Form content remains the same -->
+                    <div class="form-step" id="step1">
+                        <input type="text" placeholder="Your name" name="name" required class="name-input">
+                        <input type="email" placeholder="email@example.com" name="email" required>
+                        <button type="button" class="submit-button" id="submitStep1">Join Waitlist</button>
+                    </div>
+                    
+                    <div class="form-step" id="step2" style="display: none;">
+                        <p>What concerns you most about how your kids will interact with tech?</p>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="concern" value="screen-time"> screen-time addiction</label>
+                            <label><input type="checkbox" name="concern" value="consumptive"> consumptive habits</label>
+                            <label><input type="checkbox" name="concern" value="inappropriate"> inappropriate content</label>
+                            <label><input type="checkbox" name="concern" value="influences"> bad influences</label>
+                            <label><input type="checkbox" name="concern" value="safety"> safety</label>
+                            <label><input type="checkbox" name="concern" value="false-info"> false information</label>
+                            <label><input type="checkbox" name="concern" value="social"> social distortion</label>
+                            <label><input type="checkbox" name="concern" value="other"> other</label>
+                        </div>
+                        <input type="text" placeholder="What else?  _______" name="otherDescription">
+                        <button type="submit" class="submit-button">Submit Feedback</button>
+                    </div>
+                </form>
+            </div>
         </div>
       </div>
   <header>
