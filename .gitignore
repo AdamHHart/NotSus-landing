@@ -8,6 +8,12 @@ notes/todo.md
 *.env
 config.js
 
+scripts/hashPassword.js
+
+# Authentication and Security
+scripts/reset-admin-password.js
+**/scripts/reset-admin-password.js
+
 # Node modules
 node_modules/
 npm-debug.log

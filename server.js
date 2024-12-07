@@ -7,6 +7,8 @@ const db = require('./db');
 const authRoutes = require('./routes/auth');
 const { authenticateToken, requireAdmin } = require('./auth');
 
+
+
 const app = express();
 
 const corsOptions = {

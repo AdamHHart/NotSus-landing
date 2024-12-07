@@ -5,7 +5,7 @@ const db = require('../db');
 const router = express.Router();
 
 router.post('/login', async (req, res) => {
-    console.log('Login attempt:', req.body.email);
+    console.log('Login attempt:', req.body);
     try {
         const { email, password } = req.body;
 
@@ -17,6 +17,7 @@ router.post('/login', async (req, res) => {
         }
 
         const userResult = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+        console.log('User query result:', userResult.rows);
 
         if (userResult.rows.length === 0) {
             return res.status(401).json({ 
@@ -27,11 +28,20 @@ router.post('/login', async (req, res) => {
 
         const user = userResult.rows[0];
         const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+        console.log('Password validation:', { isValid: isPasswordValid });
 
         if (!isPasswordValid) {
             return res.status(401).json({ 
                 success: false,
                 error: 'Invalid email or password' 
+            });
+        }
+
+        // Check admin status
+        if (!user.is_admin) {
+            return res.status(403).json({
+                success: false,
+                error: 'Admin access required'
             });
         }
 
@@ -45,6 +55,8 @@ router.post('/login', async (req, res) => {
             process.env.JWT_SECRET || 'your-secret-key',
             { expiresIn: '24h' }
         );
+
+        console.log('Login successful for:', email);
 
         res.status(200).json({
             success: true,

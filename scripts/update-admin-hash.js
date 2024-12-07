@@ -1,12 +1,11 @@
 // File: scripts/update-admin-hash.js
-
 require('dotenv').config();
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 
 async function updateAdminHash(email, newPassword) {
     const pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
+        connectionString: 'postgresql://notsus_db_user:co1308KoULl6vQJoVij6vasaoaHourvl@dpg-csue64i3esus73a6k450-a.ohio-postgres.render.com/notsus_db',
         ssl: {
             rejectUnauthorized: false
         }
