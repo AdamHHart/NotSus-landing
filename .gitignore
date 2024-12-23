@@ -8,6 +8,9 @@ notes/todo.md
 *.env
 config.js
 
+notes/details.md
+notes/todo.md
+
 scripts/hashPassword.js
 
 # Authentication and Security

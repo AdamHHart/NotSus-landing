@@ -17,11 +17,6 @@
   --card-bg: #b7b2b8;
 }
 
-h1 {
-  padding-top: 2%;
-  font-size: 2.5rem;
-}
-
 /* Layout */
 html, body {
   height: 100%;
@@ -293,7 +288,7 @@ header {
 /* Video section */
 .video-page {
   padding: 0 2rem;
-  margin: -20vh 0 0;
+  margin-bottom: 0;
 }
 
 .video-container {
@@ -340,9 +335,9 @@ header {
   flex-direction: column;
   gap: 2rem;
   max-width: 800px;
-  margin: -20vh auto 0;
+  margin: 0 auto;
   text-align: center;
-}
+ }
  
  .contact-heading {
   font-size: 2.5rem;
