@@ -49,7 +49,6 @@ body {
 /* Page sections */
 .page, .page-first {
   min-height: 100vh;
-
   text-align: center;
 }
 
@@ -103,8 +102,8 @@ header {
   width: 100%;
   min-height: 90vh;
   padding: 2rem 4rem;
-  gap: 4rem;
-  align-items: center;
+  gap: 2rem;
+  align-items: flex-start;
 }
 
 .left-content, .right-content {
@@ -235,21 +234,21 @@ header {
   display: flex;
   flex-direction: column;
   gap: 2rem;
- }
- 
- .mission-vision > div {
+}
+
+.mission-vision > div {
   background-color: var(--primary-accent);
   padding: 2rem;
   border-radius: 1.5rem;
- }
- 
- .mission-vision h2 {
+}
+
+.mission-vision h2 {
   margin-bottom: 1rem;
- }
- 
- .mission-vision p {
+}
+
+.mission-vision p {
   line-height: 1.6;
- }
+}
 
 /* Grid layouts */
 .two-column {
@@ -343,17 +342,17 @@ header {
   margin: -20vh auto 0;
   text-align: center;
 }
- 
- .contact-heading {
+
+.contact-heading {
   font-size: 2.5rem;
   margin-bottom: 1rem;
- }
- 
- .contact-text {
+}
+
+.contact-text {
   font-size: 1.5rem;
   line-height: 1.6;
   margin-bottom: 2rem;
- }
+}
 
 /* Media queries */
 @media (max-width: 1024px) {
@@ -384,7 +383,15 @@ header {
   }
 }
 
+.hide-mobile {
+  display: block;
+}
+
 @media (max-width: 768px) {
+  .hide-mobile {
+    display: none;
+  }
+
   .two-column {
     grid-template-columns: 1fr;
   }
@@ -393,27 +400,87 @@ header {
     grid-template-columns: 1fr;
   }
 
-  .video-container {
-    height: 60vh;
-    width: calc(60vh * 16/9);
+  .top-hero h1 {
+    font-size: 1.5rem;
+    padding: 0 1rem;
+    margin: 0.5rem 0;
   }
 
-  .browser-description,
-  .concern-text-header {
-    font-size: 1.125rem;
+  .concern-heading {
+    font-size: 1.2rem;
+    padding: 0 1rem;
+    margin: 0.5rem 0;
+  }
+
+  .feedback-form {
+    padding: 1.5rem;
+    margin: 0;
+  }
+  
+  .split-container {
+    gap: 1rem;
+    padding: 1rem;
+    min-height: auto;
+  }
+
+  .form-inputs input {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .submit-button {
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+
+  .checkbox-group {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .video-container {
+    height: 40vh;
+    width: 90vw;
+  }
+
+  .value-card {
     padding: 1rem;
   }
-  
-  .contact-heading {
-    font-size: 2rem;
-  }
-  
-  .contact-text {
+
+  .value-card h3 {
     font-size: 1.2rem;
   }
-  
+
+  .value-card p {
+    font-size: 0.9rem;
+  }
+
+  .contact-heading {
+    font-size: 1.8rem;
+  }
+
+  .contact-text {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+
   .contact-button {
     padding: 0.8rem 2rem;
     font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  header .logo {
+    font-size: 1.5rem;
+  }
+
+  .logo-tagline {
+    padding-left: 40px;
+    font-size: 10px;
+  }
+
+  .split-container {
+    padding: 1rem;
   }
 }
