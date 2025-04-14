@@ -244,6 +244,30 @@ app.use((err, req, res, next) => {
     });
 });
 
+app.get('/download/:platform', async (req, res) => {
+    const { platform } = req.params;
+    const email = req.query.email; // Can be passed from form
+    
+    const downloadUrls = {
+        'windows': 'https://pub-e5bd9e24b50d490dada11f212ee2a0ac.r2.dev/notsusbrowser-win.exe',
+        'mac': 'https://pub-e5bd9e24b50d490dada11f212ee2a0ac.r2.dev/notsusbrowser-mac.app.zip'
+    };
+    
+    try {
+        // Log the download in your Postgres database
+        await db.query(`
+            INSERT INTO app_downloads (platform, email, download_time, user_agent)
+            VALUES ($1, $2, CURRENT_TIMESTAMP, $3)
+        `, [platform, email, req.headers['user-agent']]);
+        
+        // Redirect to the actual file
+        res.redirect(downloadUrls[platform]);
+    } catch (err) {
+        console.error('Error tracking download:', err);
+        res.redirect(downloadUrls[platform]);
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
