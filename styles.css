@@ -353,8 +353,6 @@ header {
   line-height: 1.6;
   margin-bottom: 2rem;
 }
-
-
 .download-button {
     display: inline-block;
     padding: 0.75rem 1.5rem;
@@ -372,9 +370,22 @@ header {
     transform: translateY(-2px);
 }
 
+#download-section {
+    text-align: center;
+    padding: 1rem;
+}
+
 #download-section h3 {
     margin-bottom: 0.5rem;
+    color: var(--text-light);
 }
+
+#download-section p {
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+
 
 /* Media queries */
 @media (max-width: 1024px) {
