@@ -249,8 +249,8 @@ app.get('/download/:platform', async (req, res) => {
     const email = req.query.email; // Can be passed from form
     
     const downloadUrls = {
-        'windows': 'https://pub-e5bd9e24b50d490dada11f212ee2a0ac.r2.dev/notsusbrowser-win.exe',
-        'mac': 'https://pub-e5bd9e24b50d490dada11f212ee2a0ac.r2.dev/notsusbrowser-mac.app.zip'
+        'windows': 'https://notsus.net/notsusbrowser_win.exe',
+        'mac': 'https://notsus.net/notsusbrowser_mac.app.zip'
     };
     
     try {
