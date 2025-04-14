@@ -46,14 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!response.ok) throw new Error('Submission failed');
         
-        // Show download section instead of just changing text
-        submitButton.textContent = 'Submitted Successfully!';
-        
-        // Show download section
-        const downloadSection = document.getElementById('download-section');
-        if (downloadSection) {
-            downloadSection.style.display = 'block';
-        }
+        // Hide the form step and show download section
+        document.getElementById('form-step-3').style.display = 'none';
+        document.getElementById('download-section').style.display = 'block';
         
     } catch (err) {
         console.error('Submission error:', err);
