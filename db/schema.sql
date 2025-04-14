@@ -21,6 +21,15 @@ CREATE TABLE users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE app_downloads (
+    id SERIAL PRIMARY KEY,
+    platform VARCHAR(50) NOT NULL,
+    email VARCHAR(255),
+    download_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    user_agent TEXT,
+    ip_address VARCHAR(50)
+);
+
 -- Add user_id foreign key to user_feedback
 ALTER TABLE user_feedback 
 ADD COLUMN user_id INTEGER REFERENCES users(id);
