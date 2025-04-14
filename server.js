@@ -37,6 +37,9 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
+// Downloads
+app.use('/downloads', express.static(path.join(__dirname, 'downloads')));
+
 // Auth routes
 app.use('/auth', authRoutes);
 
