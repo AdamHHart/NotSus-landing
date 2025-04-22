@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NotSus.net</title>
+    <title>NotSus.net - The Better Browser for Kids</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     
     <!-- Analytics Scripts -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JP7D4XPL7X"></script>
@@ -43,11 +44,7 @@
         </div>
         
         <div class="split-container">
-            
             <div class="left-content">
-                <!-- <h1 class="main-heading">Kids deserve productive, explorative, creative tools.</h1>
-                <p class="browser-description">NotSus promotes learning and skills development. We get rid of the other stuff.</p> -->
-                
                 <h2 class="concern-heading hide-mobile">Take control by giving them access to the tools and information you trust.</h2>
                 <h2 class="concern-heading">Set your kids up for success! Sign up for our waitlist today for early access.</h2>
             </div>
@@ -72,8 +69,9 @@
                             <label><input type="checkbox" name="concern" value="safety"> safety</label>
                             <label><input type="checkbox" name="concern" value="false-info"> false information</label>
                             <label><input type="checkbox" name="concern" value="social"> social distortion</label>
+                            <label><input type="checkbox" name="concern" value="other"> other</label>
                         </div>
-                        <input type="text" placeholder="What else?" name="concernDescription">
+                        <input type="text" placeholder="What else concerns you?" name="concernDescription">
                         <button type="button" class="submit-button" onclick="showNextStep(3)">Next</button>
                     </div>
                     
@@ -105,68 +103,63 @@
         </div>
     </div>
 
+    <!-- Video Section -->
+    <div class="page video-page">
+        <h2 class="video-heading">Meet the Founder</h2>
+        <div class="video-container">
+            <iframe 
+                width="960" 
+                height="540" 
+                src="https://www.youtube.com/embed/mtlJAzD6NkI" 
+                title="NotSus Browser Introduction" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen>
+            </iframe>
+        </div>
+    </div>
 
-            <!-- Video Section -->
-            <div class="page video-page">
-                <h2 class="video-heading">Meet the Founder</h2>
-                <div class="video-container">
-                    <iframe 
-                        width="960" 
-                        height="540" 
-                        src="https://www.youtube.com/embed/mtlJAzD6NkI" 
-                        title="NotSus Browser Introduction" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
+    <!-- Values Section -->
+    <div class="page">
+        <h2>Our Values</h2>
+        <div class="values-grid">
+            <div class="value-card">
+                <h3>Curiosity</h3>
+                <p>Encouraging endless exploration and a passion for discovery.</p>
             </div>
-    
-
-        <!-- Values Section -->
-        <div class="page">
-            <h2>Our Values</h2>
-            <div class="values-grid">
-                <div class="value-card">
-                    <h3>Curiosity</h3>
-                    <p>Encouraging endless exploration and a passion for discovery.</p>
-                </div>
-                <div class="value-card">
-                    <h3>Creativity</h3>
-                    <p>Inspiring imagination through access to innovative tools.</p>
-                </div>
-                <div class="value-card">
-                    <h3>Productivity</h3>
-                    <p>Promoting active engagement over passive consumption.</p>
-                </div>
-                <div class="value-card">
-                    <h3>Skepticism</h3>
-                    <p>Cultivating critical thinking to question and understand the world.</p>
-                </div>
-                <div class="value-card">
-                    <h3>Safety</h3>
-                    <p>Ensuring a secure environment devoid of inappropriate content.</p>
-                </div>
-                <div class="value-card">
-                    <h3>Empowerment</h3>
-                    <p>Returning control to users to make healthy, value-driven choices.</p>
-                </div>
+            <div class="value-card">
+                <h3>Creativity</h3>
+                <p>Inspiring imagination through access to innovative tools.</p>
+            </div>
+            <div class="value-card">
+                <h3>Productivity</h3>
+                <p>Promoting active engagement over passive consumption.</p>
+            </div>
+            <div class="value-card">
+                <h3>Skepticism</h3>
+                <p>Cultivating critical thinking to question and understand the world.</p>
+            </div>
+            <div class="value-card">
+                <h3>Safety</h3>
+                <p>Ensuring a secure environment devoid of inappropriate content.</p>
+            </div>
+            <div class="value-card">
+                <h3>Empowerment</h3>
+                <p>Returning control to users to make healthy, value-driven choices.</p>
             </div>
         </div>
+    </div>
 
-
-
-        <!-- Contact Section -->
-        <div class="page contact-page">
-            <h2 class="contact-heading">We're looking for help!</h2>
-            <p class="contact-text">
-                Donors, designers, programmers, parents, and teachers,<br>
-                let us know how we can improve the learning environment for our children.
-            </p>
-            <a href="mailto:contact@notsus.net" class="contact-button">
-                contact@notsus.net
-            </a>
-        </div>
+    <!-- Contact Section -->
+    <div class="page contact-page">
+        <h2 class="contact-heading">We're looking for help!</h2>
+        <p class="contact-text">
+            Donors, designers, programmers, parents, and teachers,<br>
+            let us know how we can improve the learning environment for our children.
+        </p>
+        <a href="mailto:contact@notsus.net" class="contact-button">
+            contact@notsus.net
+        </a>
     </div>
 
     <script src="scripts.js"></script>

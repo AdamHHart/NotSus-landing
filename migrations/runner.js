@@ -5,9 +5,16 @@ const fs = require('fs').promises;
 const path = require('path');
 
 async function runMigrations() {
+    // Configure SSL for all environments
+    // This is crucial for connecting to PostgreSQL services like Render, Heroku, etc.
+    const sslConfig = {
+        rejectUnauthorized: false  // This allows self-signed certificates
+    };
+
+    // Create pool with SSL config
     const pool = new Pool({
         connectionString: process.env.DATABASE_URL,
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+        ssl: sslConfig
     });
 
     try {

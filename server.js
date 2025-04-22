@@ -7,8 +7,6 @@ const db = require('./db');
 const authRoutes = require('./routes/auth');
 const { authenticateToken, requireAdmin } = require('./auth');
 
-
-
 const app = express();
 
 const corsOptions = {
@@ -45,7 +43,7 @@ app.use('/auth', authRoutes);
 
 // Validation middleware
 const validateFeedback = (req, res, next) => {
-    const { email, concerns, step } = req.body;
+    const { email, concerns } = req.body;
 
     if (!email) {
         return res.status(400).json({
@@ -55,8 +53,8 @@ const validateFeedback = (req, res, next) => {
         });
     }
 
-    // Only validate concerns array for step 2
-    if (step === 2 && !Array.isArray(concerns)) {
+    // Only validate concerns array if present
+    if (concerns && !Array.isArray(concerns)) {
         return res.status(400).json({
             success: false,
             error: 'Validation error',
@@ -67,8 +65,7 @@ const validateFeedback = (req, res, next) => {
     next();
 };
 
-// API endpoint for submitting feedback
-// Add this logging to your feedback endpoint in server.js
+// API endpoint for submitting feedback - Updated to handle all fields
 app.post('/api/feedback', validateFeedback, async (req, res, next) => {
     try {
         console.log('Received feedback submission:', req.body);
@@ -78,14 +75,18 @@ app.post('/api/feedback', validateFeedback, async (req, res, next) => {
                 name,
                 email,
                 concerns,
-                otherDescription
+                gains,
+                otherDescription,
+                gainsDescription
             } = req.body;
 
             console.log('Processing values:', {
                 name,
                 email,
                 concerns,
-                otherDescription
+                gains,
+                otherDescription,
+                gainsDescription
             });
 
             const query = `
@@ -108,14 +109,14 @@ app.post('/api/feedback', validateFeedback, async (req, res, next) => {
             const values = [
                 name,
                 email,
-                concerns.includes('screen-time'),
-                concerns.includes('consumptive'),
-                concerns.includes('inappropriate'),
-                concerns.includes('influences'),
-                concerns.includes('safety'),
-                concerns.includes('false-info'),
-                concerns.includes('social'),
-                concerns.includes('other'),
+                concerns?.includes('screen-time'),
+                concerns?.includes('consumptive'),
+                concerns?.includes('inappropriate'),
+                concerns?.includes('influences'),
+                concerns?.includes('safety'),
+                concerns?.includes('false-info'),
+                concerns?.includes('social'),
+                concerns?.includes('other'),
                 otherDescription
             ];
 
@@ -155,6 +156,49 @@ app.post('/api/feedback', validateFeedback, async (req, res, next) => {
             error: 'Failed to save feedback',
             detail: err.message
         });
+    }
+});
+
+// NEW: API endpoint for tracking download attempts
+app.post('/api/track-download', async (req, res) => {
+    try {
+        const { email, platform, action, browserInfo } = req.body;
+        
+        console.log('Tracking download:', {
+            email,
+            platform,
+            action,
+            browserInfo
+        });
+        
+        // Insert into download_tracking table
+        await db.query(`
+            INSERT INTO download_tracking (
+                email,
+                platform,
+                action,
+                browser_name,
+                browser_version,
+                os_name,
+                os_version,
+                user_agent
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `, [
+            email,
+            platform,
+            action,
+            browserInfo.browser.name,
+            browserInfo.browser.version,
+            browserInfo.os.name,
+            browserInfo.os.version,
+            browserInfo.userAgent
+        ]);
+        
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Error tracking download:', err);
+        // Still return success to not interrupt user experience
+        res.json({ success: true });
     }
 });
 
@@ -210,8 +254,127 @@ app.get('/api/admin/feedback', authenticateToken, requireAdmin, async (req, res)
     }
 });
 
+// NEW: Admin endpoint to view download statistics
+app.get('/api/admin/downloads', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        // Get download statistics
+        const statsQuery = `
+            SELECT 
+                platform,
+                action,
+                COUNT(*) as count,
+                MAX(created_at) as last_attempt
+            FROM download_tracking
+            GROUP BY platform, action
+            ORDER BY platform, action
+        `;
+
+        const statsResult = await db.query(statsQuery);
+
+        // Get recent download attempts
+        const recentQuery = `
+            SELECT
+                id,
+                email,
+                platform,
+                action,
+                browser_name,
+                browser_version,
+                os_name,
+                os_version,
+                created_at
+            FROM download_tracking
+            ORDER BY created_at DESC
+            LIMIT 50
+        `;
+
+        const recentResult = await db.query(recentQuery);
+
+        res.json({
+            success: true,
+            stats: statsResult.rows,
+            recent: recentResult.rows
+        });
+    } catch (err) {
+        console.error('Error fetching download stats:', err);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch download statistics'
+        });
+    }
+});
+
 app.get('/admin', authenticateToken, requireAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+// Updated download endpoint to track successful downloads
+app.get('/download/:platform', async (req, res) => {
+    const { platform } = req.params;
+    const email = req.query.email; // Can be passed from form
+    
+    // Updated download URLs pointing to R2 buckets
+    const downloadUrls = {
+        'windows': 'https://notsus.net/NotSus%20Browser.exe',
+        'mac': 'https://notsus.net/NotSus_Browser-1.0.0-arm64.dmg'
+    };
+    
+    if (!downloadUrls[platform]) {
+        return res.status(404).json({
+            success: false,
+            error: 'Platform not supported'
+        });
+    }
+    
+    try {
+        // Log the download in the database
+        await db.query(`
+            INSERT INTO app_downloads (
+                platform,
+                email,
+                download_time,
+                user_agent,
+                ip_address
+            ) VALUES ($1, $2, CURRENT_TIMESTAMP, $3, $4)
+        `, [
+            platform,
+            email,
+            req.headers['user-agent'],
+            req.headers['x-forwarded-for'] || req.connection.remoteAddress
+        ]);
+        
+        // Also track this as a 'complete' action in download_tracking
+        if (email) {
+            await db.query(`
+                INSERT INTO download_tracking (
+                    email,
+                    platform,
+                    action,
+                    browser_name,
+                    browser_version,
+                    os_name,
+                    os_version,
+                    user_agent
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            `, [
+                email,
+                platform,
+                'complete', // This action indicates they reached the download redirect
+                'Unknown', // We don't parse these values on the server
+                'Unknown',
+                'Unknown',
+                'Unknown',
+                req.headers['user-agent']
+            ]);
+        }
+        
+        // Redirect to the actual file
+        res.redirect(downloadUrls[platform]);
+    } catch (err) {
+        console.error('Error tracking download:', err);
+        // Still redirect to download even if tracking fails
+        res.redirect(downloadUrls[platform]);
+    }
 });
 
 // Health check endpoint
@@ -242,30 +405,6 @@ app.use((err, req, res, next) => {
         error: 'Server error',
         message: err.message
     });
-});
-
-app.get('/download/:platform', async (req, res) => {
-    const { platform } = req.params;
-    const email = req.query.email; // Can be passed from form
-    
-    const downloadUrls = {
-        'windows': 'https://notsus.net/notsusbrowser_win.exe',
-        'mac': 'https://notsus.net/notsusbrowser_mac.app.zip'
-    };
-    
-    try {
-        // Log the download in your Postgres database
-        await db.query(`
-            INSERT INTO app_downloads (platform, email, download_time, user_agent)
-            VALUES ($1, $2, CURRENT_TIMESTAMP, $3)
-        `, [platform, email, req.headers['user-agent']]);
-        
-        // Redirect to the actual file
-        res.redirect(downloadUrls[platform]);
-    } catch (err) {
-        console.error('Error tracking download:', err);
-        res.redirect(downloadUrls[platform]);
-    }
 });
 
 const PORT = process.env.PORT || 3000;

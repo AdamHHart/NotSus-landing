@@ -6,15 +6,15 @@
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Colors */
+/* Colors - Updated to match browser theme */
 :root {
-  --primary-bg: #17104D;
-  --primary-accent: #7169C9;
-  --secondary-accent: #9dcfd0;
-  --hover-accent: #8bbabb;
+  --primary-bg: #1a1a1a;
+  --primary-accent: #00A86B;
+  --secondary-accent: #1fc988;
+  --hover-accent: #008f5a;
   --text-light: #ffffff;
-  --text-dark: #17104D;
-  --card-bg: #b7b2b8;
+  --text-dark: #2d2a2a;
+  --card-bg: #f5f5f5;
 }
 
 h1 {
@@ -170,7 +170,7 @@ header {
   border: none;
   border-radius: 2rem;
   background-color: var(--secondary-accent);
-  color: var(--text-dark);
+  color: var(--text-light);
   font-size: 1rem;
 }
 
@@ -207,8 +207,8 @@ header {
   padding: 1rem 2rem;
   border: none;
   border-radius: 2rem;
-  background-color: var(--secondary-accent);
-  color: var(--text-dark);
+  background-color: var(--hover-accent);
+  color: var(--text-light);
   font-size: 1.2rem;
   font-weight: bold;
   cursor: pointer;
@@ -217,7 +217,7 @@ header {
 
 .submit-button:hover,
 .waitlist-button:hover {
-  background-color: var(--hover-accent);
+  background-color: var(--secondary-accent);
   transform: translateY(-2px);
 }
 
@@ -325,7 +325,7 @@ header {
 }
 
 .contact-button:hover {
-  background-color: #8b84d9;
+  background-color: var(--secondary-accent);
   transform: translateY(-2px);
 }
 
@@ -357,7 +357,7 @@ header {
     display: inline-block;
     padding: 0.75rem 1.5rem;
     background-color: var(--secondary-accent);
-    color: var(--text-dark);
+    color: var(--text-light);
     text-decoration: none;
     border-radius: 2rem;
     font-weight: bold;
