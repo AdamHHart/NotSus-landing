@@ -28,7 +28,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-            background-color: #7169C9;
+            background-color: #00A86B;
             padding: 1rem 2rem;
             border-radius: 1rem;
         }
@@ -36,6 +36,32 @@
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            background-color: #1a1a1a;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .tab.active {
+            background-color: #00A86B;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .stats {
@@ -46,7 +72,7 @@
         }
 
         .stat-card {
-            background-color: #7169C9;
+            background-color: #00A86B;
             padding: 1.5rem;
             border-radius: 1rem;
             text-align: center;
@@ -61,7 +87,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            background-color: #7169C9;
+            background-color: #00A86B;
             border-radius: 1rem;
             overflow: hidden;
             margin-bottom: 2rem;
@@ -74,20 +100,20 @@
         }
 
         th {
-            background-color: #9dcfd0;
-            color: #17104D;
+            background-color: #008f5a;
+            color: #ffffff;
             font-weight: bold;
         }
 
         tr:hover {
-            background-color: #8b84d9;
+            background-color: #1fc988;
         }
 
         .concern-tag {
             display: inline-block;
             padding: 0.25rem 0.5rem;
-            background-color: #9dcfd0;
-            color: #17104D;
+            background-color: #1fc988;
+            color: #ffffff;
             border-radius: 0.5rem;
             margin: 0.25rem;
             font-size: 0.875rem;
@@ -101,8 +127,8 @@
         }
 
         .refresh-button {
-            background-color: #9dcfd0;
-            color: #17104D;
+            background-color: #1fc988;
+            color: #ffffff;
         }
 
         .export-button {
@@ -126,7 +152,7 @@
             max-width: 400px;
             margin: 100px auto;
             padding: 2rem;
-            background-color: #7169C9;
+            background-color: #00A86B;
             border-radius: 1rem;
             text-align: center;
         }
@@ -137,8 +163,8 @@
             margin-bottom: 1rem;
             border: none;
             border-radius: 0.5rem;
-            background-color: #9dcfd0;
-            color: #17104D;
+            background-color: #1fc988;
+            color: #ffffff;
             font-size: 1rem;
         }
 
@@ -147,8 +173,8 @@
             padding: 0.75rem;
             border: none;
             border-radius: 0.5rem;
-            background-color: #9dcfd0;
-            color: #17104D;
+            background-color: #008f5a;
+            color: #ffffff;
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
@@ -156,7 +182,7 @@
         }
 
         .login-form button:hover {
-            background-color: #8bbabb;
+            background-color: #1fc988;
         }
 
         .error-message {
@@ -197,35 +223,76 @@
                 </div>
             </div>
 
-            <div class="stats">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalSubmissions">-</div>
-                    <div>Total Submissions</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="topConcern">-</div>
-                    <div>Top Concern</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="todaySubmissions">-</div>
-                    <div>Today's Submissions</div>
-                </div>
+            <div class="tabs">
+                <div class="tab active" data-tab="feedback">Feedback Submissions</div>
+                <div class="tab" data-tab="downloads">Download Tracking</div>
             </div>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Concerns</th>
-                        <th>Other Description</th>
-                    </tr>
-                </thead>
-                <tbody id="submissionsTable">
-                    <!-- Data will be populated here -->
-                </tbody>
-            </table>
+            <div id="feedbackTab" class="tab-content active">
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalSubmissions">-</div>
+                        <div>Total Submissions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="topConcern">-</div>
+                        <div>Top Concern</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="todaySubmissions">-</div>
+                        <div>Today's Submissions</div>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Concerns</th>
+                            <th>Other Concern</th>
+                            <th>Tech Interests</th>
+                        </tr>
+                    </thead>
+                    <tbody id="submissionsTable">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="downloadsTab" class="tab-content">
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalDownloads">-</div>
+                        <div>Total Downloads</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="windowsDownloads">-</div>
+                        <div>Windows Downloads</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="macDownloads">-</div>
+                        <div>Mac Downloads</div>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Email</th>
+                            <th>Platform</th>
+                            <th>Action</th>
+                            <th>Browser</th>
+                            <th>OS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="downloadsTable">
+                        <!-- Download data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -237,6 +304,7 @@
 
         let authToken = localStorage.getItem('adminToken');
         let currentSubmissions = [];
+        let currentDownloads = [];
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -287,6 +355,25 @@
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('dashboardContainer').style.display = 'block';
         }
+
+        // Handle tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                this.classList.add('active');
+                const tabName = this.getAttribute('data-tab');
+                document.getElementById(`${tabName}Tab`).classList.add('active');
+                
+                // Refresh data based on active tab
+                if (tabName === 'downloads') {
+                    refreshDownloadData();
+                }
+            });
+        });
 
         async function refreshData() {
             if (!authToken) {
@@ -344,6 +431,7 @@
                             <td>${submission.email || ''}</td>
                             <td>${concerns.map(c => `<span class="concern-tag">${c}</span>`).join('')}</td>
                             <td>${submission.other_description || ''}</td>
+                            <td>${submission.gains_description || ''}</td>
                         `;
                     });
                 } else {
@@ -357,13 +445,91 @@
             }
         }
 
+        async function refreshDownloadData() {
+            if (!authToken) {
+                showLogin();
+                return;
+            }
+
+            try {
+                console.log('Fetching download data...');
+                const response = await fetch(
+                    `${API_BASE_URL}/api/admin/downloads`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${authToken}`
+                        }
+                    }
+                );
+
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('Authentication failed');
+                }
+
+                const data = await response.json();
+                console.log('Received download data:', data);
+
+                if (data.success) {
+                    currentDownloads = data.recent || [];
+
+                    // Calculate stats
+                    const totalDownloads = data.recent ? data.recent.length : 0;
+                    const windowsDownloads = data.recent ? data.recent.filter(d => d.platform === 'windows').length : 0;
+                    const macDownloads = data.recent ? data.recent.filter(d => d.platform === 'mac').length : 0;
+
+                    // Update stats
+                    document.getElementById('totalDownloads').textContent = totalDownloads;
+                    document.getElementById('windowsDownloads').textContent = windowsDownloads;
+                    document.getElementById('macDownloads').textContent = macDownloads;
+
+                    // Update table
+                    const tbody = document.getElementById('downloadsTable');
+                    tbody.innerHTML = '';
+
+                    if (data.recent && data.recent.length > 0) {
+                        data.recent.forEach(download => {
+                            const row = tbody.insertRow();
+                            row.innerHTML = `
+                                <td>${new Date(download.created_at).toLocaleString()}</td>
+                                <td>${download.email || '-'}</td>
+                                <td>${download.platform || '-'}</td>
+                                <td>${download.action || '-'}</td>
+                                <td>${download.browser_name || '-'} ${download.browser_version || ''}</td>
+                                <td>${download.os_name || '-'} ${download.os_version || ''}</td>
+                            `;
+                        });
+                    } else {
+                        // No download data
+                        const row = tbody.insertRow();
+                        row.innerHTML = `<td colspan="6" style="text-align: center;">No download data available</td>`;
+                    }
+                } else {
+                    throw new Error('Invalid download data format received');
+                }
+            } catch (err) {
+                console.error('Error fetching download data:', err);
+                
+                // Show error in the table
+                const tbody = document.getElementById('downloadsTable');
+                tbody.innerHTML = '';
+                const row = tbody.insertRow();
+                row.innerHTML = `<td colspan="6" style="text-align: center; color: #ff4444;">
+                    Error loading download data: ${err.message}
+                </td>`;
+                
+                if (err.message === 'Authentication failed') {
+                    logout();
+                }
+            }
+        }
+
         async function exportToCSV() {
             if (currentSubmissions.length === 0) {
                 alert('No data to export');
                 return;
             }
 
-            const headers = ['Date', 'Name', 'Email', 'Concerns', 'Other Description'];
+            const headers = ['Date', 'Name', 'Email', 'Concerns', 'Other Description', 'Tech Interests'];
             const csvRows = [headers.join(',')];
 
             currentSubmissions.forEach(submission => {
@@ -383,7 +549,8 @@
                     submission.name?.replace(/,/g, ';'),
                     submission.email?.replace(/,/g, ';'),
                     concerns.join('; '),
-                    submission.other_description?.replace(/,/g, ';').replace(/\n/g, ' ')
+                    submission.other_description?.replace(/,/g, ';').replace(/\n/g, ' '),
+                    submission.gains_description?.replace(/,/g, ';').replace(/\n/g, ' ')
                 ];
 
                 csvRows.push(row.join(','));
