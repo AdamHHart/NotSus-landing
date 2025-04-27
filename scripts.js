@@ -4,7 +4,8 @@ const config = {
         ? 'http://localhost:3000/api/feedback'
         : 'https://www.notsus.net/api/feedback',
     downloadUrls: {
-        windows: 'https://notsus.net/download/windows',
+        // windows: 'https://notsus.net/download/windows',
+        windows: 'https://notsus.net/NotSus_Browser_1.0.5.exe',
         mac: 'https://notsus.net/download/mac'
     }
 };
