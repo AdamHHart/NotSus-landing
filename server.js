@@ -315,8 +315,8 @@ app.get('/download/:platform', async (req, res) => {
     
     // Updated download URLs pointing to R2 buckets
     const downloadUrls = {
-        'windows': 'https://notsus.net/NotSus_Browser_1.0.1.exe',
-        'mac': 'https://notsus.net/NotSus_Browser-1.0.0-arm64.dmg'
+        'windows': 'https://notsus.net/NotSus_Browser_1.0.5.exe',
+        'mac': 'https://notsus.net/NotSus_Browser-1.0.5-arm64.dmg'
     };
     
     if (!downloadUrls[platform]) {
