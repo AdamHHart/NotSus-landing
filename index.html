@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,17 +16,24 @@
         gtag('js', new Date());
         gtag('config', 'G-JP7D4XPL7X');
     </script>
+</head>
+<body><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotSus.net - The Better Browser for Kids</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     
-    <!-- User Behavior Tracking -->
+    <!-- Analytics Scripts -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JP7D4XPL7X"></script>
     <script>
-        (function(h,o,t,j,a,r){
-            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-            h._hjSettings={hjid:5232697,hjsv:6};
-            a=o.getElementsByTagName('head')[0];
-            r=o.createElement('script');r.async=1;
-            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-            a.appendChild(r);
-        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-JP7D4XPL7X');
     </script>
 </head>
 <body>
@@ -38,129 +44,374 @@
     </header>
 
     <!-- Hero Section -->
-    <div class="page-first">
-        <div class="top-hero">
-            <h1>Do you want a safer, more productive online experience for your kids?</h1>
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">Your Kids Deserve Better Than the Attention Economy</h1>
+            <p class="hero-subtitle">NotSus gives children ages 4-8 access to the best educational and creative tools, without the distractions</p>
+            <div class="hero-cta">
+                <form id="heroForm" class="waitlist-form">
+                    <div class="form-inputs">
+                        <input type="text" placeholder="Your name" name="name" class="name-input" required>
+                        <input type="email" placeholder="email@example.com" name="email" required>
+                    </div>
+                    <button type="submit" class="submit-button">Join Waitlist</button>
+                </form>
+                <a href="#waitlist-section" class="secondary-cta">Get Early Access</a>
+            </div>
+            <div class="hero-image">
+                <img src="./public/browserImg.png" alt="Homepage of NotSus browser" onerror="this.onerror=null; this.src=''; this.alt='NotSus Browser Preview'; this.style.height='300px'; this.style.background='#433d85'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.parentElement.innerHTML = '🧐 NotSus Browser Preview';">
+            </div>
         </div>
-        
-        <div class="split-container">
-            <div class="left-content">
-                <h2 class="concern-heading hide-mobile">Take control by giving them access to the tools and information you trust.</h2>
-                <h2 class="concern-heading">Set your kids up for success! Sign up for our waitlist today for early access.</h2>
+    </section>
+
+    <!-- Stats Impact Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <h3 class="stat-number">5-7</h3>
+                    <p class="stat-text">Hours that children spend on screens daily</p>
+                </div>
+                <div class="stat-item highlight">
+                    <h3 class="stat-number">20%</h3>
+                    <p class="stat-text">of that time actually builds useful skills</p>
+                </div>
+                <div class="stat-item">
+                    <h3 class="stat-number">100%</h3>
+                    <p class="stat-text">of NotSus time is focused on learning and creativity</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem-Solution Grid -->
+    <section class="problem-solution">
+        <div class="container">
+            <h2>The Internet Wasn't Designed for Kids</h2>
+            
+            <div class="comparison-grid">
+                <div class="comparison-header">
+                    <div class="column-problem">Traditional Browsing</div>
+                    <div class="column-solution">NotSus Browser</div>
+                </div>
+                
+                <div class="comparison-row">
+                    <div class="column-problem">
+                        <h3>Endless rabbit holes of videos and games</h3>
+                        <p>One click leads to hours of wasted time with algorithms designed to keep them scrolling</p>
+                        <div class="problem-icon">📱</div>
+                    </div>
+                    <div class="column-solution">
+                        <h3>Curated environment focused on skill-building</h3>
+                        <p>Access to carefully selected tools that engage while building valuable skills</p>
+                        <div class="solution-icon">🧠</div>
+                    </div>
+                </div>
+                
+                <div class="comparison-row">
+                    <div class="column-problem">
+                        <h3>Algorithms designed to maximize attention, not learning</h3>
+                        <p>Content optimized to keep eyes glued to screens, regardless of value</p>
+                        <div class="problem-icon">⏱️</div>
+                    </div>
+                    <div class="column-solution">
+                        <h3>Tools designed to maximize creativity and knowledge</h3>
+                        <p>Platforms that encourage active engagement, creation and learning</p>
+                        <div class="solution-icon">💡</div>
+                    </div>
+                </div>
+                
+                <div class="comparison-row">
+                    <div class="column-problem">
+                        <h3>Parents constantly saying 'no' and limiting access</h3>
+                        <p>Screen time becomes a source of conflict and negotiation</p>
+                        <div class="problem-icon">🚫</div>
+                    </div>
+                    <div class="column-solution">
+                        <h3>Freedom to explore within a safe, productive environment</h3>
+                        <p>Kids can independently navigate between approved educational and creative tools</p>
+                        <div class="solution-icon">🔑</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Showcase -->
+    <section class="features" id="how-it-works">
+        <div class="container">
+            <h2>A Browser That Parents and Kids Both Love</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Safety Controls</h3>
+                    <p>No exposure to inappropriate content, with a completely curated experience</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🧩</div>
+                    <h3>Skill-Building Tools</h3>
+                    <p>Access to coding, design, and educational platforms that prepare for the future</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Distraction-Free</h3>
+                    <p>No notifications, autoplay, or recommendation algorithms to hijack attention</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <h3>Parent Dashboard</h3>
+                    <p>Simple controls to customize your child's experience and adjust settings</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section class="tools-section">
+        <div class="container">
+            <h2>Discover What's Possible</h2>
+            
+            <div class="tools-categories">
+                <div class="category-tab active" data-category="learn">Learn</div>
+                <div class="category-tab" data-category="create">Create</div>
             </div>
             
-            <div class="right-content">
-                <form class="feedback-form header-form">
-                    <div id="form-step-1">
-                        <div class="form-inputs">
-                            <input type="text" placeholder="Your name" name="name" required class="name-input">
-                            <input type="email" placeholder="email@example.com" name="email" required>
+            <div class="tools-content">
+                <div class="tools-category active" id="learn-category">
+                    <div class="tools-grid">
+                        <div class="tool-card">
+                            <div class="tool-image">📚</div>
+                            <h3>Khan Academy</h3>
+                            <p>Free world-class education in math, science, and more</p>
                         </div>
-                        <button type="button" class="submit-button" onclick="showNextStep(2)">Join the waitlist</button>
-                    </div>
-                    
-                    <div id="form-step-2" style="display: none;">
-                        <p>What concerns you most about how your kids interact with tech?</p>
-                        <div class="checkbox-group">
-                            <label><input type="checkbox" name="concern" value="screen-time"> screen-time addiction</label>
-                            <label><input type="checkbox" name="concern" value="consumptive"> consumptive habits</label>
-                            <label><input type="checkbox" name="concern" value="inappropriate"> inappropriate content</label>
-                            <label><input type="checkbox" name="concern" value="influences"> bad influences</label>
-                            <label><input type="checkbox" name="concern" value="safety"> safety</label>
-                            <label><input type="checkbox" name="concern" value="false-info"> false information</label>
-                            <label><input type="checkbox" name="concern" value="social"> social distortion</label>
-                            <label><input type="checkbox" name="concern" value="other"> other</label>
+                        <div class="tool-card">
+                            <div class="tool-image">📖</div>
+                            <h3>Wikipedia</h3>
+                            <p>The free encyclopedia for exploring any topic imaginable</p>
                         </div>
-                        <input type="text" placeholder="What else concerns you?" name="concernDescription">
-                        <button type="button" class="submit-button" onclick="showNextStep(3)">Next</button>
-                    </div>
-                    
-                    <div id="form-step-3" style="display: none;">
-                        <p>What do you want your kids to get out of technology?</p>
-                        <div class="checkbox-group">
-                            <label><input type="checkbox" name="gains" value="valuable-skills"> Valuable skills</label>
-                            <label><input type="checkbox" name="gains" value="active-habits"> Active/Productive habits</label>
-                            <label><input type="checkbox" name="gains" value="educational-tools"> Good educational tools</label>
-                            <label><input type="checkbox" name="gains" value="safe-experience"> A safe experience</label>
-                        </div>
-                        <input type="text" placeholder="What else?" name="gainsDescription">
-                        <button type="submit" class="submit-button">Submit</button>
-                    </div>
-                    <div id="download-section" style="display: none; margin-top: 2rem;">
-                        <h3>Thank you for your submission!</h3>
-                        <p>Download the NotSus browser for a safer browsing experience for your kids.</p>
-                        <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; justify-content: center;">
-                            <a href="/download/windows" class="download-button">
-                                <span>Download for Windows</span>
-                            </a>
-                            <a href="/download/mac" class="download-button">
-                                <span>Download for Mac</span>
-                            </a>
+                        <div class="tool-card">
+                            <div class="tool-image">🔍</div>
+                            <h3>Perplexity</h3>
+                            <p>AI-powered search for instant answers and deep insights</p>
                         </div>
                     </div>
-                </form>
+                </div>
+                
+                <div class="tools-category" id="create-category">
+                    <div class="tools-grid">
+                        <div class="tool-card">
+                            <div class="tool-image">🎮</div>
+                            <h3>Scratch</h3>
+                            <p>Create and share interactive stories, games, and animations</p>
+                        </div>
+                        <div class="tool-card">
+                            <div class="tool-image">💻</div>
+                            <h3>Replit</h3>
+                            <p>Code, create, and learn together</p>
+                        </div>
+                        <div class="tool-card">
+                            <div class="tool-image" id="tinkercad-canvas-container">
+                                <canvas id="tinkercad-canvas"></canvas>
+                            </div>
+                            <h3>Tinkercad</h3>
+                            <p>3D design, electronics, and coding platform</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-
-    <!-- Video Section -->
-    <div class="page video-page">
-        <h2 class="video-heading">Meet the Founder</h2>
-        <div class="video-container">
-            <iframe 
-                width="960" 
-                height="540" 
-                src="https://www.youtube.com/embed/mtlJAzD6NkI" 
-                title="NotSus Browser Introduction" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                allowfullscreen>
-            </iframe>
-        </div>
-    </div>
+    </section>
 
     <!-- Values Section -->
-    <div class="page">
-        <h2>Our Values</h2>
-        <div class="values-grid">
-            <div class="value-card">
-                <h3>Curiosity</h3>
-                <p>Encouraging endless exploration and a passion for discovery.</p>
-            </div>
-            <div class="value-card">
-                <h3>Creativity</h3>
-                <p>Inspiring imagination through access to innovative tools.</p>
-            </div>
-            <div class="value-card">
-                <h3>Productivity</h3>
-                <p>Promoting active engagement over passive consumption.</p>
-            </div>
-            <div class="value-card">
-                <h3>Skepticism</h3>
-                <p>Cultivating critical thinking to question and understand the world.</p>
-            </div>
-            <div class="value-card">
-                <h3>Safety</h3>
-                <p>Ensuring a secure environment devoid of inappropriate content.</p>
-            </div>
-            <div class="value-card">
-                <h3>Empowerment</h3>
-                <p>Returning control to users to make healthy, value-driven choices.</p>
+    <section class="values-section">
+        <div class="container">
+            <h2>What Makes NotSus Different</h2>
+            
+            <div class="values-grid">
+                <div class="value-card">
+                    <h3>Curiosity</h3>
+                    <p>Encouraging endless exploration and a passion for discovery.</p>
+                </div>
+                <div class="value-card">
+                    <h3>Creativity</h3>
+                    <p>Inspiring imagination through access to innovative tools.</p>
+                </div>
+                <div class="value-card">
+                    <h3>Productivity</h3>
+                    <p>Promoting active engagement over passive consumption.</p>
+                </div>
+                <div class="value-card">
+                    <h3>Skepticism</h3>
+                    <p>Cultivating critical thinking to question and understand the world.</p>
+                </div>
+                <div class="value-card">
+                    <h3>Safety</h3>
+                    <p>Ensuring a secure environment devoid of inappropriate content.</p>
+                </div>
+                <div class="value-card">
+                    <h3>Empowerment</h3>
+                    <p>Returning control to users to make healthy, value-driven choices.</p>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Parent Control Preview -->
+    <section class="dashboard-preview">
+        <div class="container">
+            <h2>Simple Controls, Peace of Mind</h2>
+            <p class="section-subtitle">Set it up once, then let your child explore independently</p>
+            
+            <div class="dashboard-showcase">
+                <div class="dashboard-image">⚙️</div>
+                <div class="dashboard-features">
+                    <div class="dashboard-feature">
+                        <div class="feature-number">1</div>
+                        <div>
+                            <h3>Customize Available Tools</h3>
+                            <p>Select the apps and websites appropriate for your child's age and interests</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-feature">
+                        <div class="feature-number">2</div>
+                        <div>
+                            <h3>Optional Time Limits</h3>
+                            <p>Set usage boundaries if desired, encouraging healthy habits</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-feature">
+                        <div class="feature-number">3</div>
+                        <div>
+                            <h3>Activity Insights</h3>
+                            <p>See what tools your child is using most without intrusive monitoring</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Waitlist Section -->
+    <section class="waitlist-section" id="waitlist-section">
+        <div class="container">
+            <h2>Be Among the First to Transform Your Child's Digital Experience</h2>
+            
+            <div class="waitlist-download-container">
+                <div class="waitlist-form-container">
+                    <form id="feedbackForm" class="feedback-form">
+                        <div id="form-step-1">
+                            <div class="form-inputs">
+                                <input type="text" placeholder="Your name" name="name" required class="name-input">
+                                <input type="email" placeholder="email@example.com" name="email" required>
+                            </div>
+                            <button type="button" class="submit-button" onclick="showNextStep(2)">Join the waitlist</button>
+                        </div>
+                        
+                        <div id="form-step-2" style="display: none;">
+                            <p>What concerns you most about how your kids interact with tech?</p>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="concern" value="screen-time"> screen-time addiction</label>
+                                <label><input type="checkbox" name="concern" value="consumptive"> consumptive habits</label>
+                                <label><input type="checkbox" name="concern" value="inappropriate"> inappropriate content</label>
+                                <label><input type="checkbox" name="concern" value="influences"> bad influences</label>
+                                <label><input type="checkbox" name="concern" value="safety"> safety</label>
+                                <label><input type="checkbox" name="concern" value="false-info"> false information</label>
+                                <label><input type="checkbox" name="concern" value="social"> social distortion</label>
+                                <label><input type="checkbox" name="concern" value="other"> other</label>
+                            </div>
+                            <input type="text" placeholder="What else concerns you?" name="concernDescription">
+                            <button type="button" class="submit-button" onclick="showNextStep(3)">Next</button>
+                        </div>
+                        
+                        <div id="form-step-3" style="display: none;">
+                            <p>What do you want your kids to get out of technology?</p>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="gains" value="valuable-skills"> Valuable skills</label>
+                                <label><input type="checkbox" name="gains" value="active-habits"> Active/Productive habits</label>
+                                <label><input type="checkbox" name="gains" value="educational-tools"> Good educational tools</label>
+                                <label><input type="checkbox" name="gains" value="safe-experience"> A safe experience</label>
+                            </div>
+                            <input type="text" placeholder="What else?" name="gainsDescription">
+                            <button type="submit" class="submit-button">Submit</button>
+                        </div>
+                        <div id="download-section" style="display: none; margin-top: 2rem;">
+                            <h3>Thank you for your submission!</h3>
+                            <p>Download the NotSus browser for a safer browsing experience for your kids.</p>
+                            <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; justify-content: center;">
+                                <a href="/download/windows" class="download-button">
+                                    <span>Download for Windows</span>
+                                </a>
+                                <a href="/download/mac" class="download-button">
+                                    <span>Download for Mac</span>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="waitlist-benefits">
+                        <p>By joining our waitlist, you'll:</p>
+                        <ul>
+                            <li>Get early access during Beta testing</li>
+                            <li>Help shape the future of NotSus</li>
+                            <li>Receive exclusive resources for digital parenting</li>
+                            <li>Receive lifetime discount pricing!</li>
+                        </ul>
+                        <p class="no-credit-card">No credit card required. Simple installation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section class="video-section">
+        <div class="container">
+            <h2>Meet the Founder</h2>
+            <div class="video-container">
+                <iframe 
+                    width="960" 
+                    height="540" 
+                    src="https://www.youtube.com/embed/mtlJAzD6NkI" 
+                    title="NotSus Browser Introduction" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </section>
 
     <!-- Contact Section -->
-    <div class="page contact-page">
-        <h2 class="contact-heading">We're looking for help!</h2>
-        <p class="contact-text">
-            Donors, designers, programmers, parents, and teachers,<br>
-            let us know how we can improve the learning environment for our children.
-        </p>
-        <a href="mailto:contact@notsus.net" class="contact-button">
-            contact@notsus.net
-        </a>
-    </div>
+    <section class="contact-section">
+        <div class="container">
+            <h2>We're Looking for Help!</h2>
+            <p class="contact-text">
+                Donors, designers, programmers, parents, and teachers,<br>
+                let us know how we can improve the learning environment for our children.
+            </p>
+            <a href="mailto:contact@notsus.net" class="contact-button">
+                contact@notsus.net
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">🧐NotSus.net</div>
+                <div class="footer-tagline">The better browser for kids.</div>
+                <div class="footer-links">
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+                <div class="footer-copyright">© 2025 NotSus.net. All rights reserved.</div>
+            </div>
+        </div>
+    </footer>
 
     <script src="scripts.js"></script>
 </body>
