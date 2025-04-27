@@ -6,7 +6,8 @@ const config = {
     downloadUrls: {
         // windows: 'https://notsus.net/download/windows',
         windows: 'https://notsus.net/NotSus_Browser_1.0.5.exe',
-        mac: 'https://notsus.net/download/mac'
+        // mac: 'https://notsus.net/download/mac'
+        mac: 'https://notsus.net/NotSus_Browser-1.0.5-arm64.dmg'
     }
 };
 
