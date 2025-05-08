@@ -1,9 +1,11 @@
+
 services:
   - type: web
     name: notsus-web
     env: node
-    buildCommand: npm install
+    buildCommand: npm install && npm rebuild bcrypt --build-from-source
     startCommand: npm run migrate && npm start
+    nodeVersion: 18.x
     envVars:
       - key: NODE_ENV
         value: production
@@ -13,7 +15,6 @@ services:
         fromDatabase:
           name: notsus-db
           property: connectionString
-
 databases:
   - name: notsus-db
     ipAllowList: []
