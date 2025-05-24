@@ -5,9 +5,9 @@ const config = {
         : 'https://www.notsus.net/api/feedback',
     downloadUrls: {
         // windows: 'https://notsus.net/download/windows',
-        windows: 'https://notsus.net/NotSus_Browser_1.0.5.exe',
+        windows: 'https://pub-e5bd9e24b50d490dada11f212ee2a0ac.r2.dev/NotSus_Browser_1.0.6.exe',
         // mac: 'https://notsus.net/download/mac'
-        mac: 'https://notsus.net/NotSus_Browser-1.0.5-arm64.dmg'
+        mac: 'https://pub-e5bd9e24b50d490dada11f212ee2a0ac.r2.dev/NotSus_Browser-1.0.6-arm64.dmg'
     }
 };
 
