@@ -44,22 +44,55 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="hero">
+        <section class="hero">
         <div class="container">
-            <h1 class="hero-title">Our Kids Deserve Better Than the Attention Economy</h1>
-            <p class="hero-subtitle">NotSus gives children to the best educational and creative tools, without the distractions.</p>
-            <div class="hero-cta">
-                <form id="heroForm" class="waitlist-form">
-                    <div class="form-inputs">
-                        <input type="text" placeholder="Your name" name="name" class="name-input" required>
-                        <input type="email" placeholder="email@example.com" name="email" required>
+            <div class="hero-content-wrapper">
+                <!-- Main Content -->
+                <div class="hero-main-content">
+                    <h1 class="hero-title">Our Kids Deserve Better Than the Attention Economy</h1>
+                    <p class="hero-subtitle">NotSus gives children access to the best educational and creative tools, without the distractions.</p>
+                    
+                    <!-- <div class="hero-cta-buttons">
+                        <button class="submit-button" onclick="scrollToWaitlist()">Join Waitlist</button>
+                        <a href="#waitlist-section" class="secondary-cta">Test the Beta Version</a>
+                    </div> -->
+                </div>
+
+                <!-- Sidebar Form -->
+                <div class="hero-sidebar">
+                    <!-- <h3 class="sidebar-title">Get Early Access</h3> -->
+                    <form id="heroForm" class="waitlist-form">
+                        <div class="form-inputs">
+                            <!-- <input type="text" placeholder="Your name" name="name" class="name-input" required>
+                            <input type="email" placeholder="email@example.com" name="email" required> -->
+                        </div>
+                        <!-- <button class="submit-button" href="#waitlist-section" class="secondary-cta" onclick="scrollToWaitlist()">Join Waitlist</button> -->
+                        <a href="#waitlist-section" class="submit-button" >Join Waitlist</a>
+                    </form>
+                    
+                    <div class="sidebar-benefits">
+                        <p><strong>You'll get:</strong></p>
+                        <ul>
+                            <li>Early beta access</li>
+                            <li>Lifetime discount pricing</li>
+                            <li>Digital parenting resources</li>
+                        </ul>
+                        <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 1rem;">
+                            No credit card required. Free during beta.
+                        </p>
                     </div>
-                    <button type="submit" class="submit-button">Join Waitlist</button>
-                </form>
-                <a href="#waitlist-section" class="secondary-cta">Improve the future now</a>
+                </div>
             </div>
-            <div class="hero-image">
-                <!-- <img src="./public/browserImg.png" alt="Homepage of NotSus browser" onerror="this.onerror=null; this.src=''; this.alt='NotSus Browser Preview'; this.style.height='300px'; this.style.background='#433d85'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.parentElement.innerHTML = '🧐 NotSus Browser Preview';"> -->
+
+            <!-- Demo GIF Section -->
+            <div class="demo-section">
+                <h2 class="demo-title">See NotSus in Action</h2>
+                <div class="demo-gif-container">
+                    <img src="/public/notsus_gif_demo.gif" 
+                         alt="NotSus Browser Demo" 
+                         class="demo-gif"
+                         onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div style=\'padding: 4rem; color: #9dcfd0; font-size: 1.2rem;\'>🧐 NotSus Browser Demo<br><small style=\'opacity: 0.7;\'>GIF will load when available</small></div>';">
+                </div>
             </div>
         </div>
     </section>

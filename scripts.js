@@ -1,15 +1,24 @@
 // Configure API URL based on environment
 const config = {
-    apiUrl: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'http://localhost:3000/api/feedback'
-        : 'https://www.notsus.net/api/feedback',
+    apiUrl: (() => {
+        // Check if we're in development (localhost)
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            // Use the same port as the current page
+            return `${window.location.protocol}//${window.location.host}/api/feedback`;
+        } else {
+            // Production - use the production domain
+            return 'https://www.notsus.net/api/feedback';
+        }
+    })(),
     downloadUrls: {
-        // windows: 'https://notsus.net/download/windows',
         windows: 'https://pub-e5bd9e24b50d490dada11f212ee2a0ac.r2.dev/NotSus_Browser_1.0.6.exe',
-        // mac: 'https://notsus.net/download/mac'
         mac: 'https://pub-e5bd9e24b50d490dada11f212ee2a0ac.r2.dev/NotSus_Browser-1.0.6-arm64.dmg'
     }
 };
+
+// Debug logging to see what URL is being used
+console.log('API URL configured as:', config.apiUrl);
+console.log('Current location:', window.location.href);
 
 // Function to handle multi-step form transitions
 window.showNextStep = (step) => {

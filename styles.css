@@ -103,28 +103,124 @@ section:nth-child(odd) {
 .hero {
   padding-top: 8rem;
   padding-bottom: 4rem;
-  text-align: center;
+  margin-top: 10vh;
+  margin-bottom: 12vh;
   background: linear-gradient(135deg, var(--primary-bg) 0%, #2b1e82 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.hero-content-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 4rem;
+  align-items: center;
+  width: 100%;
+}
+
+.hero-main-content {
+  text-align: left;
 }
 
 .hero-title {
-  max-width: 900px;
-  margin: 0 auto 1.5rem;
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
 }
 
 .hero-subtitle {
   font-size: 1.5rem;
-  max-width: 800px;
-  margin: 0 auto 3rem;
+  margin-bottom: 3rem;
+  color: var(--secondary-accent);
+  line-height: 1.4;
+}
+
+.hero-cta-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 300px;
+}
+
+/* Sidebar Form */
+.hero-sidebar {
+  background-color: var(--primary-accent);
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.hero-sidebar .submit-button {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--secondary-accent);
+  color: var(--text-dark);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none; /* Since it's an anchor tag */
+  display: block; /* Make it block level for centering */
+  text-align: center; /* Center the text */
+  margin: 0 auto; /* Center the button itself if needed */
+}
+
+.hero-sidebar .submit-button:hover {
+  background-color: var(--hover-accent);
+  transform: translateY(-3px);
+}
+
+.sidebar-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.sidebar-benefits {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.sidebar-benefits ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.sidebar-benefits li {
+  margin-bottom: 0.5rem;
+}
+
+/* Demo GIF Section */
+.demo-section {
+  margin-top: 4rem;
+  text-align: center;
+}
+
+.demo-title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
   color: var(--secondary-accent);
 }
 
-.hero-cta {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+.demo-gif-container {
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  background-color: #433d85;
+}
+
+.demo-gif {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .waitlist-form {
@@ -787,6 +883,25 @@ footer {
     flex-direction: column;
     gap: 3rem;
   }
+    .hero-content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    text-align: center;
+  }
+
+  .hero-main-content {
+    text-align: center;
+  }
+
+  .hero-sidebar {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .hero-cta-buttons {
+    max-width: 400px;
+    margin: 0 auto;
+  }
 }
 
 @media (max-width: 768px) {
@@ -808,5 +923,13 @@ footer {
   
   .waitlist-form-container {
     flex-direction: column;
+  }
+
+    .hero-content-wrapper {
+    gap: 2rem;
+  }
+
+  .demo-title {
+    font-size: 1.5rem;
   }
 }
