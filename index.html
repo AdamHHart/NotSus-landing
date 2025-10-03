@@ -39,66 +39,78 @@
 <body>
     <!-- Fixed Header -->
     <header>
-        <div class="logo">🧐NotSus.net</div>
-        <h6 class="logo-tagline">The better browser for kids.</h6>
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo">🧐NotSus.net</div>
+                <h6 class="logo-tagline">The better browser for kids.</h6>
+            </div>
+            
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger-menu" id="hamburgerBtn" aria-label="Menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="mobile-nav" id="mobileNav">
+            <a href="#waitlist-section" class="nav-link">Join Waitlist</a>
+            <a href="#demo-gif" class="nav-link">Demo</a>
+            <a href="#problem-solution" class="nav-link">Problems to Solve</a>
+            <a href="#tools-section" class="nav-link">Learning Tools for Kids</a>
+            <a href="#values-section" class="nav-link">Values</a>
+            <a href="#contact-section" class="nav-link">Contact Us</a>
+        </nav>
     </header>
 
     <!-- Hero Section -->
         <section class="hero">
-        <div class="container">
-            <div class="hero-content-wrapper">
-                <!-- Main Content -->
-                <div class="hero-main-content">
-                    <h1 class="hero-title">Our Kids Deserve Better Than the Attention Economy</h1>
-                    <p class="hero-subtitle">NotSus gives children access to the best educational and creative tools, without the distractions.</p>
-                    
-                    <!-- <div class="hero-cta-buttons">
-                        <button class="submit-button" onclick="scrollToWaitlist()">Join Waitlist</button>
-                        <a href="#waitlist-section" class="secondary-cta">Test the Beta Version</a>
-                    </div> -->
+            <div class="container">
+                <div class="hero-content-wrapper">
+                    <!-- Main Content -->
+                    <div class="hero-main-content">
+                        <h1 class="hero-title">Our Kids Deserve Better Than the Attention Economy</h1>
+                        <p class="hero-subtitle">NotSus gives children access to the best educational and creative tools, without the distractions.</p>
+                    </div>
+
+                    <!-- Sidebar Form -->
+                    <div class="hero-sidebar">
+                        <form id="heroForm" class="waitlist-form">
+                            <div class="form-inputs">
+                            </div>
+                            <a href="#waitlist-section" class="submit-button">Join Waitlist</a>
+                        </form>
+                        
+                        <div class="sidebar-benefits">
+                            <p><strong>You'll get:</strong></p>
+                            <ul>
+                                <li>Early beta access</li>
+                                <li>Input into our design</li>
+                                <li>Healthy and capable children</li>
+                            </ul>
+                            <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 1rem;">
+                                No credit card required. 14-day free trial.
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Sidebar Form -->
-                <div class="hero-sidebar">
-                    <!-- <h3 class="sidebar-title">Get Early Access</h3> -->
-                    <form id="heroForm" class="waitlist-form">
-                        <div class="form-inputs">
-                            <!-- <input type="text" placeholder="Your name" name="name" class="name-input" required>
-                            <input type="email" placeholder="email@example.com" name="email" required> -->
-                        </div>
-                        <!-- <button class="submit-button" href="#waitlist-section" class="secondary-cta" onclick="scrollToWaitlist()">Join Waitlist</button> -->
-                        <a href="#waitlist-section" class="submit-button" >Join Waitlist</a>
-                    </form>
-                    
-                    <div class="sidebar-benefits">
-                        <p><strong>You'll get:</strong></p>
-                        <ul>
-                            <li>Early beta access</li>
-                            <li>Lifetime discount pricing</li>
-                            <li>Digital parenting resources</li>
-                        </ul>
-                        <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 1rem;">
-                            No credit card required. Free during beta.
-                        </p>
+                <!-- Demo GIF Section - ADD id="demo-gif" here -->
+                <div class="demo-section" id="demo-gif">
+                    <h2 class="demo-title">See NotSus in Action</h2>
+                    <div class="demo-gif-container">
+                        <img src="/public/notsus_gif_demo.gif" 
+                            alt="NotSus Browser Demo" 
+                            class="demo-gif"
+                            onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div style=\'padding: 4rem; color: #9dcfd0; font-size: 1.2rem;\'>🧐 NotSus Browser Demo<br><small style=\'opacity: 0.7;\'>GIF will load when available</small></div>';">
                     </div>
                 </div>
             </div>
-
-            <!-- Demo GIF Section -->
-            <div class="demo-section">
-                <h2 class="demo-title">See NotSus in Action</h2>
-                <div class="demo-gif-container">
-                    <img src="/public/notsus_gif_demo.gif" 
-                         alt="NotSus Browser Demo" 
-                         class="demo-gif"
-                         onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div style=\'padding: 4rem; color: #9dcfd0; font-size: 1.2rem;\'>🧐 NotSus Browser Demo<br><small style=\'opacity: 0.7;\'>GIF will load when available</small></div>';">
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
 
     <!-- Stats Impact Section -->
-    <section class="stats-section">
+    <!-- <section class="stats-section">
         <div class="container">
             <div class="stats-container">
                 <div class="stat-item">
@@ -115,10 +127,10 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> -->
 
     <!-- Problem-Solution Grid -->
-    <section class="problem-solution">
+    <section class="problem-solution" id="problem-solution">
         <div class="container">
             <h2>The Internet Wasn't Designed for Kids</h2>
             
@@ -152,11 +164,6 @@
                         <p>Platforms that encourage active engagement, creation and learning</p>
                         <div class="solution-icon">💡</div>
                     </div>
-<!--                      <div class="column-solution">
-                        <h3>Sustainability means keeping our values and cultures alive </h3>
-                        <p>Platforms that encourage active engagement, creation and learning</p>
-                        <div class="solution-icon">💡</div>
-                    </div> -->
                 </div>
                 
                 <div class="comparison-row">
@@ -209,9 +216,9 @@
     </section>
 
     <!-- Tools Section -->
-    <section class="tools-section">
+    <section class="tools-section" id="tools-section">
         <div class="container">
-            <h2>Discover What's Possible</h2>
+            <h2>What can kids learn?</h2>
             
             <div class="tools-categories">
                 <div class="category-tab active" data-category="learn">Learn</div>
@@ -265,9 +272,9 @@
     </section>
 
     <!-- Values Section -->
-    <section class="values-section">
+    <section class="values-section" id="values-section">
         <div class="container">
-            <h2>What Makes NotSus Different</h2>
+            <h2>Our Values</h2>
             
             <div class="values-grid">
                 <div class="value-card">
@@ -354,7 +361,7 @@
     <!-- Waitlist Section -->
     <section class="waitlist-section" id="waitlist-section">
         <div class="container">
-            <h2>Help us design NotSus the best browser for your kids!</h2>
+            <h2>Help us design NotSus into the best browser for your kids!</h2>
             
             <div class="waitlist-download-container">
                 <div class="waitlist-form-container">
@@ -396,7 +403,8 @@
                         </div>
                         <div id="download-section" style="display: none; margin-top: 2rem;">
                             <h3>Thank you for your submission!</h3>
-                            <p>Download the NotSus browser for a safer browsing experience for your kids.</p>
+                            <p>Download the NotSus browser MVP for a safer browsing experience for your kids.</p>
+                            <p>We are currently developing the Beta version. Please contact us for feedback and suggestions.</p>
                             <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; justify-content: center;">
                                 <a href="/download/windows" class="download-button">
                                     <span>Download for Windows</span>
@@ -424,11 +432,11 @@
 
 
     <!-- Contact Section -->
-    <section class="contact-section">
+    <section class="contact-section" id="contact-section">
         <div class="container">
             <h2>We're Looking for Help!</h2>
             <p class="contact-text">
-                Donors, designers, programmers, parents, and teachers,<br>
+                Angels, designers, programmers, parents, and teachers,<br>
                 let us know how we can improve the learning environment for our children.
             </p>
             <a href="mailto:contact@notsus.net" class="contact-button">

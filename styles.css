@@ -59,18 +59,119 @@ p {
 
 /* Header */
 header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background: var(--primary-accent);
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  border-bottom-left-radius: 1.5rem;
-  border-bottom-right-radius: 1.5rem;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: var(--primary-accent);
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 1000;
+    border-bottom-left-radius: 1.5rem;
+    border-bottom-right-radius: 1.5rem;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Hamburger Menu Button */
+.hamburger-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 2rem;
+    height: 2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+}
+
+.hamburger-line {
+    width: 2rem;
+    height: 0.25rem;
+    background: var(--text-light);
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+/* Hamburger animation when open */
+.hamburger-menu.active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translateY(0.6rem);
+}
+
+.hamburger-menu.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu.active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translateY(-0.6rem);
+}
+
+.mobile-nav {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 70%;
+    max-width: 300px;
+    height: 100vh;
+    background: var(--primary-bg);
+    padding: 5rem 2rem 2rem;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+    transition: right 0.3s ease;
+    z-index: 1000;
+}
+
+.mobile-nav.active {
+    right: 0;
+}
+
+.nav-link {
+    color: var(--text-light);
+    text-decoration: none;
+    padding: 1rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--secondary-accent);
+    padding-left: 0.5rem;
+}
+
+/* Overlay when menu is open */
+.nav-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.nav-overlay.active {
+    display: block;
+    opacity: 1;
 }
 
 .logo {
@@ -905,31 +1006,98 @@ footer {
 }
 
 @media (max-width: 768px) {
-  h1 {
-    font-size: 2rem;
-  }
-  
-  h2 {
-    font-size: 1.8rem;
-  }
-  
-  .hero-subtitle {
-    font-size: 1.2rem;
-  }
-  
-  .stats-container {
+  .comparison-row {
     flex-direction: column;
-  }
-  
-  .waitlist-form-container {
-    flex-direction: column;
+    margin-bottom: 1rem; /* Reduce spacing between comparison pairs */
   }
 
-    .hero-content-wrapper {
-    gap: 2rem;
+  /* Add labels with icons before each section on mobile */
+  .comparison-row .column-problem::before,
+  .comparison-row .column-solution::before {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
   }
 
-  .demo-title {
+  .comparison-row .column-problem::before {
+    content: '❌ Problem';
+    color: #ff6b6b;
+  }
+
+  .comparison-row .column-solution::before {
+    content: '✓ Solution';
+    color: #00a86b;
+  }
+
+  /* Hide the large icons on mobile (they take up too much space) */
+  .problem-icon,
+  .solution-icon {
+    display: none;
+  }
+
+  /* Adjust padding for mobile cards */
+  .comparison-row .column-problem,
+  .comparison-row .column-solution {
+    padding: 1.25rem;
+  }
+
+  /* Remove border radius on adjacent cards for cleaner look */
+  .comparison-row .column-problem {
+    border-radius: 0.5rem 0.5rem 0 0;
+    border-bottom: 3px solid #17104D;
+  }
+
+  .comparison-row .column-solution {
+    border-radius: 0 0 0.5rem 0.5rem;
+  }
+
+  /* Adjust typography for mobile */
+  .comparison-row h3 {
+    font-size: 1rem;
+    padding-right: 0;
+    line-height: 1.3;
+  }
+
+  .comparison-row p {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+}
+
+/* Optional: Add slight shadow to make cards pop on mobile */
+@media (max-width: 768px) {
+  .comparison-row {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Make sure desktop stays the same (optional - only if you see issues) */
+@media (min-width: 769px) {
+  .comparison-row .column-problem::before,
+  .comparison-row .column-solution::before {
+    display: none;
+  }
+}
+
+/* Reduce header height on mobile */
+@media (max-width: 768px) {
+  header {
+    padding: 0rem 1rem;
+    padding-top: 0.3rem;
+  }
+  .logo {
     font-size: 1.5rem;
+    padding: 0 1rem;
   }
+
+  .logo-tagline {
+    padding-left: 42px;
+    font-size: 0.7rem;
+  }
+
 }
