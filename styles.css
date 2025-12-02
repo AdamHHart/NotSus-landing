@@ -109,6 +109,10 @@ header {
 .logo-img {
     display: block;
     flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    max-width: 100%;
+    object-fit: contain;
 }
 
 /* Hamburger Menu Button */
@@ -1037,6 +1041,14 @@ footer {
   font-weight: bold;
 }
 
+/* Footer logo image */
+footer img.footer-logo {
+  width: 50px;
+  height: 50px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
 .footer-tagline {
   font-size: 1rem;
   color: rgba(255, 255, 255, 0.7);
@@ -1067,6 +1079,18 @@ footer {
   
   h2 {
     font-size: 2rem;
+  }
+  
+  .hero-title {
+    font-size: 3rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5rem;
+  }
+
+  .demo-title {
+    font-size: 2.5rem;
   }
   
   .comparison-row {
@@ -1187,17 +1211,167 @@ footer {
     padding: 0rem 1rem;
     padding-top: 0.3rem;
   }
+
+  /* Logo sizing for mobile */
+  .logo-img {
+    width: 32px;
+    height: 32px;
+  }
+
   .logo {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     padding: 0;
   }
 
   .logo-tagline {
     padding-left: 0;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     margin: 0;
   }
 
+  /* Heading sizes for mobile */
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  .hero-title {
+    font-size: 2.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .demo-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .contact-text {
+    font-size: 1.25rem;
+  }
+
+  .footer-logo {
+    font-size: 1.5rem;
+  }
+
+  footer img.footer-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .footer-tagline {
+    font-size: 0.9rem;
+  }
+
+  /* Card heading sizes for mobile */
+  .feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .tool-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .dashboard-feature h3 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Extra small screens - further reduce sizes */
+@media (max-width: 480px) {
+  /* Even smaller logo */
+  .logo-img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .logo {
+    font-size: 1.1rem;
+  }
+
+  .logo-tagline {
+    font-size: 0.6rem;
+  }
+
+  /* Smaller headings */
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  .hero-title {
+    font-size: 1.9rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .demo-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+  }
+
+  .contact-text {
+    font-size: 1.1rem;
+  }
+
+  .footer-logo {
+    font-size: 1.25rem;
+  }
+
+  footer img.footer-logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .footer-tagline {
+    font-size: 0.85rem;
+  }
+
+  /* Even smaller card headings */
+  .feature-card h3 {
+    font-size: 1.25rem;
+  }
+
+  .tool-card h3 {
+    font-size: 1rem;
+  }
+
+  .dashboard-feature h3 {
+    font-size: 1rem;
+  }
 }
 
 /* Modal Styles */
