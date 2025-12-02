@@ -11,8 +11,9 @@ const config = {
         }
     })(),
     downloadUrls: {
-        windows: 'https://pub-e5bd9e24b50d490dada11f212ee2a0ac.r2.dev/NotSus_Browser_1.0.6.exe',
-        mac: 'https://pub-e5bd9e24b50d490dada11f212ee2a0ac.r2.dev/NotSus_Browser-1.0.6-arm64.dmg'
+        windows: 'https://download.notsus.net/NotSus_Browser_2.0.3.exe',
+        mac: 'https://download.notsus.net/NotSus_Browser-2.0.3-arm64.dmg',
+        macIntel: 'https://download.notsus.net/NotSus_Browser-2.0.3.dmg'
     }
 };
 
@@ -42,7 +43,7 @@ function initTinkercadModel() {
     
     // Create scene
     tinkercadScene = new THREE.Scene();
-    tinkercadScene.background = new THREE.Color(0x433d85);
+    tinkercadScene.background = new THREE.Color(0x2d2a2a); // bg-medium color
     
     // Create camera
     tinkercadCamera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
@@ -424,13 +425,21 @@ function setupDownloadTracking(email) {
     downloadButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             // Get platform from href
-            const platform = this.getAttribute('href').includes('windows') ? 'windows' : 'mac';
+            let platform = 'mac'; // default
+            const href = this.getAttribute('href');
+            if (href.includes('windows')) {
+                platform = 'windows';
+            } else if (href.includes('macIntel')) {
+                platform = 'macIntel';
+            } else if (href.includes('mac')) {
+                platform = 'mac';
+            }
             
             // Track the download attempt
             trackDownload(email, platform, 'click');
             
-            // Update download URL to include email for server-side tracking
-            const downloadUrl = `/download/${platform}?email=${encodeURIComponent(email)}`;
+            // Update download URL to use the direct download URL from config
+            const downloadUrl = config.downloadUrls[platform] || `/download/${platform}?email=${encodeURIComponent(email)}`;
             this.setAttribute('href', downloadUrl);
         });
     });
