@@ -17,32 +17,16 @@
         gtag('config', 'G-JP7D4XPL7X');
     </script>
 </head>
-<body><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NotSus.net - The Better Browser for Kids</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/png" href="/favicon.png">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    
-    <!-- Analytics Scripts -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JP7D4XPL7X"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-JP7D4XPL7X');
-    </script>
-</head>
 <body>
     <!-- Fixed Header -->
     <header>
         <div class="header-container">
             <div class="header-left">
-                <div class="logo">🧐NotSus.net</div>
-                <h6 class="logo-tagline">The better browser for kids.</h6>
+                <img src="/public/logo.png" height="50" width="50" alt="NotSus Logo" class="logo-img">
+                <div class="logo-text-container">
+                    <div class="logo">NotSus.net</div>
+                    <h6 class="logo-tagline">The better browser for kids.</h6>
+                </div>
             </div>
             
             <!-- Hamburger Menu Button -->
@@ -451,17 +435,60 @@
     <footer>
         <div class="container">
             <div class="footer-content">
-                <div class="footer-logo">🧐NotSus.net</div>
+                <img src="/public/logo.png" height="50" width="50" alt="NotSus Logo" class="footer-logo">
+                <div class="footer-logo">NotSus.net</div>
                 <div class="footer-tagline">The better browser for kids.</div>
                 <div class="footer-links">
                     <a href="#how-it-works">How It Works</a>
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
+                    <a href="#" id="privacyPolicyLink">Privacy Policy</a>
+                    <a href="#" id="termsOfServiceLink">Terms of Service</a>
                 </div>
                 <div class="footer-copyright">© 2025 NotSus.net. All rights reserved.</div>
             </div>
         </div>
     </footer>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+            <div class="modal-header">
+                <h1>Privacy Policy</h1>
+                <div class="modal-meta">
+                    <div><strong>Effective Date:</strong> [Insert Date]</div>
+                    <div><strong>Last Updated:</strong> [Insert Date]</div>
+                </div>
+            </div>
+            <div class="modal-body" id="privacyModalBody">
+                <!-- Content will be loaded dynamically from docs/PrivacyPolicy.html -->
+                <div style="text-align: center; padding: 2rem;">
+                    <p>Loading Privacy Policy...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms of Service Modal -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+            <div class="modal-header">
+                <h1>Terms & Conditions</h1>
+                <p style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 1rem;">Parent/Guardian Version</p>
+                <div class="modal-meta">
+                    <div><strong>Effective Date:</strong> 26-September-2025</div>
+                    <div><strong>Last Updated:</strong> 26-September-2025</div>
+                </div>
+            </div>
+            <div class="modal-body" id="termsModalBody">
+                <!-- Content will be loaded dynamically from docs/TandC.html -->
+                <div style="text-align: center; padding: 2rem;">
+                    <p>Loading Terms & Conditions...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="scripts.js"></script>
 </body>

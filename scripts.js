@@ -204,7 +204,139 @@ function initTinkercadModel() {
 
 // Set up form submission handlers
 document.addEventListener('DOMContentLoaded', function() {
+    // Modal functionality
+    const privacyModal = document.getElementById('privacyModal');
+    const termsModal = document.getElementById('termsModal');
+    const privacyModalBody = document.getElementById('privacyModalBody');
+    const termsModalBody = document.getElementById('termsModalBody');
+    const privacyPolicyLink = document.getElementById('privacyPolicyLink');
+    const termsOfServiceLink = document.getElementById('termsOfServiceLink');
+    const modalCloses = document.querySelectorAll('.modal-close');
 
+    // Cache for loaded content
+    let privacyContentLoaded = false;
+    let termsContentLoaded = false;
+
+    // Function to load content from external HTML file
+    async function loadModalContent(url, targetElement, contentSelector) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Failed to load ${url}: ${response.statusText}`);
+            }
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const content = doc.querySelector(contentSelector);
+            
+            if (content) {
+                targetElement.innerHTML = content.innerHTML;
+                // Re-attach event listeners for links within the loaded content
+                attachModalLinkListeners();
+                return true;
+            } else {
+                throw new Error(`Content selector "${contentSelector}" not found in ${url}`);
+            }
+        } catch (error) {
+            console.error('Error loading modal content:', error);
+            targetElement.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                    <p>Error loading content. Please try again later.</p>
+                    <p style="font-size: 0.9rem; margin-top: 1rem;">${error.message}</p>
+                </div>
+            `;
+            return false;
+        }
+    }
+
+    // Function to open modal and load content if needed
+    async function openModal(modal, contentUrl, contentSelector, bodyElement, isLoaded) {
+        // Load content if not already loaded
+        if (!isLoaded && contentUrl && contentSelector && bodyElement) {
+            bodyElement.innerHTML = '<div style="text-align: center; padding: 2rem;"><p>Loading...</p></div>';
+            await loadModalContent(contentUrl, bodyElement, contentSelector);
+            if (modal === privacyModal) {
+                privacyContentLoaded = true;
+            } else if (modal === termsModal) {
+                termsContentLoaded = true;
+            }
+        }
+        
+        modal.classList.add('active');
+        document.body.classList.add('modal-open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Function to close modal
+    function closeModal(modal) {
+        modal.classList.remove('active');
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+    }
+
+    // Function to attach event listeners to links within modal content
+    function attachModalLinkListeners() {
+        // Handle Privacy Policy link in Terms modal
+        const privacyPolicyLinkInModal = document.getElementById('privacyPolicyLinkInModal');
+        if (privacyPolicyLinkInModal) {
+            privacyPolicyLinkInModal.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeModal(termsModal);
+                setTimeout(() => {
+                    openModal(privacyModal, 'docs/PrivacyPolicy.html', '.privacy-content', privacyModalBody, privacyContentLoaded);
+                }, 300);
+            });
+        }
+    }
+
+    // Open Privacy Policy modal
+    if (privacyPolicyLink) {
+        privacyPolicyLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal(privacyModal, 'docs/PrivacyPolicy.html', '.privacy-content', privacyModalBody, privacyContentLoaded);
+        });
+    }
+
+    // Open Terms of Service modal
+    if (termsOfServiceLink) {
+        termsOfServiceLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal(termsModal, 'docs/TandC.html', '.terms-content', termsModalBody, termsContentLoaded);
+        });
+    }
+
+    // Close modals when clicking the X button
+    modalCloses.forEach(closeBtn => {
+        closeBtn.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            if (modal) {
+                closeModal(modal);
+            }
+        });
+    });
+
+    // Close modal when clicking outside the modal content
+    [privacyModal, termsModal].forEach(modal => {
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal(modal);
+                }
+            });
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (privacyModal && privacyModal.classList.contains('active')) {
+                closeModal(privacyModal);
+            }
+            if (termsModal && termsModal.classList.contains('active')) {
+                closeModal(termsModal);
+            }
+        }
+    });
 
        const hamburgerBtn = document.getElementById('hamburgerBtn');
     const mobileNav = document.getElementById('mobileNav');

@@ -24,8 +24,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Serve static files from the root directory
-app.use(express.static(path.join(__dirname)));
+// Serve static files from the root directory with caching headers
+app.use(express.static(path.join(__dirname), {
+    maxAge: '1y', // Cache static files for 1 year
+    etag: true, // Enable ETag for better caching
+    lastModified: true // Enable Last-Modified headers
+}));
 
 // Root route to serve the index.html page
 app.get('/', (req, res) => {
