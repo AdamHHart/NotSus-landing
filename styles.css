@@ -670,6 +670,70 @@ section:nth-child(odd) {
   color: var(--text-primary);
 }
 
+/* Responsive styles for values-section */
+/* Medium screens: reduce padding and switch to 2 columns */
+@media (max-width: 900px) {
+  .values-section {
+    padding: 4.5rem 0;
+  }
+
+  .values-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+    margin-top: 2.5rem;
+  }
+
+  .value-card {
+    padding: 2.5rem;
+  }
+
+  .value-card h3 {
+    font-size: 1.75rem;
+  }
+}
+
+/* Small screens: further reduce padding and switch to 1 column */
+@media (max-width: 600px) {
+  .values-section {
+    padding: 3rem 0;
+  }
+
+  .values-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .value-card {
+    padding: 2rem;
+  }
+
+  .value-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Extra small screens: minimal padding */
+@media (max-width: 400px) {
+  .values-section {
+    padding: 2rem 0;
+  }
+
+  .values-grid {
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .value-card {
+    padding: 1.5rem;
+  }
+
+  .value-card h3 {
+    font-size: 1.25rem;
+  }
+}
+
 /* Dashboard Preview */
 .dashboard-preview {
   padding: 6rem 0;
