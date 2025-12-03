@@ -1210,6 +1210,13 @@ footer img.footer-logo {
   header {
     padding: 0rem 1rem;
     padding-top: 0.3rem;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+  }
+
+  /* Add padding under header-left */
+  .header-left {
+    padding-bottom: 0.5rem;
   }
 
   /* Logo sizing for mobile */
@@ -1223,10 +1230,29 @@ footer img.footer-logo {
     padding: 0;
   }
 
+  /* Make logo-tagline match logo width with smaller font-size */
+  .logo-text-container {
+    width: fit-content;
+  }
+  
   .logo-tagline {
     padding-left: 0;
-    font-size: 0.65rem;
+    font-size: 0.55rem;
     margin: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Reduce hero padding-top on mobile */
+  .hero {
+    padding-top: 32px;
+  }
+
+  /* Make demo-gif-container match hero-sidebar width */
+  .demo-gif-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
   }
 
   /* Heading sizes for mobile */
