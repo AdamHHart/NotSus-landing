@@ -347,6 +347,7 @@
         <div class="container">
             <h2>Help us design NotSus into the best browser for your kids!</h2>
             
+            <div class="waitlist-containers-wrapper">
             <div class="waitlist-download-container">
                 <div class="waitlist-form-container">
                     <form id="feedbackForm" class="feedback-form">
@@ -356,6 +357,7 @@
                                 <input type="email" placeholder="email@example.com" name="email" required>
                             </div>
                             <button type="button" class="submit-button" onclick="showNextStep(2)">Download Now</button>
+                            <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">*available for Mac, Windows, and Linux</p>
                         </div>
                         
                         <div id="form-step-2" style="display: none;">
@@ -416,6 +418,64 @@
                         <p class="no-credit-card">No credit card required. Simple installation (FREE 14-day trial).</p>
                     </div>
                 </div>
+            </div>
+            
+            <div class="waitlist-join-container">
+                <div class="waitlist-form-container">
+                    <form id="waitlistForm" class="feedback-form">
+                        <div id="waitlist-form-step-1">
+                            <div class="form-inputs">
+                                <input type="text" placeholder="Your name" name="name" required class="name-input">
+                                <input type="email" placeholder="email@example.com" name="email" required>
+                            </div>
+                            <button type="button" class="submit-button" onclick="showWaitlistNextStep(2)">Join Waitlist</button>
+                        </div>
+                        
+                        <div id="waitlist-form-step-2" style="display: none;">
+                            <p>What concerns you most about how your kids interact with tech?</p>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="concern" value="screen-time"> screen-time addiction</label>
+                                <label><input type="checkbox" name="concern" value="consumptive"> consumptive habits</label>
+                                <label><input type="checkbox" name="concern" value="inappropriate"> inappropriate content</label>
+                                <label><input type="checkbox" name="concern" value="influences"> bad influences</label>
+                                <label><input type="checkbox" name="concern" value="safety"> safety</label>
+                                <label><input type="checkbox" name="concern" value="false-info"> false information</label>
+                                <label><input type="checkbox" name="concern" value="social"> social distortion</label>
+                                <label><input type="checkbox" name="concern" value="other"> other</label>
+                            </div>
+                            <input type="text" placeholder="What else concerns you?" name="concernDescription">
+                            <button type="button" class="submit-button" onclick="showWaitlistNextStep(3)">Next</button>
+                        </div>
+                        
+                        <div id="waitlist-form-step-3" style="display: none;">
+                            <p>What do you want your kids to get out of technology?</p>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="gains" value="valuable-skills"> Valuable skills</label>
+                                <label><input type="checkbox" name="gains" value="active-habits"> Active/Productive habits</label>
+                                <label><input type="checkbox" name="gains" value="educational-tools"> Good educational tools</label>
+                                <label><input type="checkbox" name="gains" value="safe-experience"> A safe experience</label>
+                            </div>
+                            <input type="text" placeholder="What else?" name="gainsDescription">
+                            <button type="submit" class="submit-button">Submit</button>
+                        </div>
+                        <div id="waitlist-thankyou-section" style="display: none; margin-top: 2rem;">
+                            <h3>Thank you for joining our waitlist!</h3>
+                            <p>We'll keep you updated on our progress and notify you when NotSus is ready.</p>
+                            <p>Your feedback helps us build the best browser for your kids.</p>
+                        </div>
+                    </form>
+                    <div class="waitlist-benefits">
+                        <p>By joining our community, you'll:</p>
+                        <ul>
+                            <li>Get early access during Beta testing</li>
+                            <li>Help shape the future of NotSus</li>
+                            <li>Receive exclusive resources for digital parenting</li>
+                            <li>Receive lifetime discount pricing!</li>
+                        </ul>
+                        <p class="no-credit-card">No credit card required. Simple installation (FREE 14-day trial).</p>
+                    </div>
+                </div>
+            </div>
             </div>
         </div>
     </section>

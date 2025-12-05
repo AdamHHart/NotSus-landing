@@ -64,6 +64,48 @@ window.showNextStep = (step) => {
     document.getElementById(`form-step-${step}`).style.display = 'block';
 };
 
+// Function to handle waitlist form multi-step transitions
+window.showWaitlistNextStep = (step) => {
+    // If moving to step 2, validate email first
+    if (step === 2) {
+        const waitlistForm = document.getElementById('waitlistForm');
+        if (waitlistForm) {
+            const emailInput = waitlistForm.querySelector('input[name="email"]');
+            const nameInput = waitlistForm.querySelector('input[name="name"]');
+            
+            // Check if email is filled and valid
+            if (!emailInput || !emailInput.value.trim()) {
+                // Show error message
+                showWaitlistFormError('Please enter your email address to continue.');
+                emailInput?.focus();
+                return; // Stop here, don't proceed to next step
+            }
+            
+            // Validate email format
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(emailInput.value.trim())) {
+                showWaitlistFormError('Please enter a valid email address.');
+                emailInput.focus();
+                return; // Stop here, don't proceed to next step
+            }
+            
+            // Check if name is filled (optional but good to have)
+            if (!nameInput || !nameInput.value.trim()) {
+                showWaitlistFormError('Please enter your name to continue.');
+                nameInput?.focus();
+                return;
+            }
+            
+            // Clear any previous error messages
+            clearWaitlistFormError();
+        }
+    }
+    
+    // If validation passed (or not step 2), proceed with showing the step
+    document.querySelectorAll('[id^="waitlist-form-step-"]').forEach(el => el.style.display = 'none');
+    document.getElementById(`waitlist-form-step-${step}`).style.display = 'block';
+};
+
 // Function to show form error message
 function showFormError(message) {
     // Remove any existing error message
@@ -93,6 +135,41 @@ function clearFormError() {
     const existingError = document.querySelector('.form-error-message');
     if (existingError) {
         existingError.remove();
+    }
+}
+
+// Function to show waitlist form error message
+function showWaitlistFormError(message) {
+    // Remove any existing error message
+    clearWaitlistFormError();
+    
+    // Create error message element
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'form-error-message';
+    errorDiv.textContent = message;
+    errorDiv.style.cssText = 'color: #ff6b6b; background-color: #ffe0e0; padding: 0.75rem 1rem; border-radius: 4px; margin-top: 1rem; border: 1px solid #ff6b6b;';
+    
+    // Find the waitlist form step 1 container
+    const formStep1 = document.getElementById('waitlist-form-step-1');
+    if (formStep1) {
+        // Insert error message after the form inputs
+        const formInputs = formStep1.querySelector('.form-inputs');
+        if (formInputs) {
+            formInputs.parentNode.insertBefore(errorDiv, formInputs.nextSibling);
+        } else {
+            formStep1.appendChild(errorDiv);
+        }
+    }
+}
+
+// Function to clear waitlist form error message
+function clearWaitlistFormError() {
+    const waitlistForm = document.getElementById('waitlistForm');
+    if (waitlistForm) {
+        const existingError = waitlistForm.querySelector('.form-error-message');
+        if (existingError) {
+            existingError.remove();
+        }
     }
 }
 
@@ -582,6 +659,58 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Setup download tracking
                 setupDownloadTracking(formData.email);
+                
+            } catch (err) {
+                console.error('Submission error:', err);
+                submitButton.textContent = 'Error - Try Again';
+                submitButton.disabled = false;
+                setTimeout(() => submitButton.textContent = originalButtonText, 2000);
+            }
+        });
+    }
+
+    // Waitlist form submission
+    const waitlistForm = document.getElementById('waitlistForm');
+    if (waitlistForm) {
+        waitlistForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitButton = e.submitter;
+            const originalButtonText = submitButton.textContent;
+            submitButton.textContent = 'Submitting...';
+            submitButton.disabled = true;
+
+            try {
+                // Gather all form data
+                const formData = {
+                    name: waitlistForm.querySelector('input[name="name"]').value,
+                    email: waitlistForm.querySelector('input[name="email"]').value,
+                    concerns: Array.from(waitlistForm.querySelectorAll('input[name="concern"]:checked')).map(cb => cb.value),
+                    gains: Array.from(waitlistForm.querySelectorAll('input[name="gains"]:checked')).map(cb => cb.value),
+                    otherDescription: waitlistForm.querySelector('input[name="concernDescription"]').value,
+                    gainsDescription: waitlistForm.querySelector('input[name="gainsDescription"]').value,
+                    timestamp: new Date().toISOString()
+                };
+
+                console.log('Submitting waitlist form data:', formData);
+
+                // Submit the data to the API
+                const response = await fetch(config.apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Submission failed');
+                }
+                
+                const responseData = await response.json();
+                console.log('Waitlist form submission successful:', responseData);
+                
+                // Show thank you section instead of download section
+                document.getElementById('waitlist-form-step-3').style.display = 'none';
+                document.getElementById('waitlist-thankyou-section').style.display = 'block';
                 
             } catch (err) {
                 console.error('Submission error:', err);

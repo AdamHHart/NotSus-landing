@@ -815,9 +815,33 @@ section:nth-child(odd) {
   background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
 }
 
-.waitlist-download-container {
+.waitlist-containers-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .waitlist-containers-wrapper {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.waitlist-download-container,
+.waitlist-join-container {
+  flex: 1;
   max-width: 900px;
   margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .waitlist-download-container,
+  .waitlist-join-container {
+    margin: 0;
+  }
 }
 
 .waitlist-form-container {
@@ -915,6 +939,10 @@ input[type="text"]::placeholder {
 
 /* Multi-step form styling */
 #form-step-2, #form-step-3, #download-section {
+  display: none;
+}
+
+#waitlist-form-step-2, #waitlist-form-step-3, #waitlist-thankyou-section {
   display: none;
 }
 
