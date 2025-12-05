@@ -819,29 +819,13 @@ section:nth-child(odd) {
   display: flex;
   flex-direction: column;
   gap: 3rem;
-  max-width: 1800px;
-  margin: 0 auto;
-}
-
-@media (min-width: 1024px) {
-  .waitlist-containers-wrapper {
-    flex-direction: row;
-    align-items: flex-start;
-  }
-}
-
-.waitlist-download-container,
-.waitlist-join-container {
-  flex: 1;
   max-width: 900px;
   margin: 0 auto;
 }
 
-@media (min-width: 1024px) {
-  .waitlist-download-container,
-  .waitlist-join-container {
-    margin: 0;
-  }
+.waitlist-download-container,
+.waitlist-join-container {
+  width: 100%;
 }
 
 .waitlist-form-container {
