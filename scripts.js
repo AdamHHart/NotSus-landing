@@ -13,7 +13,8 @@ const config = {
     downloadUrls: {
         windows: 'https://download.notsus.net/NotSus_Browser_2.0.3.exe',
         mac: 'https://download.notsus.net/NotSus_Browser-2.0.3-arm64.dmg',
-        macIntel: 'https://download.notsus.net/NotSus_Browser-2.0.3.dmg'
+        macIntel: 'https://download.notsus.net/NotSus_Browser-2.0.3.dmg',
+        linux: '' // Add your Linux download URL here when ready
     }
 };
 
@@ -23,9 +24,77 @@ console.log('Current location:', window.location.href);
 
 // Function to handle multi-step form transitions
 window.showNextStep = (step) => {
+    // If moving to step 2, validate email first
+    if (step === 2) {
+        const feedbackForm = document.getElementById('feedbackForm');
+        if (feedbackForm) {
+            const emailInput = feedbackForm.querySelector('input[name="email"]');
+            const nameInput = feedbackForm.querySelector('input[name="name"]');
+            
+            // Check if email is filled and valid
+            if (!emailInput || !emailInput.value.trim()) {
+                // Show error message
+                showFormError('Please enter your email address to continue.');
+                emailInput?.focus();
+                return; // Stop here, don't proceed to next step
+            }
+            
+            // Validate email format
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(emailInput.value.trim())) {
+                showFormError('Please enter a valid email address.');
+                emailInput.focus();
+                return; // Stop here, don't proceed to next step
+            }
+            
+            // Check if name is filled (optional but good to have)
+            if (!nameInput || !nameInput.value.trim()) {
+                showFormError('Please enter your name to continue.');
+                nameInput?.focus();
+                return;
+            }
+            
+            // Clear any previous error messages
+            clearFormError();
+        }
+    }
+    
+    // If validation passed (or not step 2), proceed with showing the step
     document.querySelectorAll('[id^="form-step-"]').forEach(el => el.style.display = 'none');
     document.getElementById(`form-step-${step}`).style.display = 'block';
 };
+
+// Function to show form error message
+function showFormError(message) {
+    // Remove any existing error message
+    clearFormError();
+    
+    // Create error message element
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'form-error-message';
+    errorDiv.textContent = message;
+    errorDiv.style.cssText = 'color: #ff6b6b; background-color: #ffe0e0; padding: 0.75rem 1rem; border-radius: 4px; margin-top: 1rem; border: 1px solid #ff6b6b;';
+    
+    // Find the form step 1 container
+    const formStep1 = document.getElementById('form-step-1');
+    if (formStep1) {
+        // Insert error message after the form inputs
+        const formInputs = formStep1.querySelector('.form-inputs');
+        if (formInputs) {
+            formInputs.parentNode.insertBefore(errorDiv, formInputs.nextSibling);
+        } else {
+            formStep1.appendChild(errorDiv);
+        }
+    }
+}
+
+// Function to clear form error message
+function clearFormError() {
+    const existingError = document.querySelector('.form-error-message');
+    if (existingError) {
+        existingError.remove();
+    }
+}
 
 // TinkerCad 3D Car Model
 let tinkercadScene, tinkercadCamera, tinkercadRenderer, tinkercadCar;
@@ -563,6 +632,8 @@ function setupDownloadTracking(email) {
                 platform = 'windows';
             } else if (href.includes('macIntel')) {
                 platform = 'macIntel';
+            } else if (href.includes('linux')) {
+                platform = 'linux';
             } else if (href.includes('mac')) {
                 platform = 'mac';
             }

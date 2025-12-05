@@ -319,14 +319,25 @@ app.get('/download/:platform', async (req, res) => {
     
     // Updated download URLs pointing to R2 buckets
     const downloadUrls = {
-        'windows': 'https://pub-e5bd9e24b50d490dada11f212ee2a0ac.r2.dev/NotSus_Browser_1.0.6.exe',
-        'mac': 'https://pub-e5bd9e24b50d490dada11f212ee2a0ac.r2.dev/NotSus_Browser-1.0.6-arm64.dmg'
+        windows: 'https://download.notsus.net/NotSus_Browser_2.0.3.exe',
+        mac: 'https://download.notsus.net/NotSus_Browser-2.0.3-arm64.dmg',
+        macIntel: 'https://download.notsus.net/NotSus_Browser-2.0.3.dmg',
+        linux: '' // Add your Linux download URL here when ready
     };
     
     if (!downloadUrls[platform]) {
         return res.status(404).json({
             success: false,
             error: 'Platform not supported'
+        });
+    }
+    
+    // Check if download URL is configured for this platform
+    if (!downloadUrls[platform] || downloadUrls[platform].trim() === '') {
+        return res.status(503).json({
+            success: false,
+            error: 'Download not available',
+            message: `The ${platform} download is not yet available. Please check back soon.`
         });
     }
     
