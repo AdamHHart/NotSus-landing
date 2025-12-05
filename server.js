@@ -322,7 +322,7 @@ app.get('/download/:platform', async (req, res) => {
         windows: 'https://download.notsus.net/NotSus_Browser_2.0.3.exe',
         mac: 'https://download.notsus.net/NotSus_Browser-2.0.3-arm64.dmg',
         macIntel: 'https://download.notsus.net/NotSus_Browser-2.0.3.dmg',
-        linux: '' // Add your Linux download URL here when ready
+        linux: 'https://download.notsus.net/notsusbrowser_2.0.4_amd64.deb' 
     };
     
     if (!downloadUrls[platform]) {
