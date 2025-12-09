@@ -845,24 +845,26 @@ section:nth-child(odd) {
 .waitlist-benefits {
   flex: 1;
   min-width: 300px;
-  padding: 2rem;
+  padding: 1.5rem;
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 1.5rem;
 }
 
 .waitlist-benefits p {
   font-size: 1.1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .waitlist-benefits ul {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   margin-left: 1.5rem;
+  list-style-type: none;
 }
 
 .waitlist-benefits li {
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   position: relative;
+  list-style: none;
 }
 
 .waitlist-benefits li::before {
