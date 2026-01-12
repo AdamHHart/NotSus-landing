@@ -11,7 +11,7 @@ const config = {
         }
     })(),
     downloadUrls: {
-        windows: 'https://download.notsus.net/NotSus_Browser_2.0.5.exe',
+        windows: 'https://download.notsus.net/NotSus_Browser_2.0.6.exe',
         mac: 'https://download.notsus.net/NotSus_Browser-2.0.3-arm64.dmg',
         macIntel: 'https://download.notsus.net/NotSus_Browser-2.0.3.dmg',
         linux: 'https://download.notsus.net/notsusbrowser_2.0.4_amd64.deb' 
