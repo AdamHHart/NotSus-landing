@@ -1,19 +1,33 @@
 #!/usr/bin/env node
 'use strict';
-// Fix for gopd@1.2.0: some environments (e.g. Render) don't unpack gOPD.js from the package.
-// This creates it if missing so require('./gOPD') in gopd/index.js works.
+// Patch node_modules where npm install on Render omits files from published packages.
 const fs = require('fs');
 const path = require('path');
 
-const gopdDir = path.join(__dirname, '..', 'node_modules', 'gopd');
-const targetFile = path.join(gopdDir, 'gOPD.js');
-const content = "'use strict';\n\n/** @type {import('./gOPD')} */\nmodule.exports = Object.getOwnPropertyDescriptor;\n";
+const root = path.join(__dirname, '..', 'node_modules');
 
-if (fs.existsSync(gopdDir) && !fs.existsSync(targetFile)) {
-  try {
-    fs.writeFileSync(targetFile, content, 'utf8');
-    console.log('patch-gopd: wrote gOPD.js');
-  } catch (e) {
-    if (e.code !== 'ENOENT') throw e;
-  }
+// 1. gopd@1.2.0: missing gOPD.js
+const gopdDir = path.join(root, 'gopd');
+const gopdFile = path.join(gopdDir, 'gOPD.js');
+const gopdContent = "'use strict';\n\n/** @type {import('./gOPD')} */\nmodule.exports = Object.getOwnPropertyDescriptor;\n";
+if (fs.existsSync(gopdDir) && !fs.existsSync(gopdFile)) {
+  fs.writeFileSync(gopdFile, gopdContent, 'utf8');
+  console.log('patch-deps: wrote gopd/gOPD.js');
+}
+
+// 2. validator: missing lib/util/nullUndefinedCheck.js
+const validatorUtil = path.join(root, 'validator', 'lib', 'util');
+const validatorFile = path.join(validatorUtil, 'nullUndefinedCheck.js');
+const validatorContent = [
+  '"use strict";',
+  '',
+  'Object.defineProperty(exports, "__esModule", { value: true });',
+  'exports.default = isNullOrUndefined;',
+  'function isNullOrUndefined(value) { return value === null || value === undefined; }',
+  'module.exports = exports.default;',
+  'module.exports.default = exports.default;'
+].join('\n');
+if (fs.existsSync(validatorUtil) && !fs.existsSync(validatorFile)) {
+  fs.writeFileSync(validatorFile, validatorContent, 'utf8');
+  console.log('patch-deps: wrote validator/lib/util/nullUndefinedCheck.js');
 }
