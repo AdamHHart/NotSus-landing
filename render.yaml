@@ -3,9 +3,9 @@ services:
   - type: web
     name: notsus-web
     env: node
-    buildCommand: npm install && npm rebuild bcrypt --build-from-source
+    buildCommand: npm install && node scripts/patch-gopd.js && npm rebuild bcrypt --build-from-source
     startCommand: npm run migrate && npm start
-    nodeVersion: 18.x
+    nodeVersion: 20.x
     envVars:
       - key: NODE_ENV
         value: production
