@@ -7,11 +7,10 @@
     "migrate": "node migrations/runner.js",
     "dev": "nodemon server.js",
     "migrate:dev": "NODE_ENV=development node migrations/runner.js",
-    "migrate:prod": "NODE_ENV=production node migrations/runner.js",
-    "postinstall": "npm run migrate"
+    "migrate:prod": "NODE_ENV=production node migrations/runner.js"
   },
   "engines": {
-    "node": "18.x"
+    "node": ">=18.x"
   },
   "keywords": [],
   "author": "",
@@ -25,7 +24,7 @@
     "express": "^4.21.1",
     "express-validator": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.13.1",
+    "pg": "^8.13.3",
     "resend": "^6.9.2"
   }
 }
