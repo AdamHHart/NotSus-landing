@@ -976,6 +976,71 @@ input[type="text"]::placeholder {
   transform: translateY(-2px);
 }
 
+/* Download page (post-verification) */
+.page-download-now header {
+  padding: 1.25rem 1.5rem;
+}
+
+.page-download-now .download-now-main {
+  padding: 6rem 1.5rem 4rem;
+  text-align: center;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-download-now .download-now-title {
+  margin-bottom: 1rem;
+}
+
+.page-download-now .download-now-subtitle {
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.page-download-now .download-now-back {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+}
+
+.page-download-now .download-buttons-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .page-download-now header {
+    padding: 1rem 1rem;
+  }
+
+  .page-download-now .download-now-main {
+    padding-top: 5.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .page-download-now .download-now-title {
+    font-size: 1.5rem;
+  }
+
+  .page-download-now .download-buttons-wrap {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .page-download-now .download-buttons-wrap .download-button {
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+  }
+}
+
 /* Video Section */
 .video-section {
   padding: 6rem 0;

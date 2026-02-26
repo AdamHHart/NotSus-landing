@@ -393,7 +393,7 @@ app.get('/download-now', async (req, res) => {
     <link rel="stylesheet" href="/styles.css">
     <link rel="icon" type="image/png" href="/favicon.png">
 </head>
-<body>
+<body class="page-download-now">
     <header>
         <div class="header-container">
             <div class="header-left">
@@ -405,13 +405,13 @@ app.get('/download-now', async (req, res) => {
             </div>
         </div>
     </header>
-    <main class="container" style="padding: 4rem 1.5rem; text-align: center;">
-        <h1 style="margin-bottom: 1rem;">Thank you for verifying your email</h1>
-        <p style="margin-bottom: 2rem; opacity: 0.9;">Download the NotSus browser for a safer browsing experience for your kids.</p>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+    <main class="container download-now-main">
+        <h1 class="download-now-title">Thank you for verifying your email</h1>
+        <p class="download-now-subtitle">Download the NotSus browser for a safer browsing experience for your kids.</p>
+        <div class="download-buttons-wrap">
             ${downloadLinks.map(({ href, label }) => `<a href="${href}" class="download-button"><span>${label}</span></a>`).join('\n            ')}
         </div>
-        <p style="margin-top: 2rem; font-size: 0.9rem;"><a href="/" style="color: var(--secondary-accent);">Back to home</a></p>
+        <p class="download-now-back"><a href="/" style="color: var(--secondary-accent);">Back to home</a></p>
     </main>
 </body>
 </html>`;
