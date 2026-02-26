@@ -1,11 +1,13 @@
 // server.js
 require('dotenv').config();
+const crypto = require('crypto');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const db = require('./db');
 const authRoutes = require('./routes/auth');
 const { authenticateToken, requireAdmin } = require('./auth');
+const { sendVerificationEmail } = require('./services/email');
 
 const app = express();
 
@@ -144,9 +146,22 @@ app.post('/api/feedback', validateFeedback, async (req, res, next) => {
 
         console.log('Transaction completed successfully:', result);
 
+        // Create email verification token (24h) and send verification email
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+        await db.query(`
+            INSERT INTO email_verification_tokens (email, token, expires_at)
+            VALUES ($1, $2, $3)
+        `, [req.body.email, verificationToken, expiresAt]);
+
+        await sendVerificationEmail(req.body.email, verificationToken);
+
         res.json({
             success: true,
-            id: result.rows[0].id
+            id: result.rows[0].id,
+            requireVerification: true,
+            message: 'check_email'
         });
     } catch (err) {
         console.error('Full error details:', {
@@ -163,19 +178,21 @@ app.post('/api/feedback', validateFeedback, async (req, res, next) => {
     }
 });
 
-// NEW: API endpoint for tracking download attempts
+// API endpoint for tracking download attempts (email or token for verified users)
 app.post('/api/track-download', async (req, res) => {
     try {
-        const { email, platform, action, browserInfo } = req.body;
-        
-        console.log('Tracking download:', {
-            email,
-            platform,
-            action,
-            browserInfo
-        });
-        
-        // Insert into download_tracking table
+        const { email, token, platform, action, browserInfo } = req.body;
+        let resolvedEmail = email;
+        if (token && !email) {
+            const row = await db.query(
+                'SELECT email FROM download_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP',
+                [token]
+            );
+            if (row.rows.length > 0) resolvedEmail = row.rows[0].email;
+        }
+
+        console.log('Tracking download:', { email: resolvedEmail, platform, action });
+
         await db.query(`
             INSERT INTO download_tracking (
                 email,
@@ -188,20 +205,19 @@ app.post('/api/track-download', async (req, res) => {
                 user_agent
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         `, [
-            email,
+            resolvedEmail || null,
             platform,
             action,
-            browserInfo.browser.name,
-            browserInfo.browser.version,
-            browserInfo.os.name,
-            browserInfo.os.version,
-            browserInfo.userAgent
+            (browserInfo && browserInfo.browser && browserInfo.browser.name) || 'Unknown',
+            (browserInfo && browserInfo.browser && browserInfo.browser.version) || 'Unknown',
+            (browserInfo && browserInfo.os && browserInfo.os.name) || 'Unknown',
+            (browserInfo && browserInfo.os && browserInfo.os.version) || 'Unknown',
+            (browserInfo && browserInfo.userAgent) || ''
         ]);
-        
+
         res.json({ success: true });
     } catch (err) {
         console.error('Error tracking download:', err);
-        // Still return success to not interrupt user experience
         res.json({ success: true });
     }
 });
@@ -312,27 +328,57 @@ app.get('/admin', authenticateToken, requireAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-// Updated download endpoint to track successful downloads
+// Verify email: validate token, mark used, create download token, redirect to home with download_token
+const BASE_URL = process.env.BASE_URL || 'https://www.notsus.net';
+app.get('/verify-email', async (req, res) => {
+    const { token } = req.query;
+    if (!token) {
+        return res.redirect(`${BASE_URL}/?verify=missing`);
+    }
+    try {
+        const row = await db.query(`
+            SELECT id, email FROM email_verification_tokens
+            WHERE token = $1 AND used_at IS NULL AND expires_at > CURRENT_TIMESTAMP
+        `, [token]);
+        if (row.rows.length === 0) {
+            return res.redirect(`${BASE_URL}/?verify=invalid`);
+        }
+        const { id, email } = row.rows[0];
+        await db.query(`UPDATE email_verification_tokens SET used_at = CURRENT_TIMESTAMP WHERE id = $1`, [id]);
+
+        const downloadToken = crypto.randomBytes(32).toString('hex');
+        const downloadExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        await db.query(`
+            INSERT INTO download_tokens (email, token, expires_at) VALUES ($1, $2, $3)
+        `, [email, downloadToken, downloadExpiresAt]);
+
+        const redirectUrl = new URL('/', BASE_URL);
+        redirectUrl.searchParams.set('download_token', downloadToken);
+        return res.redirect(redirectUrl.toString());
+    } catch (err) {
+        console.error('Verify email error:', err);
+        return res.redirect(`${BASE_URL}/?verify=error`);
+    }
+});
+
+// Download endpoint: requires valid download_token (one token grants access to all platforms)
 app.get('/download/:platform', async (req, res) => {
     const { platform } = req.params;
-    const email = req.query.email; // Can be passed from form
-    
-    // Updated download URLs pointing to R2 buckets
+    const downloadToken = req.query.token;
+
     const downloadUrls = {
         windows: 'https://download.notsus.net/NotSus_Browser_2.0.14.exe',
         mac: 'https://download.notsus.net/NotSus_Browser-2.0.14-arm64.dmg',
         macIntel: 'https://download.notsus.net/NotSus_Browser-2.0.3.dmg',
-        linux: 'https://download.notsus.net/notsusbrowser_2.0.4_amd64.deb' 
+        linux: 'https://download.notsus.net/notsusbrowser_2.0.4_amd64.deb'
     };
-    
+
     if (!downloadUrls[platform]) {
         return res.status(404).json({
             success: false,
             error: 'Platform not supported'
         });
     }
-    
-    // Check if download URL is configured for this platform
     if (!downloadUrls[platform] || downloadUrls[platform].trim() === '') {
         return res.status(503).json({
             success: false,
@@ -340,54 +386,34 @@ app.get('/download/:platform', async (req, res) => {
             message: `The ${platform} download is not yet available. Please check back soon.`
         });
     }
-    
+
+    if (!downloadToken) {
+        return res.redirect(`${BASE_URL}/?download=token_required`);
+    }
+
     try {
-        // Log the download in the database
-        await db.query(`
-            INSERT INTO app_downloads (
-                platform,
-                email,
-                download_time,
-                user_agent,
-                ip_address
-            ) VALUES ($1, $2, CURRENT_TIMESTAMP, $3, $4)
-        `, [
-            platform,
-            email,
-            req.headers['user-agent'],
-            req.headers['x-forwarded-for'] || req.connection.remoteAddress
-        ]);
-        
-        // Also track this as a 'complete' action in download_tracking
-        if (email) {
-            await db.query(`
-                INSERT INTO download_tracking (
-                    email,
-                    platform,
-                    action,
-                    browser_name,
-                    browser_version,
-                    os_name,
-                    os_version,
-                    user_agent
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            `, [
-                email,
-                platform,
-                'complete', // This action indicates they reached the download redirect
-                'Unknown', // We don't parse these values on the server
-                'Unknown',
-                'Unknown',
-                'Unknown',
-                req.headers['user-agent']
-            ]);
+        const tokenRow = await db.query(`
+            SELECT email FROM download_tokens
+            WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP
+        `, [downloadToken]);
+        if (tokenRow.rows.length === 0) {
+            return res.redirect(`${BASE_URL}/?download=invalid`);
         }
-        
-        // Redirect to the actual file
+        const email = tokenRow.rows[0].email;
+
+        await db.query(`
+            INSERT INTO app_downloads (platform, email, download_time, user_agent, ip_address)
+            VALUES ($1, $2, CURRENT_TIMESTAMP, $3, $4)
+        `, [platform, email, req.headers['user-agent'], req.headers['x-forwarded-for'] || req.connection.remoteAddress]);
+
+        await db.query(`
+            INSERT INTO download_tracking (email, platform, action, browser_name, browser_version, os_name, os_version, user_agent)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `, [email, platform, 'complete', 'Unknown', 'Unknown', 'Unknown', 'Unknown', req.headers['user-agent']]);
+
         res.redirect(downloadUrls[platform]);
     } catch (err) {
         console.error('Error tracking download:', err);
-        // Still redirect to download even if tracking fails
         res.redirect(downloadUrls[platform]);
     }
 });

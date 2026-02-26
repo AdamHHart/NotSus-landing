@@ -350,6 +350,28 @@ function initTinkercadModel() {
 
 // Set up form submission handlers
 document.addEventListener('DOMContentLoaded', function() {
+    // If user landed here after verifying email, show download section and set up token-based download links
+    const urlParams = new URLSearchParams(window.location.search);
+    const downloadToken = urlParams.get('download_token');
+    if (downloadToken) {
+        const downloadSection = document.getElementById('download-section');
+        const feedbackForm = document.getElementById('feedbackForm');
+        if (downloadSection && feedbackForm) {
+            document.querySelectorAll('[id^="form-step-"]').forEach(el => { el.style.display = 'none'; });
+            const checkEl = document.getElementById('check-email-section');
+            if (checkEl) checkEl.style.display = 'none';
+            downloadSection.style.display = 'block';
+            setupDownloadTracking(downloadToken, { useToken: true });
+            downloadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        if (window.history && window.history.replaceState) {
+            urlParams.delete('download_token');
+            const cleanSearch = urlParams.toString();
+            const newUrl = cleanSearch ? `${window.location.pathname}?${cleanSearch}` : window.location.pathname;
+            window.history.replaceState({}, '', newUrl);
+        }
+    }
+
     // Modal functionality
     const privacyModal = document.getElementById('privacyModal');
     const termsModal = document.getElementById('termsModal');
@@ -652,14 +674,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const responseData = await response.json();
                 console.log('Form submission successful:', responseData);
-                
-                // Show download section
+
                 document.getElementById('form-step-3').style.display = 'none';
-                document.getElementById('download-section').style.display = 'block';
-                
-                // Setup download tracking
-                setupDownloadTracking(formData.email);
-                
+                if (responseData.requireVerification || responseData.message === 'check_email') {
+                    const checkEmailSection = document.getElementById('check-email-section');
+                    const checkEmailAddress = document.getElementById('check-email-address');
+                    if (checkEmailSection && checkEmailAddress) {
+                        checkEmailAddress.textContent = formData.email;
+                        checkEmailSection.style.display = 'block';
+                    }
+                } else {
+                    document.getElementById('download-section').style.display = 'block';
+                    setupDownloadTracking(formData.email, {});
+                }
             } catch (err) {
                 console.error('Submission error:', err);
                 submitButton.textContent = 'Error - Try Again';
@@ -748,39 +775,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Function to set up download tracking
-function setupDownloadTracking(email) {
+// Set up download buttons with token (verified users) or email (legacy). Token grants access to all platforms.
+function setupDownloadTracking(emailOrToken, options) {
+    const useToken = options && options.useToken === true;
     const downloadButtons = document.querySelectorAll('.download-button');
-    
+
     downloadButtons.forEach(button => {
+        let platform = 'mac';
+        const href = button.getAttribute('href');
+        if (href && href.includes('windows')) platform = 'windows';
+        else if (href && href.includes('macIntel')) platform = 'macIntel';
+        else if (href && href.includes('linux')) platform = 'linux';
+        else if (href && href.includes('mac')) platform = 'mac';
+
+        const downloadUrl = useToken
+            ? `/download/${platform}?token=${encodeURIComponent(emailOrToken)}`
+            : (config.downloadUrls[platform] || `/download/${platform}?email=${encodeURIComponent(emailOrToken)}`);
+        button.setAttribute('href', downloadUrl);
+
         button.addEventListener('click', function(e) {
-            // Get platform from href
-            let platform = 'mac'; // default
-            const href = this.getAttribute('href');
-            if (href.includes('windows')) {
-                platform = 'windows';
-            } else if (href.includes('macIntel')) {
-                platform = 'macIntel';
-            } else if (href.includes('linux')) {
-                platform = 'linux';
-            } else if (href.includes('mac')) {
-                platform = 'mac';
+            if (useToken) {
+                trackDownload(null, platform, 'click', emailOrToken);
+            } else {
+                trackDownload(emailOrToken, platform, 'click');
             }
-            
-            // Track the download attempt
-            trackDownload(email, platform, 'click');
-            
-            // Update download URL to use the direct download URL from config
-            const downloadUrl = config.downloadUrls[platform] || `/download/${platform}?email=${encodeURIComponent(email)}`;
-            this.setAttribute('href', downloadUrl);
         });
     });
 }
 
-// Function to track downloads
-async function trackDownload(email, platform, action) {
+// Function to track downloads (email or token for verified users)
+async function trackDownload(email, platform, action, token) {
     try {
-        // Get browser and OS info
         const userAgent = navigator.userAgent;
         const browserInfo = {
             userAgent,
@@ -788,24 +813,20 @@ async function trackDownload(email, platform, action) {
             os: getOSInfo(),
             timestamp: new Date().toISOString()
         };
-        
-        // Track the download event
+
+        const body = { platform, action, browserInfo };
+        if (token) body.token = token;
+        else if (email) body.email = email;
+
         await fetch('/api/track-download', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email,
-                platform,
-                action,
-                browserInfo
-            })
+            body: JSON.stringify(body)
         });
-        
+
         console.log(`Download ${action} tracked for ${platform}`);
-        
     } catch (err) {
         console.error('Error tracking download:', err);
-        // Continue with download even if tracking fails
     }
 }
 

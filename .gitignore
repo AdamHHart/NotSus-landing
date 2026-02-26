@@ -1,10 +1,7 @@
-notes/todo.md
-
-# File: .gitignore
-
-# Environment variables and secrets
+# Environment variables and secrets (never commit real values)
 .env
-.env.*
+.env.local
+.env.*.local
 *.env
 config.js
 
@@ -70,7 +67,8 @@ auth/credentials.js
 *.cert
 *.crt
 
-# Local development files
+# Local development / temp
+fresh_clone/
 local/
 development/
 dev.js
