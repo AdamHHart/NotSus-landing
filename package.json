@@ -10,7 +10,7 @@
     "migrate:prod": "NODE_ENV=production node migrations/runner.js"
   },
   "engines": {
-    "node": ">=18.x"
+    "node": "20.x"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +24,7 @@
     "express": "^4.21.1",
     "express-validator": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.13.3",
+    "pg": "^8.19.0",
     "resend": "^6.9.2"
   }
 }
