@@ -1,14 +1,7 @@
-// Configure API URL based on environment
+// Configure API URL: always use same origin so form posts to the backend you're actually viewing
 const config = {
     apiUrl: (() => {
-        // Check if we're in development (localhost)
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            // Use the same port as the current page
-            return `${window.location.protocol}//${window.location.host}/api/feedback`;
-        } else {
-            // Production - use the production domain
-            return 'https://www.notsus.net/api/feedback';
-        }
+        return `${window.location.origin}/api/feedback`;
     })(),
     downloadUrls: {
         windows: 'https://download.notsus.net/NotSus_Browser_2.0.14.exe',
