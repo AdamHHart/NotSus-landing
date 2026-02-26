@@ -1,18 +1,34 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { body, validationResult } = require('express-validator');
 
 // Load JWT secret from environment variables
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'; // In production, always use environment variable!
 const SALT_ROUNDS = 10;
 
-// Validation rules
+// Simple email regex (no external validator dependency)
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Registration validation middleware (replaces express-validator to avoid broken dependency chain on Render)
 const registrationRules = [
-    body('email').isEmail().normalizeEmail(),
-    body('password').isLength({ min: 8 })
-        .withMessage('Password must be at least 8 characters long')
-        .matches(/\d/)
-        .withMessage('Password must contain a number')
+    (req, res, next) => {
+        const { email, password } = req.body || {};
+        const errors = [];
+        if (!email || typeof email !== 'string' || !EMAIL_REGEX.test(email.trim())) {
+            errors.push({ field: 'email', message: 'Valid email is required' });
+        }
+        if (!password || typeof password !== 'string') {
+            errors.push({ field: 'password', message: 'Password is required' });
+        } else if (password.length < 8) {
+            errors.push({ field: 'password', message: 'Password must be at least 8 characters long' });
+        } else if (!/\d/.test(password)) {
+            errors.push({ field: 'password', message: 'Password must contain a number' });
+        }
+        if (errors.length) {
+            return res.status(400).json({ success: false, error: errors[0].message, errors });
+        }
+        req.body.email = (req.body.email || '').trim().toLowerCase();
+        next();
+    }
 ];
 
 // Middleware to verify JWT
@@ -69,3 +85,6 @@ module.exports = {
     generateToken,
     SALT_ROUNDS
 };
+
+// Back-compat: validationResult was used with express-validator; no-op if anything still expects it
+module.exports.validationResult = () => ({ isEmpty: () => true, array: () => [] });
