@@ -352,12 +352,73 @@ app.get('/verify-email', async (req, res) => {
             INSERT INTO download_tokens (email, token, expires_at) VALUES ($1, $2, $3)
         `, [email, downloadToken, downloadExpiresAt]);
 
-        const redirectUrl = new URL('/', BASE_URL);
-        redirectUrl.searchParams.set('download_token', downloadToken);
-        return res.redirect(redirectUrl.toString());
+        const downloadNowUrl = `${BASE_URL}/download-now?token=${encodeURIComponent(downloadToken)}`;
+        return res.redirect(downloadNowUrl);
     } catch (err) {
         console.error('Verify email error:', err);
         return res.redirect(`${BASE_URL}/?verify=error`);
+    }
+});
+
+// Dedicated download page: only shown when token is valid (works regardless of caching/subdomain)
+app.get('/download-now', async (req, res) => {
+    const token = req.query.token;
+    if (!token) {
+        return res.redirect(`${BASE_URL}/?download=token_required`);
+    }
+    try {
+        const tokenRow = await db.query(`
+            SELECT email FROM download_tokens
+            WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP
+        `, [token]);
+        if (tokenRow.rows.length === 0) {
+            return res.redirect(`${BASE_URL}/?download=invalid`);
+        }
+        const tokenEnc = encodeURIComponent(token);
+        const downloadLinks = [
+            { platform: 'windows', label: 'Download for Windows' },
+            { platform: 'mac', label: 'Download for Mac (Apple Silicon)' },
+            { platform: 'macIntel', label: 'Download for Mac (Intel)' },
+            { platform: 'linux', label: 'Download for Linux' }
+        ].map(({ platform, label }) => ({
+            href: `/download/${platform}?token=${tokenEnc}`,
+            label
+        }));
+        const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download NotSus Browser | NotSus.net</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" type="image/png" href="/favicon.png">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="header-left">
+                <a href="/"><img src="/public/logo.png" height="40" width="40" alt="NotSus Logo" class="logo-img"></a>
+                <div class="logo-text-container">
+                    <a href="/" style="color:inherit;text-decoration:none;"><div class="logo">NotSus.net</div></a>
+                    <h6 class="logo-tagline">The better browser for kids.</h6>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="container" style="padding: 4rem 1.5rem; text-align: center;">
+        <h1 style="margin-bottom: 1rem;">Thank you for verifying your email</h1>
+        <p style="margin-bottom: 2rem; opacity: 0.9;">Download the NotSus browser for a safer browsing experience for your kids.</p>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+            ${downloadLinks.map(({ href, label }) => `<a href="${href}" class="download-button"><span>${label}</span></a>`).join('\n            ')}
+        </div>
+        <p style="margin-top: 2rem; font-size: 0.9rem;"><a href="/" style="color: var(--secondary-accent);">Back to home</a></p>
+    </main>
+</body>
+</html>`;
+        res.type('html').send(html);
+    } catch (err) {
+        console.error('Downloads page error:', err);
+        return res.redirect(`${BASE_URL}/?download=error`);
     }
 });
 
