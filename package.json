@@ -7,7 +7,8 @@
     "migrate": "node migrations/runner.js",
     "dev": "nodemon server.js",
     "migrate:dev": "NODE_ENV=development node migrations/runner.js",
-    "migrate:prod": "NODE_ENV=production node migrations/runner.js"
+    "migrate:prod": "NODE_ENV=production node migrations/runner.js",
+    "postinstall": "node scripts/patch-gopd.js"
   },
   "engines": {
     "node": "20.x"
