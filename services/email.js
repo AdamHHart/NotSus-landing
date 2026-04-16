@@ -22,12 +22,16 @@ async function sendVerificationEmail(to, verificationToken) {
         to: [to],
         subject: 'Verify your email to download NotSus Browser',
         html: `
-            <p>Thanks for your interest in NotSus Browser.</p>
+            <p>Thank you for protecting your kid from online garbage!</p>
+            <p>They will now have to actively decide what to do with their computer.</p>
             <p>Click the link below to verify your email and get your download:</p>
-            <p><a href="${verificationLink}" style="color: #008080;">${verificationLink}</a></p>
+            <p><a href="${verificationLink}" style="color: #008080; font-weight: bold;">${verificationLink}</a></p>
             <p>This link expires in 24 hours.</p>
-            <p>If you didn't request this, you can ignore this email.</p>
-            <p>— The NotSus team</p>
+            <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 24px 0;" />
+            <p>We're fighting to rescue kids from the attention economy. If you have any questions, requests, or want to help, reach us directly at <a href="mailto:contact@NotSus.net" style="color: #6A0DAD;">contact@NotSus.net</a></p>
+            <p>We wish you and your family a life of curiosity, creativity, and control of your own mind.</p>
+            <p><strong>Let's go!</strong><br/>The 🧐NotSus Team</p>
+            <p style="font-size: 12px; color: #999;">If you didn't request this, you can safely ignore this email.</p>
         `
     });
 
