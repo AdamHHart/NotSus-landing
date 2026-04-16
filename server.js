@@ -411,6 +411,7 @@ app.get('/download-now', async (req, res) => {
         <div class="download-buttons-wrap">
             ${downloadLinks.map(({ href, label }) => `<a href="${href}" class="download-button"><span>${label}</span></a>`).join('\n            ')}
         </div>
+        <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">*We're working on tablet and mobile versions, we will let you know when they are available.</p>
         <p class="download-now-back"><a href="/" style="color: var(--secondary-accent);">Back to home</a></p>
     </main>
 </body>

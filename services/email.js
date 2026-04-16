@@ -21,7 +21,7 @@ async function sendVerificationEmail(to, verificationToken) {
     const { data, error } = await resend.emails.send({
         from: FROM_EMAIL,
         to: [to],
-        subject: 'You are one click away from NotSus',
+        subject: 'Verify your email for NotSus.net.',
         html: `
             <div style="margin:0;padding:0;background:#f2f6fb;">
                 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
@@ -32,17 +32,13 @@ async function sendVerificationEmail(to, verificationToken) {
                         <td align="center">
                             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="640" style="max-width:640px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e6edf5;font-family:Arial,sans-serif;">
                                 <tr>
-                                    <td style="background:linear-gradient(135deg,#008080 0%,#6A0DAD 100%);padding:28px 28px 24px 28px;color:#ffffff;">
-                                        <p style="margin:0 0 8px 0;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;opacity:0.9;">NotSus Browser</p>
-                                        <h1 style="margin:0;font-size:30px;line-height:1.2;font-weight:800;">Your safer browser is ready.</h1>
-                                        <p style="margin:12px 0 0 0;font-size:17px;line-height:1.5;opacity:0.95;">You are one click away from giving your child a more focused, creative internet experience.</p>
+                                    <td style="background:linear-gradient(135deg,#008f5a 0%,#00A86B 100%);padding:28px 28px 24px 28px;color:#ffffff;">
+                                        <h1 style="margin:0;font-size:30px;line-height:1.2;font-weight:800;">NotSus.net is ready!</h1>
+                                        <p style="margin:12px 0 0 0;font-size:17px;line-height:1.5;opacity:0.95;">Your kids will thank you one day for the way you raised them.</p>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="padding:28px;">
-                                        <p style="margin:0 0 14px 0;font-size:16px;line-height:1.6;color:#1c2a39;">
-                                            We are excited to have you with us. Verify your email, unlock your download, and start building healthier digital habits at home.
-                                        </p>
 
                                         <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 22px 0;">
                                             <tr>
@@ -77,12 +73,12 @@ async function sendVerificationEmail(to, verificationToken) {
                                             <a href="mailto:contact@NotSus.net" style="color:#6A0DAD;font-weight:700;text-decoration:none;">contact@NotSus.net</a>.
                                         </p>
                                         <p style="margin:0;font-size:16px;line-height:1.6;color:#1c2a39;">
-                                            <strong>Let's go,</strong>
+                                            <strong>Let's go!</strong>
                                         </p>
                                         <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:10px;">
                                             <tr>
                                                 <td style="vertical-align:middle;padding-right:10px;">
-                                                    <img src="${logoUrl}" alt="NotSus logo" width="18" height="18" style="display:block;border:0;outline:none;text-decoration:none;border-radius:4px;" />
+                                                    <img src="${logoUrl}" alt="NotSus logo" width="20" height="20" style="display:block;border:0;outline:none;text-decoration:none;border-radius:4px;" />
                                                 </td>
                                                 <td style="vertical-align:middle;font-size:16px;line-height:1.4;color:#1c2a39;font-weight:700;">
                                                     The NotSus Team
