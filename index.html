@@ -353,13 +353,16 @@
                     <form id="feedbackForm" class="feedback-form">
                         <div id="form-step-1">
                             <div class="form-inputs">
-                                <input type="text" placeholder="Your name" name="name" required class="name-input">
                                 <input type="email" placeholder="email@example.com" name="email" required>
                             </div>
-                            <button type="button" class="submit-button" onclick="showNextStep(2)">Download Now</button>
+                            <input type="hidden" name="name" value="NotSus Download User">
+                            <input type="hidden" name="concernDescription" value="">
+                            <input type="hidden" name="gainsDescription" value="">
+                            <button type="submit" class="submit-button">Download Now</button>
                             <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; opacity: 0.8; color: rgba(255, 255, 255, 0.8);">*available for Mac, Windows, and Linux</p>
                         </div>
-                        
+
+                        <!-- Legacy multi-step download form kept for rollback
                         <div id="form-step-2" style="display: none;">
                             <p>What concerns you most about how your kids interact with tech?</p>
                             <div class="checkbox-group">
@@ -375,7 +378,7 @@
                             <input type="text" placeholder="What else concerns you?" name="concernDescription">
                             <button type="button" class="submit-button" onclick="showNextStep(3)">Next</button>
                         </div>
-                        
+
                         <div id="form-step-3" style="display: none;">
                             <p>What do you want your kids to get out of technology?</p>
                             <div class="checkbox-group">
@@ -387,6 +390,7 @@
                             <input type="text" placeholder="What else?" name="gainsDescription">
                             <button type="submit" class="submit-button">Submit</button>
                         </div>
+                        -->
                         <div id="check-email-section" style="display: none; margin-top: 2rem;">
                             <h3>Check your email</h3>
                             <p>We sent a verification link to <strong id="check-email-address"></strong>. Click the link to get your download.</p>

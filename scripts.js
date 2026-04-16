@@ -15,48 +15,6 @@ const config = {
 console.log('API URL configured as:', config.apiUrl);
 console.log('Current location:', window.location.href);
 
-// Function to handle multi-step form transitions
-window.showNextStep = (step) => {
-    // If moving to step 2, validate email first
-    if (step === 2) {
-        const feedbackForm = document.getElementById('feedbackForm');
-        if (feedbackForm) {
-            const emailInput = feedbackForm.querySelector('input[name="email"]');
-            const nameInput = feedbackForm.querySelector('input[name="name"]');
-            
-            // Check if email is filled and valid
-            if (!emailInput || !emailInput.value.trim()) {
-                // Show error message
-                showFormError('Please enter your email address to continue.');
-                emailInput?.focus();
-                return; // Stop here, don't proceed to next step
-            }
-            
-            // Validate email format
-            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailPattern.test(emailInput.value.trim())) {
-                showFormError('Please enter a valid email address.');
-                emailInput.focus();
-                return; // Stop here, don't proceed to next step
-            }
-            
-            // Check if name is filled (optional but good to have)
-            if (!nameInput || !nameInput.value.trim()) {
-                showFormError('Please enter your name to continue.');
-                nameInput?.focus();
-                return;
-            }
-            
-            // Clear any previous error messages
-            clearFormError();
-        }
-    }
-    
-    // If validation passed (or not step 2), proceed with showing the step
-    document.querySelectorAll('[id^="form-step-"]').forEach(el => el.style.display = 'none');
-    document.getElementById(`form-step-${step}`).style.display = 'block';
-};
-
 // Function to handle waitlist form multi-step transitions
 window.showWaitlistNextStep = (step) => {
     // If moving to step 2, validate email first
@@ -99,38 +57,6 @@ window.showWaitlistNextStep = (step) => {
     document.getElementById(`waitlist-form-step-${step}`).style.display = 'block';
 };
 
-// Function to show form error message
-function showFormError(message) {
-    // Remove any existing error message
-    clearFormError();
-    
-    // Create error message element
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'form-error-message';
-    errorDiv.textContent = message;
-    errorDiv.style.cssText = 'color: #ff6b6b; background-color: #ffe0e0; padding: 0.75rem 1rem; border-radius: 4px; margin-top: 1rem; border: 1px solid #ff6b6b;';
-    
-    // Find the form step 1 container
-    const formStep1 = document.getElementById('form-step-1');
-    if (formStep1) {
-        // Insert error message after the form inputs
-        const formInputs = formStep1.querySelector('.form-inputs');
-        if (formInputs) {
-            formInputs.parentNode.insertBefore(errorDiv, formInputs.nextSibling);
-        } else {
-            formStep1.appendChild(errorDiv);
-        }
-    }
-}
-
-// Function to clear form error message
-function clearFormError() {
-    const existingError = document.querySelector('.form-error-message');
-    if (existingError) {
-        existingError.remove();
-    }
-}
-
 // Function to show waitlist form error message
 function showWaitlistFormError(message) {
     // Remove any existing error message
@@ -152,6 +78,132 @@ function showWaitlistFormError(message) {
         } else {
             formStep1.appendChild(errorDiv);
         }
+    }
+}
+
+async function handleDownloadEmailSubmit(feedbackForm, submitButton) {
+    const activeSubmitButton = submitButton || feedbackForm.querySelector('button[type="submit"]');
+    if (!activeSubmitButton) {
+        console.error('Submit button not found for download form.');
+        return;
+    }
+
+    const formData = buildFormPayload(feedbackForm);
+    const originalButtonText = activeSubmitButton.textContent;
+    activeSubmitButton.textContent = 'Submitting...';
+    activeSubmitButton.disabled = true;
+
+    try {
+        console.log('Submitting form data:', formData);
+
+        const responseData = await submitFormData(formData);
+        console.log('Form submission successful:', responseData);
+
+        const formStep1 = document.getElementById('form-step-1');
+        if (formStep1) {
+            formStep1.style.display = 'none';
+        }
+
+        if (responseData.requireVerification || responseData.message === 'check_email') {
+            const checkEmailSection = document.getElementById('check-email-section');
+            const checkEmailAddress = document.getElementById('check-email-address');
+            if (checkEmailSection && checkEmailAddress) {
+                checkEmailAddress.textContent = formData.email;
+                checkEmailSection.style.display = 'block';
+            }
+        } else {
+            document.getElementById('download-section').style.display = 'block';
+            setupDownloadTracking(formData.email, {});
+        }
+    } catch (err) {
+        handleSubmitError(err, activeSubmitButton, originalButtonText);
+    }
+}
+
+// ------------------------------
+// Form submission helper methods
+// ------------------------------
+
+/**
+ * Builds the normalized API payload from a form element.
+ * @param {HTMLFormElement} formElement - Source form for payload fields.
+ * @returns {{name: string, email: string, concerns: string[], gains: string[], otherDescription: string, gainsDescription: string, timestamp: string}}
+ */
+function buildFormPayload(formElement) {
+    return {
+        name: formElement.querySelector('input[name="name"]').value,
+        email: formElement.querySelector('input[name="email"]').value,
+        concerns: Array.from(formElement.querySelectorAll('input[name="concern"]:checked')).map(cb => cb.value),
+        gains: Array.from(formElement.querySelectorAll('input[name="gains"]:checked')).map(cb => cb.value),
+        otherDescription: formElement.querySelector('input[name="concernDescription"]').value,
+        gainsDescription: formElement.querySelector('input[name="gainsDescription"]').value,
+        timestamp: new Date().toISOString()
+    };
+}
+
+/**
+ * Submits form payload to the feedback API endpoint.
+ * @param {object} formData - Payload returned by buildFormPayload.
+ * @returns {Promise<object>} Parsed JSON response from API.
+ */
+async function submitFormData(formData) {
+    const response = await fetch(config.apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Submission failed');
+    }
+
+    return response.json();
+}
+
+/**
+ * Shows a temporary button error state after submission failure.
+ * @param {Error} error - Submission error to log.
+ * @param {HTMLButtonElement} submitButton - Button to update.
+ * @param {string} originalButtonText - Button label to restore.
+ */
+function handleSubmitError(error, submitButton, originalButtonText) {
+    console.error('Submission error:', error);
+    submitButton.textContent = 'Error - Try Again';
+    submitButton.disabled = false;
+    setTimeout(() => {
+        submitButton.textContent = originalButtonText;
+    }, 2000);
+}
+
+/**
+ * Handles waitlist form submission and success state transitions.
+ * @param {HTMLFormElement} waitlistForm - Waitlist form element.
+ * @param {HTMLButtonElement|undefined} submitButton - Optional event submitter.
+ * @returns {Promise<void>}
+ */
+async function handleWaitlistSubmit(waitlistForm, submitButton) {
+    const activeSubmitButton = submitButton || waitlistForm.querySelector('button[type="submit"]');
+    if (!activeSubmitButton) {
+        console.error('Submit button not found for waitlist form.');
+        return;
+    }
+
+    const originalButtonText = activeSubmitButton.textContent;
+    activeSubmitButton.textContent = 'Submitting...';
+    activeSubmitButton.disabled = true;
+
+    try {
+        const formData = buildFormPayload(waitlistForm);
+        console.log('Submitting waitlist form data:', formData);
+
+        const responseData = await submitFormData(formData);
+        console.log('Waitlist form submission successful:', responseData);
+
+        document.getElementById('waitlist-form-step-3').style.display = 'none';
+        document.getElementById('waitlist-thankyou-section').style.display = 'block';
+    } catch (err) {
+        handleSubmitError(err, activeSubmitButton, originalButtonText);
     }
 }
 
@@ -605,87 +657,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Hero form submission
-    const heroForm = document.getElementById('heroForm');
-    if (heroForm) {
-        heroForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Capture hero form data
-            const heroName = heroForm.querySelector('input[name="name"]').value;
-            const heroEmail = heroForm.querySelector('input[name="email"]').value;
-            
-            // Prefill the waitlist form
-            const feedbackForm = document.getElementById('feedbackForm');
-            if (feedbackForm) {
-                feedbackForm.querySelector('input[name="name"]').value = heroName;
-                feedbackForm.querySelector('input[name="email"]').value = heroEmail;
-            }
-            
-            // Scroll to waitlist section
-            document.getElementById('waitlist-section').scrollIntoView({ behavior: 'smooth' });
-            
-            // Immediately show step 2 since we already have name and email
-            showNextStep(2);
-        });
-    }
-
     // Main feedback form submission
     const feedbackForm = document.getElementById('feedbackForm');
     if (feedbackForm) {
         feedbackForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             const submitButton = e.submitter;
-            const originalButtonText = submitButton.textContent;
-            submitButton.textContent = 'Submitting...';
-            submitButton.disabled = true;
-
-            try {
-                // Gather all form data
-                const formData = {
-                    name: feedbackForm.querySelector('input[name="name"]').value,
-                    email: feedbackForm.querySelector('input[name="email"]').value,
-                    concerns: Array.from(feedbackForm.querySelectorAll('input[name="concern"]:checked')).map(cb => cb.value),
-                    gains: Array.from(feedbackForm.querySelectorAll('input[name="gains"]:checked')).map(cb => cb.value),
-                    otherDescription: feedbackForm.querySelector('input[name="concernDescription"]').value,
-                    gainsDescription: feedbackForm.querySelector('input[name="gainsDescription"]').value,
-                    timestamp: new Date().toISOString()
-                };
-
-                console.log('Submitting form data:', formData);
-
-                // Submit the data to the API
-                const response = await fetch(config.apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Submission failed');
-                }
-                
-                const responseData = await response.json();
-                console.log('Form submission successful:', responseData);
-
-                document.getElementById('form-step-3').style.display = 'none';
-                if (responseData.requireVerification || responseData.message === 'check_email') {
-                    const checkEmailSection = document.getElementById('check-email-section');
-                    const checkEmailAddress = document.getElementById('check-email-address');
-                    if (checkEmailSection && checkEmailAddress) {
-                        checkEmailAddress.textContent = formData.email;
-                        checkEmailSection.style.display = 'block';
-                    }
-                } else {
-                    document.getElementById('download-section').style.display = 'block';
-                    setupDownloadTracking(formData.email, {});
-                }
-            } catch (err) {
-                console.error('Submission error:', err);
-                submitButton.textContent = 'Error - Try Again';
-                submitButton.disabled = false;
-                setTimeout(() => submitButton.textContent = originalButtonText, 2000);
-            }
+            await handleDownloadEmailSubmit(feedbackForm, submitButton);
         });
     }
 
@@ -695,49 +673,7 @@ document.addEventListener('DOMContentLoaded', function() {
         waitlistForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             const submitButton = e.submitter;
-            const originalButtonText = submitButton.textContent;
-            submitButton.textContent = 'Submitting...';
-            submitButton.disabled = true;
-
-            try {
-                // Gather all form data
-                const formData = {
-                    name: waitlistForm.querySelector('input[name="name"]').value,
-                    email: waitlistForm.querySelector('input[name="email"]').value,
-                    concerns: Array.from(waitlistForm.querySelectorAll('input[name="concern"]:checked')).map(cb => cb.value),
-                    gains: Array.from(waitlistForm.querySelectorAll('input[name="gains"]:checked')).map(cb => cb.value),
-                    otherDescription: waitlistForm.querySelector('input[name="concernDescription"]').value,
-                    gainsDescription: waitlistForm.querySelector('input[name="gainsDescription"]').value,
-                    timestamp: new Date().toISOString()
-                };
-
-                console.log('Submitting waitlist form data:', formData);
-
-                // Submit the data to the API
-                const response = await fetch(config.apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Submission failed');
-                }
-                
-                const responseData = await response.json();
-                console.log('Waitlist form submission successful:', responseData);
-                
-                // Show thank you section instead of download section
-                document.getElementById('waitlist-form-step-3').style.display = 'none';
-                document.getElementById('waitlist-thankyou-section').style.display = 'block';
-                
-            } catch (err) {
-                console.error('Submission error:', err);
-                submitButton.textContent = 'Error - Try Again';
-                submitButton.disabled = false;
-                setTimeout(() => submitButton.textContent = originalButtonText, 2000);
-            }
+            await handleWaitlistSubmit(waitlistForm, submitButton);
         });
     }
 
