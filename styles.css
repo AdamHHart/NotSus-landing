@@ -809,6 +809,95 @@ section:nth-child(odd) {
   color: rgba(255, 255, 255, 0.8);
 }
 
+/* Resources Section */
+.resources-section {
+  padding: 6rem 0;
+  background-color: var(--bg-dark);
+}
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 1rem;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.resource-card {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 2rem 2rem 2.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.resource-card:hover {
+  transform: translateY(-6px);
+  background-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.resource-icon {
+  font-size: 2.75rem;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.resource-card h3 {
+  font-size: 1.35rem;
+  margin-bottom: 0.75rem;
+  text-align: left;
+}
+
+.resource-card p {
+  flex: 1;
+  margin-bottom: 1.5rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.resource-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.resource-actions .download-button {
+  margin: 0;
+  text-align: center;
+}
+
+.resource-link-guide {
+  display: inline-block;
+  text-align: center;
+  padding: 0.65rem 1rem;
+  border-radius: 2rem;
+  border: 2px solid rgba(255, 179, 0, 0.55);
+  color: var(--secondary-accent);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.resource-link-guide:hover {
+  background-color: rgba(255, 179, 0, 0.12);
+  border-color: var(--secondary-accent);
+}
+
+@media (min-width: 600px) {
+  .resources-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+}
+
 /* Waitlist Section */
 .waitlist-section {
   padding: 6rem 0;
