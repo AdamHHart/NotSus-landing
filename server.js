@@ -324,6 +324,41 @@ app.get('/api/admin/downloads', authenticateToken, requireAdmin, async (req, res
     }
 });
 
+// Admin endpoint to export all completed downloads (full historical data)
+app.get('/api/admin/downloads/export', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const completedDownloadsQuery = `
+            SELECT
+                id,
+                email,
+                platform,
+                action,
+                browser_name,
+                browser_version,
+                os_name,
+                os_version,
+                user_agent,
+                created_at
+            FROM download_tracking
+            WHERE action = 'complete'
+            ORDER BY created_at DESC
+        `;
+
+        const result = await db.query(completedDownloadsQuery);
+
+        res.json({
+            success: true,
+            downloads: result.rows
+        });
+    } catch (err) {
+        console.error('Error exporting completed downloads:', err);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to export completed download data'
+        });
+    }
+});
+
 app.get('/admin', authenticateToken, requireAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });

@@ -523,38 +523,94 @@
             }
         }
 
-        async function exportToCSV() {
-            if (currentSubmissions.length === 0) {
-                alert('No data to export');
-                return;
+        function sanitizeCsvValue(value) {
+            if (value === null || value === undefined) {
+                return '';
             }
 
-            const headers = ['Date', 'Name', 'Email', 'Concerns', 'Other Description', 'Tech Interests'];
-            const csvRows = [headers.join(',')];
+            return String(value).replace(/,/g, ';').replace(/\n/g, ' ');
+        }
 
-            currentSubmissions.forEach(submission => {
-                const concerns = [
-                    submission.screen_time_addiction && 'Screen Time',
-                    submission.consumptive_habits && 'Consumptive Habits',
-                    submission.inappropriate_content && 'Inappropriate Content',
-                    submission.bad_influences && 'Bad Influences',
-                    submission.safety && 'Safety',
-                    submission.false_information && 'False Information',
-                    submission.social_distortion && 'Social Distortion',
-                    submission.other_concern && 'Other'
-                ].filter(Boolean);
+        async function exportToCSV() {
+            const activeTab = document.querySelector('.tab.active')?.getAttribute('data-tab');
+            const today = new Date().toISOString().split('T')[0];
+            let headers = [];
+            let csvRows = [];
+            let fileName = `notsus_export_${today}.csv`;
 
-                const row = [
-                    new Date(submission.created_at).toLocaleString(),
-                    submission.name?.replace(/,/g, ';'),
-                    submission.email?.replace(/,/g, ';'),
-                    concerns.join('; '),
-                    submission.other_description?.replace(/,/g, ';').replace(/\n/g, ' '),
-                    submission.gains_description?.replace(/,/g, ';').replace(/\n/g, ' ')
-                ];
+            if (activeTab === 'downloads') {
+                const exportResponse = await fetch(`${API_BASE_URL}/api/admin/downloads/export`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
 
-                csvRows.push(row.join(','));
-            });
+                if (exportResponse.status === 401 || exportResponse.status === 403) {
+                    throw new Error('Authentication failed');
+                }
+
+                if (!exportResponse.ok) {
+                    throw new Error('Failed to fetch completed download export data');
+                }
+
+                const exportData = await exportResponse.json();
+                const completedDownloads = exportData.downloads || [];
+
+                if (completedDownloads.length === 0) {
+                    alert('No completed download data to export');
+                    return;
+                }
+
+                headers = ['Date', 'Email', 'Platform', 'Action', 'Browser', 'OS'];
+                csvRows = [headers.join(',')];
+                fileName = `notsus_completed_downloads_${today}.csv`;
+
+                completedDownloads.forEach(download => {
+                    const row = [
+                        sanitizeCsvValue(new Date(download.created_at).toLocaleString()),
+                        sanitizeCsvValue(download.email || '-'),
+                        sanitizeCsvValue(download.platform || '-'),
+                        sanitizeCsvValue(download.action || '-'),
+                        sanitizeCsvValue(`${download.browser_name || '-'} ${download.browser_version || ''}`.trim()),
+                        sanitizeCsvValue(`${download.os_name || '-'} ${download.os_version || ''}`.trim())
+                    ];
+
+                    csvRows.push(row.join(','));
+                });
+            } else {
+                if (currentSubmissions.length === 0) {
+                    alert('No feedback data to export');
+                    return;
+                }
+
+                headers = ['Date', 'Name', 'Email', 'Concerns', 'Other Description', 'Tech Interests'];
+                csvRows = [headers.join(',')];
+                fileName = `notsus_feedback_${today}.csv`;
+
+                currentSubmissions.forEach(submission => {
+                    const concerns = [
+                        submission.screen_time_addiction && 'Screen Time',
+                        submission.consumptive_habits && 'Consumptive Habits',
+                        submission.inappropriate_content && 'Inappropriate Content',
+                        submission.bad_influences && 'Bad Influences',
+                        submission.safety && 'Safety',
+                        submission.false_information && 'False Information',
+                        submission.social_distortion && 'Social Distortion',
+                        submission.other_concern && 'Other'
+                    ].filter(Boolean);
+
+                    const row = [
+                        sanitizeCsvValue(new Date(submission.created_at).toLocaleString()),
+                        sanitizeCsvValue(submission.name),
+                        sanitizeCsvValue(submission.email),
+                        sanitizeCsvValue(concerns.join('; ')),
+                        sanitizeCsvValue(submission.other_description),
+                        sanitizeCsvValue(submission.gains_description)
+                    ];
+
+                    csvRows.push(row.join(','));
+                });
+            }
 
             const csvContent = csvRows.join('\n');
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -563,12 +619,19 @@
             if (link.download !== undefined) {
                 const url = URL.createObjectURL(blob);
                 link.setAttribute('href', url);
-                link.setAttribute('download', `notsus_feedback_${new Date().toISOString().split('T')[0]}.csv`);
+                link.setAttribute('download', fileName);
                 link.style.visibility = 'hidden';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
             }
+        } catch (err) {
+            console.error('CSV export error:', err);
+            if (err.message === 'Authentication failed') {
+                logout();
+                return;
+            }
+            alert(`Export failed: ${err.message}`);
         }
 
         // Initialize the dashboard
