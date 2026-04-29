@@ -532,6 +532,7 @@
         }
 
         async function exportToCSV() {
+            try {
             const activeTab = document.querySelector('.tab.active')?.getAttribute('data-tab');
             const today = new Date().toISOString().split('T')[0];
             let headers = [];
@@ -625,13 +626,14 @@
                 link.click();
                 document.body.removeChild(link);
             }
-        } catch (err) {
-            console.error('CSV export error:', err);
-            if (err.message === 'Authentication failed') {
-                logout();
-                return;
+            } catch (err) {
+                console.error('CSV export error:', err);
+                if (err.message === 'Authentication failed') {
+                    logout();
+                    return;
+                }
+                alert(`Export failed: ${err.message}`);
             }
-            alert(`Export failed: ${err.message}`);
         }
 
         // Initialize the dashboard
