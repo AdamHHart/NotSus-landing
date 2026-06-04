@@ -44,11 +44,6 @@ a:has(.header-left){
 			color:white;
 		}
 
-    a{
-			text-decoration: none;
-			color:#8888ff;
-		}
-
 /* Container */
 .container {
   width: 100%;
@@ -1244,6 +1239,310 @@ footer img.footer-logo {
   transition: color 0.3s ease;
 }
 
+.footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1.25rem;
+  margin: 0.5rem 0;
+}
+
+.footer-social-link {
+  color: var(--secondary-accent);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.35rem 0.5rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.footer-social-link:hover {
+  color: var(--text-primary);
+  opacity: 0.9;
+}
+
+/* Accessible text hidden visually (e.g. podcast title for screen readers) */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* Podcast page — override homepage .hero (100vh / large margins) */
+.podcast-hero-section.hero {
+  padding-top: 6rem;
+  padding-bottom: 1.25rem;
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  min-height: 0;
+  display: block;
+  align-items: stretch;
+}
+
+.podcast-hero-section .podcast-hero {
+  padding: 0.5rem 1.25rem 0;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.podcast-hero-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* Mobile: logo + buttons first, subtitle below */
+@media (max-width: 991px) {
+  .podcast-hero-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .podcast-hero-brand {
+    order: 1;
+    width: min(260px, 85vw);
+  }
+
+  .podcast-hero-about {
+    order: 2;
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+    padding: 0 1rem;
+  }
+}
+
+/* Left column: logo + buttons share one width */
+.podcast-hero-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: min(260px, 72vw);
+  box-sizing: border-box;
+}
+
+.podcast-artwork {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 14px;
+  margin: 0 0 0.85rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.podcast-hero-about {
+  text-align: center;
+  margin: 0;
+  padding: 0 1rem;
+  line-height: 1.45;
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Two buttons side-by-side, combined width = logo width */
+.podcast-subscribe {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.podcast-subscribe a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0.45rem;
+  background: var(--secondary-accent);
+  color: var(--text-dark);
+  font-weight: 700;
+  font-size: clamp(0.68rem, 2.8vw, 0.8rem);
+  border-radius: 2rem;
+  text-decoration: none;
+  min-height: 42px;
+  line-height: 1.15;
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
+  hyphens: auto;
+  box-sizing: border-box;
+}
+
+.podcast-subscribe a:hover {
+  filter: brightness(1.08);
+}
+
+/* One platform link: button spans full logo width */
+.podcast-subscribe--solo {
+  grid-template-columns: 1fr;
+}
+
+/* Desktop: logo left, wider subtitle column on the right */
+@media (min-width: 992px) {
+  .podcast-hero-section.hero {
+    padding-top: 6.25rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .podcast-hero-section .podcast-hero {
+    padding: 0.75rem 2rem 0;
+    max-width: 1200px;
+  }
+
+  .podcast-hero-layout {
+    display: grid;
+    grid-template-columns: 338px minmax(0, 1.3fr);
+    align-items: center;
+    gap: 1.75rem 2.5rem;
+  }
+
+  .podcast-hero-brand {
+    order: unset;
+    width: 338px;
+    max-width: none;
+  }
+
+  .podcast-artwork {
+    margin-bottom: 1rem;
+    border-radius: 16px;
+  }
+
+  .podcast-subscribe a {
+    font-size: 0.78rem;
+    padding: 0.55rem 0.5rem;
+  }
+
+  .podcast-hero-about {
+    order: unset;
+    text-align: left;
+    padding: 0;
+    font-size: 2.1rem;
+    line-height: 1.5;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .podcast-hero-layout {
+    grid-template-columns: 364px minmax(0, 1.3fr);
+    gap: 2rem 2.75rem;
+  }
+
+  .podcast-hero-brand {
+    width: 364px;
+  }
+
+  .podcast-hero-about {
+    font-size: 2.15rem;
+  }
+
+  .podcast-subscribe a {
+    font-size: 0.82rem;
+  }
+}
+
+.podcast-episodes {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2.5rem;
+}
+
+.podcast-episode {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.podcast-episode h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+}
+
+.podcast-episode-meta {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.75rem;
+}
+
+.podcast-episode p {
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.podcast-analytics-note {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0.5rem 0 1rem;
+  padding: 0 0.5rem;
+  line-height: 1.45;
+  text-align: center;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 768px) {
+  .podcast-analytics-note {
+    text-align: left;
+    margin-left: 0;
+    margin-right: 0;
+    max-width: none;
+  }
+}
+
+.podcast-player {
+  width: 100%;
+  margin: 0.75rem 0 0.5rem;
+  border-radius: 8px;
+  min-height: 44px;
+}
+
+.podcast-episode-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.podcast-episode-links a {
+  color: var(--secondary-accent);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.podcast-episode-links a:hover {
+  text-decoration: underline;
+}
+
+.podcast-episode-desc {
+  margin-bottom: 0.25rem !important;
+}
+
+.podcast-loading,
+.podcast-error {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 2rem;
+}
+
 .footer-copyright {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.5);
@@ -1425,8 +1724,22 @@ footer img.footer-logo {
 
 
   /* Reduce hero padding-top on mobile */
-  .hero {
+  .hero:not(.podcast-hero-section) {
     padding-top: 32px;
+  }
+
+  .podcast-hero-section.hero {
+    padding-top: 5.5rem;
+    padding-bottom: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .podcast-hero-about {
+    font-size: 1.65rem;
+  }
+
+  .podcast-hero-brand {
+    width: min(260px, 85vw);
   }
 
   /* Make demo-gif-container match hero-sidebar width */

@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog - NotSus.net</title>
+    <title>Podcast - NotSus.net</title>
     <link rel="stylesheet" href="/styles.css">
-    <link rel="stylesheet" href="/public/css/browser-home.css">
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JP7D4XPL7X"></script>
@@ -44,13 +43,32 @@
         </nav>
     </header>
 
-    <section class="hero" style="min-height:0">
-        <div class="container">
-            <h1 class="hero-title" style="text-align:center;margin-bottom:0">Blog</h1>
+    <section class="hero podcast-hero-section">
+        <div class="container podcast-hero">
+            <div class="podcast-hero-layout">
+                <div class="podcast-hero-brand">
+                    <img
+                        id="podcast-show-artwork"
+                        class="podcast-artwork"
+                        src="/public/images/podcast-artwork.jpg"
+                        alt="The NotSus Podcast"
+                        width="364"
+                        height="364"
+                    >
+                    <h1 class="visually-hidden" id="podcast-show-title">The NotSus Podcast</h1>
+                    <div class="podcast-subscribe">
+                        <a id="podcast-spotify-link" href="https://open.spotify.com/show/2W1EDfZ6NJ9Su14Pbm0Mjt" target="_blank" rel="noopener noreferrer">Listen on Spotify</a>
+                        <a id="podcast-apple-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none">Listen on Apple Podcasts</a>
+                    </div>
+                </div>
+                <p class="podcast-hero-about" id="podcast-show-description">Parenting, screens, and raising curious kids.</p>
+            </div>
         </div>
     </section>
 
-    <div class="browser-home" id="blog-articles-root"></div>
+    <div class="podcast-episodes" id="podcast-episodes">
+        <p class="podcast-loading">Loading episodes…</p>
+    </div>
 
     <footer>
         <div class="container">
@@ -104,6 +122,6 @@
 
     <script src="/scripts/site-chrome.js"></script>
     <script src="/scripts.js"></script>
-    <script src="/scripts/blog-index.js"></script>
+    <script src="/scripts/podcast.js"></script>
 </body>
 </html>

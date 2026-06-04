@@ -1,14 +1,43 @@
 // server.js
+console.log('[NotSus] Starting server...');
+console.log('[NotSus] Loading dependencies (first run on this machine can take 1–2 minutes — please wait)...');
+
 require('dotenv').config();
 const crypto = require('crypto');
+
+console.log('[NotSus]   • loading Express...');
 const express = require('express');
+console.log('[NotSus]   • Express ready');
+
 const cors = require('cors');
 const path = require('path');
-const db = require('./db');
-const authRoutes = require('./routes/auth');
-const { authenticateToken, requireAdmin } = require('./auth');
-const { sendVerificationEmail } = require('./services/email');
 
+// pg and rss-parser can take 30–90s on first require; load only when needed.
+let db;
+function getDb() {
+    if (!db) {
+        console.log('[NotSus] Loading database (first use may take a minute)...');
+        db = require('./db');
+    }
+    return db;
+}
+
+// bcrypt and resend are slow to load on first require (~30–90s). Load lazily so the site starts immediately.
+let authRoutesCache;
+function getAuthRoutes() {
+    if (!authRoutesCache) authRoutesCache = require('./routes/auth');
+    return authRoutesCache;
+}
+
+function lazyAuthenticateToken(req, res, next) {
+    return require('./auth').authenticateToken(req, res, next);
+}
+
+function lazyRequireAdmin(req, res, next) {
+    return require('./auth').requireAdmin(req, res, next);
+}
+
+console.log('[NotSus] Loading Express app...');
 const app = express();
 
 const corsOptions = {
@@ -41,11 +70,50 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
+app.get('/podcast', (req, res) => {
+    res.redirect(301, '/podcast/');
+});
+
+app.get('/tools', (req, res) => {
+    res.redirect(301, '/tools/');
+});
+
+// Legacy blog URLs → production filenames
+const blogRedirects = {
+    'screen-quality-vs-time-parents-guide': 'screen-quality-vs-time',
+    'understanding-dopamine-loops-digital-age': 'dopamine-loops',
+    'childhood-tech-experience-for-kids': '90s-computer-experience-for-kids',
+    'kid-safe-search-engines-creativity': 'Why-Kid-Safe-Search-Engines-Still-Fail-the-Creativity-Test',
+    'minecraft-to-masterpiece-screen-time': 'from-minecraft-to-masterpiece',
+    'adhd-and-attention-economy': 'adhd-and-the-attention-economy'
+};
+Object.entries(blogRedirects).forEach(([from, to]) => {
+    app.get(`/blog/${from}`, (req, res) => res.redirect(301, `/blog/${to}.html`));
+    app.get(`/blog/${from}.html`, (req, res) => res.redirect(301, `/blog/${to}.html`));
+});
+
+app.get('/api/podcast/episodes', async (req, res) => {
+    try {
+        const { getPodcastEpisodes } = require('./services/podcastService');
+        const data = await getPodcastEpisodes();
+        res.json({ success: true, data });
+    } catch (err) {
+        console.error('Podcast API error:', err);
+        res.status(503).json({
+            success: false,
+            message: 'Unable to load podcast episodes',
+            error: err.message
+        });
+    }
+});
+
 // Downloads
 app.use('/downloads', express.static(path.join(__dirname, 'downloads')));
 
-// Auth routes
-app.use('/auth', authRoutes);
+// Auth routes (loaded on first /auth request)
+app.use('/auth', (req, res, next) => getAuthRoutes()(req, res, next));
+
+console.log('[NotSus] Core routes registered...');
 
 // Validation middleware
 const validateFeedback = (req, res, next) => {
@@ -76,7 +144,7 @@ app.post('/api/feedback', validateFeedback, async (req, res, next) => {
     try {
         console.log('Received feedback submission:', req.body);
         
-        const result = await db.transaction(async (client) => {
+        const result = await getDb().transaction(async (client) => {
             const {
                 name,
                 email,
@@ -150,11 +218,12 @@ app.post('/api/feedback', validateFeedback, async (req, res, next) => {
         const verificationToken = crypto.randomBytes(32).toString('hex');
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-        await db.query(`
+        await getDb().query(`
             INSERT INTO email_verification_tokens (email, token, expires_at)
             VALUES ($1, $2, $3)
         `, [req.body.email, verificationToken, expiresAt]);
 
+        const { sendVerificationEmail } = require('./services/email');
         await sendVerificationEmail(req.body.email, verificationToken);
 
         res.json({
@@ -184,7 +253,7 @@ app.post('/api/track-download', async (req, res) => {
         const { email, token, platform, action, browserInfo } = req.body;
         let resolvedEmail = email;
         if (token && !email) {
-            const row = await db.query(
+            const row = await getDb().query(
                 'SELECT email FROM download_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP',
                 [token]
             );
@@ -193,7 +262,7 @@ app.post('/api/track-download', async (req, res) => {
 
         console.log('Tracking download:', { email: resolvedEmail, platform, action });
 
-        await db.query(`
+        await getDb().query(`
             INSERT INTO download_tracking (
                 email,
                 platform,
@@ -223,7 +292,7 @@ app.post('/api/track-download', async (req, res) => {
 });
 
 // Admin endpoint to get feedback data
-app.get('/api/admin/feedback', authenticateToken, requireAdmin, async (req, res) => {
+app.get('/api/admin/feedback', lazyAuthenticateToken, lazyRequireAdmin, async (req, res) => {
     try {
         const dateFilter = req.query.date;
 
@@ -239,7 +308,7 @@ app.get('/api/admin/feedback', authenticateToken, requireAdmin, async (req, res)
 
         query += ` ORDER BY created_at DESC`;
 
-        const result = await db.query(query, dateFilter ? [dateFilter] : []);
+        const result = await getDb().query(query, dateFilter ? [dateFilter] : []);
 
         // Get statistics
         const statsQuery = `
@@ -254,7 +323,7 @@ app.get('/api/admin/feedback', authenticateToken, requireAdmin, async (req, res)
             FROM user_feedback;
         `;
 
-        const statsResult = await db.query(statsQuery);
+        const statsResult = await getDb().query(statsQuery);
 
         res.json({
             success: true,
@@ -275,7 +344,7 @@ app.get('/api/admin/feedback', authenticateToken, requireAdmin, async (req, res)
 });
 
 // NEW: Admin endpoint to view download statistics
-app.get('/api/admin/downloads', authenticateToken, requireAdmin, async (req, res) => {
+app.get('/api/admin/downloads', lazyAuthenticateToken, lazyRequireAdmin, async (req, res) => {
     try {
         // Get download statistics
         const statsQuery = `
@@ -289,7 +358,7 @@ app.get('/api/admin/downloads', authenticateToken, requireAdmin, async (req, res
             ORDER BY platform, action
         `;
 
-        const statsResult = await db.query(statsQuery);
+        const statsResult = await getDb().query(statsQuery);
 
         // Get recent download attempts
         const recentQuery = `
@@ -308,7 +377,7 @@ app.get('/api/admin/downloads', authenticateToken, requireAdmin, async (req, res
             LIMIT 50
         `;
 
-        const recentResult = await db.query(recentQuery);
+        const recentResult = await getDb().query(recentQuery);
 
         res.json({
             success: true,
@@ -325,7 +394,7 @@ app.get('/api/admin/downloads', authenticateToken, requireAdmin, async (req, res
 });
 
 // Admin endpoint to export all completed downloads (full historical data)
-app.get('/api/admin/downloads/export', authenticateToken, requireAdmin, async (req, res) => {
+app.get('/api/admin/downloads/export', lazyAuthenticateToken, lazyRequireAdmin, async (req, res) => {
     try {
         const completedDownloadsQuery = `
             SELECT
@@ -344,7 +413,7 @@ app.get('/api/admin/downloads/export', authenticateToken, requireAdmin, async (r
             ORDER BY created_at DESC
         `;
 
-        const result = await db.query(completedDownloadsQuery);
+        const result = await getDb().query(completedDownloadsQuery);
 
         res.json({
             success: true,
@@ -359,7 +428,7 @@ app.get('/api/admin/downloads/export', authenticateToken, requireAdmin, async (r
     }
 });
 
-app.get('/admin', authenticateToken, requireAdmin, (req, res) => {
+app.get('/admin', lazyAuthenticateToken, lazyRequireAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
@@ -371,7 +440,7 @@ app.get('/verify-email', async (req, res) => {
         return res.redirect(`${BASE_URL}/?verify=missing`);
     }
     try {
-        const row = await db.query(`
+        const row = await getDb().query(`
             SELECT id, email FROM email_verification_tokens
             WHERE token = $1 AND used_at IS NULL AND expires_at > CURRENT_TIMESTAMP
         `, [token]);
@@ -379,11 +448,11 @@ app.get('/verify-email', async (req, res) => {
             return res.redirect(`${BASE_URL}/?verify=invalid`);
         }
         const { id, email } = row.rows[0];
-        await db.query(`UPDATE email_verification_tokens SET used_at = CURRENT_TIMESTAMP WHERE id = $1`, [id]);
+        await getDb().query(`UPDATE email_verification_tokens SET used_at = CURRENT_TIMESTAMP WHERE id = $1`, [id]);
 
         const downloadToken = crypto.randomBytes(32).toString('hex');
         const downloadExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-        await db.query(`
+        await getDb().query(`
             INSERT INTO download_tokens (email, token, expires_at) VALUES ($1, $2, $3)
         `, [email, downloadToken, downloadExpiresAt]);
 
@@ -402,7 +471,7 @@ app.get('/download-now', async (req, res) => {
         return res.redirect(`${BASE_URL}/?download=token_required`);
     }
     try {
-        const tokenRow = await db.query(`
+        const tokenRow = await getDb().query(`
             SELECT email FROM download_tokens
             WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP
         `, [token]);
@@ -496,7 +565,7 @@ app.get('/download/:platform', async (req, res) => {
     }
 
     try {
-        const tokenRow = await db.query(`
+        const tokenRow = await getDb().query(`
             SELECT email FROM download_tokens
             WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP
         `, [downloadToken]);
@@ -505,12 +574,12 @@ app.get('/download/:platform', async (req, res) => {
         }
         const email = tokenRow.rows[0].email;
 
-        await db.query(`
+        await getDb().query(`
             INSERT INTO app_downloads (platform, email, download_time, user_agent, ip_address)
             VALUES ($1, $2, CURRENT_TIMESTAMP, $3, $4)
         `, [platform, email, req.headers['user-agent'], req.headers['x-forwarded-for'] || req.connection.remoteAddress]);
 
-        await db.query(`
+        await getDb().query(`
             INSERT INTO download_tracking (email, platform, action, browser_name, browser_version, os_name, os_version, user_agent)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         `, [email, platform, 'complete', 'Unknown', 'Unknown', 'Unknown', 'Unknown', req.headers['user-agent']]);
@@ -525,7 +594,7 @@ app.get('/download/:platform', async (req, res) => {
 // Health check endpoint
 app.get('/health', async (req, res) => {
     try {
-        await db.query('SELECT 1');
+        await getDb().query('SELECT 1');
         res.json({ status: 'healthy' });
     } catch (err) {
         res.status(503).json({ status: 'unhealthy', error: err.message });
@@ -533,10 +602,12 @@ app.get('/health', async (req, res) => {
 });
 
 // Error handling middleware - must be last
+console.log('[NotSus] All routes registered.');
+
 app.use((err, req, res, next) => {
     console.error(err.stack);
 
-    if (err instanceof db.DatabaseError) {
+    if (err.name === 'DatabaseError') {
         return res.status(500).json({
             success: false,
             error: 'Database error',
@@ -553,13 +624,25 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+console.log(`[NotSus] Binding to port ${PORT}...`);
+const server = app.listen(PORT, () => {
+    console.log(`[NotSus] Server running at http://localhost:${PORT}`);
+    console.log('[NotSus] Blog: /blog/  Tools: /tools/  Podcast: /podcast/');
+    console.log('[NotSus] Static pages are ready. Waitlist/API routes load the database on first use.');
+});
+
+server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`[NotSus] Port ${PORT} is already in use. Stop the other process or set PORT in .env`);
+    } else {
+        console.error('[NotSus] Failed to start server:', err.message);
+    }
+    process.exit(1);
 });
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
     console.log('SIGTERM received. Closing database connections...');
-    await db.end();
+    if (db) await getDb().end();
     process.exit(0);
 });

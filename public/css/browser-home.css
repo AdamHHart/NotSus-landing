@@ -1,0 +1,234 @@
+/* Browser homepage grid — blog + tools pages */
+.browser-home {
+  --bh-primary: #00A86B;
+  --bh-primary-dark: #008f5a;
+  --bh-text-primary: #ffffff;
+  --bh-border-radius: 12px;
+  --bh-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --bh-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --bh-page-pad: 12px;
+  background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+  padding: 1.5rem 0 3rem;
+  min-height: 50vh;
+}
+
+.browser-home .app-section {
+  margin-bottom: 2.5rem;
+}
+
+.browser-home .section-title {
+  font-size: 2.25rem;
+  color: var(--bh-text-primary);
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  text-align: left;
+  font-weight: bold;
+  font-family: var(--bh-font);
+  max-width: none;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--bh-page-pad);
+  padding-right: var(--bh-page-pad);
+}
+
+.browser-home .app-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 14px;
+  max-width: none;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 var(--bh-page-pad);
+}
+
+.browser-home .app-button {
+  background: #008f5a;
+  color: #fff;
+  border: none;
+  border-radius: var(--bh-border-radius);
+  padding: 20px 12px 32px;
+  font-size: 1.15rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, filter 0.2s;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 110px;
+  box-shadow: var(--bh-shadow);
+  font-family: var(--bh-font);
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.browser-home .app-description {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  min-height: 26%;
+  background-color: #444;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6px 8px;
+  box-sizing: border-box;
+  border-radius: 0 0 var(--bh-border-radius) var(--bh-border-radius);
+  transition: background-color 0.2s ease;
+  line-height: 1.25;
+}
+
+.browser-home .app-button:hover .app-description {
+  background-color: #555;
+}
+
+.browser-home .app-button:hover,
+.browser-home .app-button:focus {
+  background: #00A86B;
+  filter: brightness(1.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+.browser-home .app-button > span.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.browser-home .app-button::before {
+  content: '';
+  display: block;
+  width: 100%;
+  max-width: 160px;
+  height: 72px;
+  margin: 0 auto;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.9;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.browser-home .app-button:hover::before,
+.browser-home .app-button:focus::before {
+  transform: scale(1.06);
+  opacity: 1;
+}
+
+.browser-home #khan-btn::before { background-image: url('/public/images/tools/Khan_Academy_Logo.png'); }
+.browser-home #perp-btn::before { background-image: url('/public/images/tools/perplexity_logo.png'); }
+.browser-home #wiki-btn::before { background-image: url('/public/images/tools/wikipedia_logo.png'); }
+.browser-home #natgeo-kids-btn::before { background-image: url('/public/images/tools/Natgeo_Kids_logo.png'); }
+.browser-home #storyline-btn::before { background-image: url('/public/images/tools/Storyline_logo.png'); }
+.browser-home #windy-btn::before { background-image: url('/public/images/tools/windy_logo.png'); }
+.browser-home #scratch-btn::before { background-image: url('/public/images/tools/scratch_logo.png'); }
+.browser-home #replit-btn::before { background-image: url('/public/images/tools/replit_logo.webp'); }
+.browser-home #tinkercad-btn::before { background-image: url('/public/images/tools/tinkercad_logo.png'); }
+.browser-home #photopea-btn::before { background-image: url('/public/images/tools/photopea_logo.webp'); }
+.browser-home #capcut-btn::before { background-image: url('/public/images/tools/CapCut-Logo.png'); }
+.browser-home #docs-btn::before { background-image: url('/public/images/tools/Google_docs_logo.png'); }
+.browser-home #sheets-btn::before { background-image: url('/public/images/tools/google_sheets_logo.svg'); }
+.browser-home #slides-btn::before { background-image: url('/public/images/tools/googleSlides_logo.png'); }
+.browser-home #canva-btn::before { background-image: url('/public/images/tools/canva_logo.png'); }
+
+/* Blog pods */
+.browser-home .blog-pod::before {
+  display: none;
+}
+
+.browser-home .blog-pod {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 12px 34px;
+  min-height: 115px;
+}
+
+.browser-home .blog-pod-title {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+  padding: 0 6px;
+}
+
+@media (max-width: 768px) {
+  .browser-home {
+    --bh-page-pad: 8px;
+  }
+
+  .browser-home .app-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .browser-home .section-title {
+    font-size: 1.65rem;
+    text-align: center;
+  }
+
+  .browser-home .app-button {
+    min-height: 95px;
+    padding: 14px 8px 30px;
+  }
+
+  .browser-home .app-button::before {
+    height: 52px;
+    max-width: 100%;
+  }
+
+  .browser-home .app-description {
+    font-size: 0.7rem;
+    padding: 4px 5px;
+  }
+
+  .browser-home .blog-pod-title {
+    font-size: 0.78rem;
+    -webkit-line-clamp: 4;
+  }
+}
+
+@media (max-width: 480px) {
+  .browser-home {
+    --bh-page-pad: 6px;
+  }
+
+  .browser-home .app-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .browser-home .app-button {
+    min-height: 88px;
+    padding: 12px 6px 28px;
+  }
+
+  .browser-home .app-button::before {
+    height: 44px;
+  }
+
+  .browser-home .blog-pod-title {
+    font-size: 0.72rem;
+  }
+}

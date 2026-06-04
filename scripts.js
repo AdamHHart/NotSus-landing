@@ -95,8 +95,8 @@ async function handleDownloadEmailSubmit(feedbackForm, submitButton) {
 
     try {
         console.log('Submitting form data:', formData);
-        
-        //send to Google Analytics
+
+        // send to Google Analytics
         gtag('event', 'installer_email_form', {
             'link_url': 'https://notsus.net/downloads',
             'link_text': 'Get Download Link',
@@ -122,8 +122,6 @@ async function handleDownloadEmailSubmit(feedbackForm, submitButton) {
             document.getElementById('download-section').style.display = 'block';
             setupDownloadTracking(formData.email, {});
         }
-
-
     } catch (err) {
         handleSubmitError(err, activeSubmitButton, originalButtonText);
     }
@@ -560,10 +558,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-       const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
     const mobileNav = document.getElementById('mobileNav');
+    if (!hamburgerBtn || !mobileNav) return;
+
     const navLinks = document.querySelectorAll('.nav-link');
-    
+
     // Create overlay element
     const overlay = document.createElement('div');
     overlay.className = 'nav-overlay';
@@ -598,33 +598,50 @@ document.addEventListener('DOMContentLoaded', function() {
     // Close menu when clicking a nav link
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent default anchor behavior
-            
-            const targetId = this.getAttribute('href');
-            
-            // Close the menu first
-            closeMenu();
-            
+            const href = this.getAttribute('href');
+            if (!href) return;
 
-            // Smooth scroll to section with offset for fixed header
-            if (targetId.startsWith('#')) {
-                const targetSection = document.querySelector(targetId);
-                if (targetSection) {
-                    // Small delay to let menu close smoothly
-                    setTimeout(() => {
-                        const headerHeight = document.querySelector('header').offsetHeight;
-                        const targetPosition = targetSection.getBoundingClientRect().top + window.pageYOffset;
-                        const offsetPosition = targetPosition - headerHeight - 20; // 20px extra breathing room
-                        
-                        window.scrollTo({
-                            top: offsetPosition,
-                            behavior: 'smooth'
-                        });
-                    }, 300);
+            // Full page routes (blog, podcast, tools) — allow normal navigation
+            if (href.startsWith('http') || (href.startsWith('/') && !href.startsWith('/#'))) {
+                closeMenu();
+                return;
+            }
+
+            let hash = href;
+            const onHomepage = window.location.pathname === '/' ||
+                window.location.pathname.endsWith('/index.html');
+
+            if (href.startsWith('/#')) {
+                if (!onHomepage) {
+                    closeMenu();
+                    return;
                 }
-            } else {
-				location.href=targetId;
-			}
+                hash = href.slice(1);
+            } else if (!href.startsWith('#')) {
+                return;
+            }
+
+            const targetSection = document.querySelector(hash);
+            if (!targetSection) {
+                closeMenu();
+                window.location.href = '/' + hash;
+                return;
+            }
+
+            e.preventDefault();
+            closeMenu();
+
+            setTimeout(() => {
+                const header = document.querySelector('header');
+                const headerHeight = header ? header.offsetHeight : 0;
+                const targetPosition = targetSection.getBoundingClientRect().top + window.pageYOffset;
+                const offsetPosition = targetPosition - headerHeight - 20;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }, 300);
         });
     });
     
@@ -765,7 +782,7 @@ async function trackDownload(email, platform, action, token) {
             body: JSON.stringify(body)
         });
 
-         //send to Google Analytics
+        // send to Google Analytics
         gtag('event', 'installer_download', {
             'link_url': `https://notsus.net/download/${platform}`,
             'link_text': `Download for ${platform}`,
