@@ -61,9 +61,9 @@
                     : '';
                 const externalLinks = `
                     <div class="podcast-episode-links">
-                        <a href="${escapeAttr(payload.spotifyUrl || SPOTIFY_SHOW)}" target="_blank" rel="noopener noreferrer">Find on Spotify</a>
-                        ${payload.appleUrl ? `<a href="${escapeAttr(payload.appleUrl)}" target="_blank" rel="noopener noreferrer">Find on Apple Podcasts</a>` : ''}
-                        ${ep.episodePageUrl ? `<a href="${escapeAttr(ep.episodePageUrl)}" target="_blank" rel="noopener noreferrer">Episode page</a>` : ''}
+                        <a href="${escapeAttr(payload.spotifyUrl || SPOTIFY_SHOW)}" target="_blank" rel="noopener noreferrer">On Spotify</a>
+                        ${payload.appleUrl ? `<a href="${escapeAttr(payload.appleUrl)}" target="_blank" rel="noopener noreferrer">On Apple Podcasts</a>` : ''}
+                        ${ep.episodePageUrl ? `<a href="${escapeAttr(ep.episodePageUrl)}" target="_blank" rel="noopener noreferrer">Episode Page</a>` : ''}
                     </div>`;
 
                 html += `

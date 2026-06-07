@@ -7,6 +7,7 @@
         { href: '/#demo-gif', label: 'About' },
         { href: '/tools/', label: 'Tools for Kids' },
         { href: '/podcast/', label: 'Radio' },
+        { href: '/blog/', label: 'Blog' },
         { href: '/#resources-section', label: 'Resources' },
         { href: '/#contact-section', label: 'Contact Us' }
     ];

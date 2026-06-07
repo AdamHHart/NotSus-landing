@@ -55,11 +55,17 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Serve static files from the root directory with caching headers
+// Serve static files — long cache for assets, no cache for HTML (so deploys show up immediately)
 app.use(express.static(path.join(__dirname), {
-    maxAge: '1y', // Cache static files for 1 year
-    etag: true, // Enable ETag for better caching
-    lastModified: true // Enable Last-Modified headers
+    etag: true,
+    lastModified: true,
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'no-cache');
+        } else {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+    }
 }));
 
 // Root route to serve the index.html page
@@ -76,6 +82,10 @@ app.get('/podcast', (req, res) => {
 
 app.get('/tools', (req, res) => {
     res.redirect(301, '/tools/');
+});
+
+app.get('/blog', (req, res) => {
+    res.redirect(301, '/blog/');
 });
 
 // Legacy blog URLs → production filenames
