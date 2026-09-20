@@ -76,6 +76,14 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
+// Legal pages at short URLs (the /docs/ paths keep working; the homepage modals load them)
+app.get('/privacy', (req, res) => {
+    res.sendFile(path.join(__dirname, 'docs', 'PrivacyPolicy.html'));
+});
+app.get('/terms', (req, res) => {
+    res.sendFile(path.join(__dirname, 'docs', 'TandC.html'));
+});
+
 app.get('/podcast', (req, res) => {
     res.redirect(301, '/podcast/');
 });
