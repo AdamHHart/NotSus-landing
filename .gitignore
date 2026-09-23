@@ -77,3 +77,10 @@ test.js
 # System files
 .DS_Store
 Thumbs.db
+# Git's own leftovers. A rescued or half-migrated repository leaves a full copy
+# of .git behind, 27MB in the case of .git.broken-backup, and `git add -A` will
+# happily stage the whole thing. It also makes every git command in here crawl.
+.git.broken-backup/
+.git.bak/
+.git.old/
+*.git.backup/
