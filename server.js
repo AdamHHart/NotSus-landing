@@ -88,6 +88,10 @@ app.get('/podcast', (req, res) => {
     res.redirect(301, '/podcast/');
 });
 
+app.get('/android', (req, res) => {
+    res.sendFile(path.join(__dirname, 'android', 'index.html'));
+});
+
 app.get('/tools', (req, res) => {
     res.redirect(301, '/tools/');
 });
