@@ -88,6 +88,13 @@ app.get('/podcast', (req, res) => {
     res.redirect(301, '/podcast/');
 });
 
+// Google Play requires a public page for account deletion, reachable by
+// someone who has already uninstalled the app. The in-app route still exists
+// and is described here; this page is the one the store listing links to.
+app.get('/delete-account', (req, res) => {
+    res.sendFile(path.join(__dirname, 'delete-account', 'index.html'));
+});
+
 app.get('/android', (req, res) => {
     res.sendFile(path.join(__dirname, 'android', 'index.html'));
 });
