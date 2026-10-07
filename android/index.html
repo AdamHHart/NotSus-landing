@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NotSus for Android Tablets - NotSus.net</title>
-    <meta name="description" content="Install NotSus on an Android tablet. Early access, straight from us, while we finish setting up on the Play Store.">
+    <title>NotSus for Android - NotSus.net</title>
+    <meta name="description" content="Get early access to NotSus on your Android tablet.">
     <link rel="stylesheet" href="/styles.css">
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -16,48 +16,59 @@
         gtag('config', 'G-JP7D4XPL7X');
     </script>
     <style>
-        .android-page { max-width: 760px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
-        .android-page h2 { margin-top: 2.5rem; }
-        .early-note {
-            border-left: 4px solid var(--primary-accent, #4a90d9);
-            padding: 1rem 1.25rem;
-            margin: 2rem 0;
-            background: rgba(127, 127, 127, 0.08);
-            border-radius: 0 8px 8px 0;
+        /* Top padding clears the fixed header. This page has no hero section, which
+           is what provided that clearance on the other pages. */
+        .android-page { max-width: 680px; margin: 0 auto; padding: 8rem 1.5rem 4rem; }
+        .android-lead {
+            font-size: 1.5rem;
+            line-height: 1.4;
+            font-weight: 600;
+            text-align: center;
+            margin: 0 0 2.5rem;
         }
-        .early-note p:last-child { margin-bottom: 0; }
-        .download-row { margin: 2rem 0 1rem; text-align: center; }
-        .download-row .download-button { font-size: 1.1rem; padding: 0.9rem 2rem; }
-        .download-meta { text-align: center; font-size: 0.9rem; opacity: 0.75; }
-        .steps { counter-reset: step; list-style: none; padding-left: 0; }
+        .download-row { text-align: center; margin-bottom: 0.75rem; }
+        .download-row .download-button { font-size: 1.1rem; padding: 0.9rem 2.2rem; }
+        .download-meta { text-align: center; font-size: 0.9rem; opacity: 0.7; margin-bottom: 3.5rem; }
+        .android-page h2 { font-size: 1.5rem; margin: 0 0 1.25rem; }
+        .steps { counter-reset: step; list-style: none; padding-left: 0; margin: 0 0 3.5rem; }
         .steps > li {
             counter-increment: step;
             position: relative;
-            padding-left: 3rem;
-            margin-bottom: 1.75rem;
+            padding-left: 2.9rem;
+            margin-bottom: 1.1rem;
+            line-height: 1.5;
         }
         .steps > li::before {
             content: counter(step);
             position: absolute;
-            left: 0; top: 0;
-            width: 2rem; height: 2rem;
+            left: 0; top: -0.1rem;
+            width: 1.9rem; height: 1.9rem;
             border-radius: 50%;
             background: var(--primary-accent, #4a90d9);
             color: #fff;
             display: flex; align-items: center; justify-content: center;
             font-weight: 700;
+            font-size: 0.95rem;
         }
-        .screen-text {
-            display: block;
-            margin: 0.5rem 0;
-            padding: 0.6rem 0.9rem;
-            border-radius: 6px;
-            background: rgba(127, 127, 127, 0.12);
-            font-style: italic;
+        .steps .aside { display: block; font-size: 0.9rem; opacity: 0.7; }
+        .other-platforms { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 3.5rem; }
+        .other-platforms a {
+            flex: 1 1 auto;
+            text-align: center;
+            padding: 0.8rem 1.25rem;
+            border: 1px solid rgba(127,127,127,0.4);
+            border-radius: 8px;
+            text-decoration: none;
+            white-space: nowrap;
+            /* The default link blue is close to unreadable on this background. */
+            color: var(--text-primary, #fff);
         }
+        .other-platforms a:hover { border-color: var(--primary-accent, #4a90d9); }
+        .contact-row { text-align: center; }
         @media (max-width: 560px) {
-            .android-page { padding: 2rem 1rem 3rem; }
-            .steps > li { padding-left: 2.6rem; }
+            .android-page { padding: 7rem 1rem 3rem; }
+            .android-lead { font-size: 1.25rem; }
+            .other-platforms a { flex: 1 1 100%; }
         }
     </style>
 </head>
@@ -90,81 +101,43 @@
         </nav>
     </header>
 
-    <section class="hero page-hero-section">
-        <div class="container">
-            <h1 class="hero-title">NotSus for Android tablets</h1>
-        </div>
-    </section>
-
     <div class="android-page">
 
-        <div class="early-note">
-            <p><strong>This is the early version.</strong> It works, and families are using it. We are still setting up on the Google Play Store, so for now you install it straight from us instead of from Play.</p>
-            <p>That means Android will show you some warnings during the install. They are normal for any app that does not come from the Play Store yet. The steps below walk you through each one, in the order you will see them.</p>
-        </div>
+        <p class="android-lead">Get early access, help shape a better life for your children.</p>
 
         <div class="download-row">
             <a href="https://download.notsus.net/NotSus-2.2.0.apk"
                class="download-button"
                id="android-download-btn"
                onclick="gtag('event', 'download', { app_platform: 'android', app_version: '2.2.0' });">
-                <span>Download NotSus for Android</span>
+                <span>Download for Android</span>
             </a>
         </div>
-        <p class="download-meta">Version 2.2.0 &middot; 9 MB &middot; Works on Android 6 and newer</p>
+        <p class="download-meta">Version 2.2.0 &middot; 9 MB &middot; Android 6 and newer</p>
 
-        <h2>Installing it, step by step</h2>
-
-        <p>Do this on the tablet itself, not on a computer. The whole thing takes about two minutes.</p>
+        <h2>How to Install</h2>
 
         <ol class="steps">
-            <li>
-                <strong>Tap the download button above.</strong>
-                Your browser will ask whether you are sure, because the file is an app rather than a picture or a document:
-                <span class="screen-text">"This type of file can harm your device. Do you want to keep NotSus-2.2.0.apk anyway?"</span>
-                Choose <strong>Download anyway</strong>, or <strong>OK</strong>.
-            </li>
-            <li>
-                <strong>Open the file when it finishes.</strong>
-                Tap the download notification, or find it in your Files app under Downloads.
-            </li>
-            <li>
-                <strong>Allow this one install.</strong>
-                The first time, Android will say something close to:
-                <span class="screen-text">"For your security, your phone is not allowed to install unknown apps from this source."</span>
-                Tap <strong>Settings</strong>, turn on <strong>Allow from this source</strong>, then press back. On Samsung tablets the switch is called <strong>Install unknown apps</strong>. This permission applies only to the browser you downloaded with, and you can turn it off again afterwards.
-            </li>
-            <li>
-                <strong>Tell Play Protect to go ahead.</strong>
-                Google checks apps that did not come from the Play Store:
-                <span class="screen-text">"Unsafe app blocked" or "App scan recommended"</span>
-                Tap <strong>More details</strong>, then <strong>Install anyway</strong>. Play Protect says this about every app it has not seen on the Play Store before, including ours.
-            </li>
-            <li>
-                <strong>Tap Install, then Open.</strong>
-                NotSus will ask you to make a family account, or sign in to the one you already have.
-            </li>
+            <li>Tap <strong>Download</strong> above, on the tablet itself. When your browser asks, choose <strong>Download anyway</strong>.</li>
+            <li>Open the file from the download notification.</li>
+            <li>Android will say it cannot install from this source. Tap <strong>Settings</strong>, turn on <strong>Allow from this source</strong>, then press back.
+                <span class="aside">Samsung calls this switch Install unknown apps.</span></li>
+            <li>Play Protect will say <strong>Unsafe app blocked</strong>. Tap <strong>More details</strong>, then <strong>Install anyway</strong>.</li>
+            <li>Tap <strong>Install</strong>, then <strong>Open</strong>.</li>
         </ol>
 
-        <h2>What to expect from the early version</h2>
+        <h2>Other devices</h2>
 
-        <p><strong>Updates come from here, not automatically.</strong> When there is a new version we will email you and you download it from this page again. Installing over the top keeps your account, your children's profiles and your settings. Once NotSus is on the Play Store, updates arrive on their own.</p>
+        <div class="other-platforms">
+            <a href="mailto:contact@notsus.net?subject=iPad%20early%20access">iPad</a>
+            <a href="/#waitlist-section">Mac</a>
+            <a href="/#waitlist-section">Windows</a>
+            <a href="/#waitlist-section">Linux</a>
+        </div>
 
-        <p><strong>Everything is the finished app.</strong> The filtering, the daily time limits, the site requests and the parent page all work the same as they will at launch. Early access describes how you install it, and nothing about what it does.</p>
-
-        <p><strong>If something goes wrong, tell us.</strong> Write to <!--email_off--><a href="mailto:contact@notsus.net">contact@notsus.net</a><!--email_on--> and say what tablet you have and what happened. We read every one.</p>
-
-        <h2>Using an iPad instead?</h2>
-
-        <p>The iPad version is in testing with Apple right now. Write to <!--email_off--><a href="mailto:contact@notsus.net">contact@notsus.net</a><!--email_on--> and we will send you an invitation as soon as it opens up.</p>
-
-        <h2>Questions parents ask</h2>
-
-        <p><strong>Is it safe to install an app this way?</strong> The warnings are Android being careful, which is a good thing. They appear because the app is not on the Play Store yet, and not because anything is wrong with it. The file is signed by NotSus Education Inc., which is how your tablet can tell a real NotSus update from anything pretending to be one.</p>
-
-        <p><strong>Does my child need a Google account?</strong> No. NotSus uses the family account you make with us.</p>
-
-        <p><strong>What does it cost?</strong> One week free, then $7 a month. You can read the full <a href="/terms">terms</a> and our <a href="/privacy">privacy policy</a>.</p>
+        <div class="contact-row">
+            <a href="mailto:contact@notsus.net" class="download-button"><span>Contact Us</span></a>
+        </div>
 
     </div>
 

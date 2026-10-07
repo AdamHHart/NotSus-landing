@@ -486,36 +486,53 @@ app.get('/verify-email', async (req, res) => {
     }
 });
 
-// Dedicated download page: only shown when token is valid (works regardless of caching/subdomain)
-app.get('/download-now', async (req, res) => {
-    const token = req.query.token;
-    if (!token) {
-        return res.redirect(`${BASE_URL}/?download=token_required`);
-    }
-    try {
-        const tokenRow = await getDb().query(`
-            SELECT email FROM download_tokens
-            WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP
-        `, [token]);
-        if (tokenRow.rows.length === 0) {
-            return res.redirect(`${BASE_URL}/?download=invalid`);
-        }
-        const tokenEnc = encodeURIComponent(token);
-        const downloadLinks = [
-            { platform: 'windows', label: 'Download for Windows' },
-            { platform: 'mac', label: 'Download for Mac (Apple Silicon)' },
-            { platform: 'macIntel', label: 'Download for Mac (Intel)' },
-            { platform: 'linux', label: 'Download for Linux' }
-        ].map(({ platform, label }) => ({
-            href: `/download/${platform}?token=${tokenEnc}`,
-            label
-        }));
-        const html = `<!DOCTYPE html>
+/**
+ * Every platform NotSus runs on, in one list.
+ *
+ * Adam, 2026-10-06: "one Download Now, requires a parent email, it leads to a
+ * page with all downloads available. There are no separate rules for Android."
+ * So Android sits with the rest rather than on a page of its own, and the
+ * email is asked for once rather than per platform.
+ *
+ * `href` is built per request, because a visitor who came through the email
+ * carries a token and one who guessed the address does not. Both get the
+ * files; only the first is recorded against an address.
+ */
+const PLATFORMS = [
+    { platform: 'windows', label: 'Windows', note: '' },
+    { platform: 'mac', label: 'Mac', note: 'Apple Silicon' },
+    { platform: 'macIntel', label: 'Mac', note: 'Intel' },
+    { platform: 'linux', label: 'Linux', note: '' },
+    { platform: 'android', label: 'Android', note: 'not on the Play Store yet' },
+    { platform: 'ipad', label: 'iPad', note: 'write to us for an invitation' },
+];
+
+/** Where a platform's file actually lives. iPad has none yet; it is an email. */
+const DOWNLOAD_URLS = {
+    windows: 'https://download.notsus.net/NotSus_Browser_2.1.1.exe',
+    mac: 'https://download.notsus.net/NotSus_Browser-2.1.1-arm64.dmg',
+    macIntel: 'https://download.notsus.net/NotSus_Browser-2.1.1.dmg',
+    linux: 'https://download.notsus.net/notsusbrowser_2.1.1_amd64.deb',
+    android: 'https://download.notsus.net/NotSus-2.2.0.apk',
+};
+
+const IPAD_MAILTO = 'mailto:contact@notsus.net?subject=iPad%20early%20access';
+
+function downloadsPage(token) {
+    const tokenEnc = token ? encodeURIComponent(token) : '';
+    const links = PLATFORMS.map(({ platform, label, note }) => {
+        const href = platform === 'ipad'
+            ? IPAD_MAILTO
+            : (tokenEnc ? `/download/${platform}?token=${tokenEnc}` : DOWNLOAD_URLS[platform]);
+        return { href, label, note, platform };
+    });
+
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download NotSus Browser | NotSus.net</title>
+    <title>Download NotSus | NotSus.net</title>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JP7D4XPL7X"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -525,6 +542,23 @@ app.get('/download-now', async (req, res) => {
     </script>
     <link rel="stylesheet" href="/styles.css">
     <link rel="icon" type="image/png" href="/favicon.png">
+    <style>
+        .dl-grid { display: grid; gap: 0.75rem; max-width: 460px; margin: 2rem auto 0; }
+        .dl-grid a {
+            display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+            padding: 1rem 1.25rem;
+            border: 1px solid rgba(127,127,127,0.4);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-primary, #fff);
+        }
+        .dl-grid a:hover { border-color: var(--primary-accent, #4a90d9); }
+        .dl-label { font-weight: 600; }
+        .dl-note { font-size: 0.85rem; opacity: 0.65; text-align: right; }
+        .dl-help { max-width: 460px; margin: 2rem auto 0; font-size: 0.9rem; opacity: 0.8; text-align: center; }
+        /* The default link blue is close to unreadable on this background. */
+        .dl-help a { color: var(--secondary-accent, #f5a623); }
+    </style>
 </head>
 <body class="page-download-now">
     <header>
@@ -539,21 +573,46 @@ app.get('/download-now', async (req, res) => {
         </div>
     </header>
     <main class="container download-now-main">
-        <h1 class="download-now-title">Thank you for verifying your email</h1>
-        <p class="download-now-subtitle">Download the NotSus browser for a safer browsing experience for your kids.</p>
-        <div class="download-buttons-wrap">
-            ${downloadLinks.map(({ href, label }) => `<a href="${href}" class="download-button" onclick="gtag('event', 'installer_download', { event_label: '${label}', send_to: 'G-JP7D4XPL7X', link_url: '${href}', link_text: 'Download for ${label}' });"><span>${label}</span></a>`).join('\n            ')}
+        <h1 class="download-now-title">Download NotSus</h1>
+        <p class="download-now-subtitle">Choose the device your child will use.</p>
+        <div class="dl-grid">
+            ${links.map(({ href, label, note, platform }) => `<a href="${href}" onclick="gtag('event', 'installer_download', { event_label: '${label}', app_platform: '${platform}' });"><span class="dl-label">${label}</span>${note ? `<span class="dl-note">${note}</span>` : ''}</a>`).join('\n            ')}
         </div>
-        <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">*We're working on tablet and mobile versions, we will let you know when they are available.</p>
+        <p class="dl-help">On an Android tablet, your tablet will warn you because the app did not come from the Play Store. <a href="/android">The steps are here</a>.</p>
         <p class="download-now-back"><a href="/" style="color: var(--secondary-accent);">Back to home</a></p>
     </main>
 </body>
 </html>`;
-        res.type('html').send(html);
+}
+
+// The page the verification email sends a parent to. The token is what records
+// the download against their address.
+app.get('/download-now', async (req, res) => {
+    const token = req.query.token;
+    if (!token) {
+        return res.redirect(`${BASE_URL}/?download=token_required`);
+    }
+    try {
+        const tokenRow = await getDb().query(`
+            SELECT email FROM download_tokens
+            WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP
+        `, [token]);
+        if (tokenRow.rows.length === 0) {
+            return res.redirect(`${BASE_URL}/?download=invalid`);
+        }
+        res.type('html').send(downloadsPage(token));
     } catch (err) {
         console.error('Downloads page error:', err);
         return res.redirect(`${BASE_URL}/?download=error`);
     }
+});
+
+// The same page without a token. "Download Now" on the home page still asks for
+// an email, which is the path nearly everyone takes and the one that records
+// who downloaded what. This is for the person who typed the address, and Adam
+// decided on 2026-10-06 that they should simply get the files.
+app.get('/downloads', (req, res) => {
+    res.type('html').send(downloadsPage(null));
 });
 
 // Download endpoint: requires valid download_token (one token grants access to all platforms)
@@ -561,12 +620,9 @@ app.get('/download/:platform', async (req, res) => {
     const { platform } = req.params;
     const downloadToken = req.query.token;
 
-    const downloadUrls = {
-        windows: 'https://download.notsus.net/NotSus_Browser_2.1.1.exe',
-        mac: 'https://download.notsus.net/NotSus_Browser-2.1.1-arm64.dmg',
-        macIntel: 'https://download.notsus.net/NotSus_Browser-2.1.1.dmg',
-        linux: 'https://download.notsus.net/notsusbrowser_2.1.1_amd64.deb'
-    };
+    // One list, shared with the downloads page above, so a platform cannot be
+    // offered there and missing here.
+    const downloadUrls = DOWNLOAD_URLS;
 
     if (!downloadUrls[platform]) {
         return res.status(404).json({
