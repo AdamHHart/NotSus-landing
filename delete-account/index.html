@@ -54,6 +54,11 @@
         }
         .da-contact p:last-child { margin-bottom: 0; }
         .da-page a { color: var(--secondary-accent, #f5a623); }
+        /* The site's base styles leave paragraphs and lists flush against each
+           other, so a paragraph after a list reads as another bullet. */
+        .da-page p { margin: 0 0 1rem; line-height: 1.6; }
+        .da-page ul { margin: 0 0 1.25rem; padding-left: 1.4rem; }
+        .da-page ul li { margin-bottom: 0.5rem; line-height: 1.5; }
         @media (max-width: 560px) { .da-page { padding: 7rem 1rem 3rem; } }
     </style>
 </head>
@@ -105,6 +110,19 @@
         <h2>If you no longer have the app</h2>
 
         <p>Write to <!--email_off--><a href="mailto:contact@notsus.net?subject=Delete%20my%20NotSus%20account">contact@notsus.net</a><!--email_on--> from the email address on the account, and ask us to delete it. We will confirm when it is done.</p>
+
+        <h2>Deleting some of it, without closing your account</h2>
+
+        <p>You do not have to delete everything. Write to <!--email_off--><a href="mailto:contact@notsus.net?subject=Delete%20some%20of%20my%20NotSus%20data">contact@notsus.net</a><!--email_on--> from the email address on the account and tell us what you want removed. For example:</p>
+
+        <ul>
+            <li>One child's profile, and everything saved in it, leaving the rest of your family untouched.</li>
+            <li>The record of the sites a child opened, and the time they spent.</li>
+            <li>Blocked sites, including anything typed into a search box.</li>
+            <li>Your children's goals, projects or notes.</li>
+        </ul>
+
+        <p>We will tell you what we deleted, and when it is done. You can also ask us what we hold about your family, or ask us to correct it.</p>
 
         <h2>What is deleted, and what is kept</h2>
 
