@@ -499,12 +499,30 @@ app.get('/verify-email', async (req, res) => {
  * files; only the first is recorded against an address.
  */
 const PLATFORMS = [
-    { platform: 'windows', label: 'Windows', note: '' },
-    { platform: 'mac', label: 'Mac', note: 'Apple Silicon' },
-    { platform: 'macIntel', label: 'Mac', note: 'Intel' },
-    { platform: 'linux', label: 'Linux', note: '' },
-    { platform: 'android', label: 'Android', note: 'not on the Play Store yet' },
-    { platform: 'ipad', label: 'iPad', note: 'write to us for an invitation' },
+    {
+        platform: 'mac', label: 'Mac', note: 'Apple Silicon', colour: '#a78bfa',
+        icon: '<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M1 20h22"/>',
+    },
+    {
+        platform: 'windows', label: 'Windows', note: '', colour: '#38bdf8',
+        icon: '<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/>',
+    },
+    {
+        platform: 'ipad', label: 'iPad', note: 'write to us', colour: '#2dd4bf',
+        icon: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18.5h2"/>',
+    },
+    {
+        platform: 'android', label: 'Android', note: 'not on Play yet', colour: '#4ade80',
+        icon: '<rect x="5" y="7" width="14" height="12" rx="3"/><path d="M8 7 6.5 4M16 7l1.5-3M9.5 12h.01M14.5 12h.01"/>',
+    },
+    {
+        platform: 'linux', label: 'Linux', note: '', colour: '#fbbf24',
+        icon: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/>',
+    },
+    {
+        platform: 'macIntel', label: 'Mac', note: 'Intel', colour: '#94a3b8',
+        icon: '<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M1 20h22"/>',
+    },
 ];
 
 /** Where a platform's file actually lives. iPad has none yet; it is an email. */
@@ -520,11 +538,11 @@ const IPAD_MAILTO = 'mailto:contact@notsus.net?subject=iPad%20early%20access';
 
 function downloadsPage(token) {
     const tokenEnc = token ? encodeURIComponent(token) : '';
-    const links = PLATFORMS.map(({ platform, label, note }) => {
-        const href = platform === 'ipad'
+    const links = PLATFORMS.map((entry) => {
+        const href = entry.platform === 'ipad'
             ? IPAD_MAILTO
-            : (tokenEnc ? `/download/${platform}?token=${tokenEnc}` : DOWNLOAD_URLS[platform]);
-        return { href, label, note, platform };
+            : (tokenEnc ? `/download/${entry.platform}?token=${tokenEnc}` : DOWNLOAD_URLS[entry.platform]);
+        return { ...entry, href };
     });
 
     return `<!DOCTYPE html>
@@ -543,18 +561,28 @@ function downloadsPage(token) {
     <link rel="stylesheet" href="/styles.css">
     <link rel="icon" type="image/png" href="/favicon.png">
     <style>
-        .dl-grid { display: grid; gap: 0.75rem; max-width: 460px; margin: 2rem auto 0; }
+        .dl-grid { display: grid; gap: 0.85rem; max-width: 460px; margin: 2rem auto 0; }
+        /* Each row carries its platform's colour, so a parent finds their own
+           device by looking rather than by reading every line. */
         .dl-grid a {
-            display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+            display: flex; align-items: center; gap: 1rem;
             padding: 1rem 1.25rem;
-            border: 1px solid rgba(127,127,127,0.4);
-            border-radius: 10px;
+            border: 1px solid color-mix(in srgb, var(--dl-colour) 35%, transparent);
+            background: color-mix(in srgb, var(--dl-colour) 8%, transparent);
+            border-radius: 12px;
             text-decoration: none;
             color: var(--text-primary, #fff);
+            transition: border-color 0.15s, background 0.15s, transform 0.15s;
         }
-        .dl-grid a:hover { border-color: var(--primary-accent, #4a90d9); }
-        .dl-label { font-weight: 600; }
-        .dl-note { font-size: 0.85rem; opacity: 0.65; text-align: right; }
+        .dl-grid a:hover {
+            border-color: var(--dl-colour);
+            background: color-mix(in srgb, var(--dl-colour) 16%, transparent);
+            transform: translateY(-1px);
+        }
+        .dl-icon { flex: 0 0 auto; width: 26px; height: 26px; stroke: var(--dl-colour); }
+        /* The page centres its text; these rows read as a list and must not. */
+        .dl-label { font-weight: 600; font-size: 1.05rem; flex: 1 1 auto; text-align: left; }
+        .dl-note { font-size: 0.85rem; opacity: 0.7; text-align: right; flex: 0 1 auto; }
         .dl-help { max-width: 460px; margin: 2rem auto 0; font-size: 0.9rem; opacity: 0.8; text-align: center; }
         /* The default link blue is close to unreadable on this background. */
         .dl-help a { color: var(--secondary-accent, #f5a623); }
@@ -576,7 +604,7 @@ function downloadsPage(token) {
         <h1 class="download-now-title">Download NotSus</h1>
         <p class="download-now-subtitle">Choose the device your child will use.</p>
         <div class="dl-grid">
-            ${links.map(({ href, label, note, platform }) => `<a href="${href}" onclick="gtag('event', 'installer_download', { event_label: '${label}', app_platform: '${platform}' });"><span class="dl-label">${label}</span>${note ? `<span class="dl-note">${note}</span>` : ''}</a>`).join('\n            ')}
+            ${links.map(({ href, label, note, platform, colour, icon }) => `<a href="${href}" style="--dl-colour: ${colour}" onclick="gtag('event', 'installer_download', { event_label: '${label}', app_platform: '${platform}' });"><svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icon}</svg><span class="dl-label">${label}</span>${note ? `<span class="dl-note">${note}</span>` : ''}</a>`).join('\n            ')}
         </div>
         <p class="dl-help">On an Android tablet, your tablet will warn you because the app did not come from the Play Store. <a href="/android">The steps are here</a>.</p>
         <p class="download-now-back"><a href="/" style="color: var(--secondary-accent);">Back to home</a></p>
