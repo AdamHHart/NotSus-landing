@@ -225,17 +225,25 @@ const html = `<!DOCTYPE html>
 
       <div class="cta-more" id="cta-more" hidden>
         <a class="cta-tier cta-tier-primary" href="/downloads">
-          <span class="cta-tier-name">Basic Kid&rsquo;s Browser</span>
-          <span class="cta-tier-badge">Free</span>
-          <span class="cta-tier-line">No email &middot; No credit card &middot; No data</span>
+          <span class="cta-tier-text">
+            <span class="cta-tier-head">
+              <span class="cta-tier-name">Basic Kid&rsquo;s Browser</span>
+              <span class="cta-tier-badge">Free</span>
+            </span>
+            <span class="cta-tier-line">No email &middot; No credit card &middot; No data</span>
+          </span>
           <span class="cta-chip">${ARROW}</span>
         </a>
-        <a class="cta-tier" href="/downloads">
-          <span class="cta-tier-name">Custom Kid&rsquo;s Browser</span>
-          <span class="cta-tier-line">Parent input, and an investment in your child&rsquo;s future.</span>
+        <a class="cta-tier cta-tier-quiet" href="/downloads">
+          <span class="cta-tier-text">
+            <span class="cta-tier-head">
+              <span class="cta-tier-name">Custom Kid&rsquo;s Browser</span>
+            </span>
+            <span class="cta-tier-line">Parent input.</span>
+            <span class="cta-tier-line">An investment in your kid&rsquo;s future.</span>
+          </span>
           <span class="cta-chip">${ARROW}</span>
         </a>
-        <p class="cta-foot">Same download either way. You choose inside the browser.</p>
       </div>
     </div>
   </div>

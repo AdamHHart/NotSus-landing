@@ -223,71 +223,57 @@ a { color: var(--primary-emphasis); }
 .cta-more { display: flex; flex-direction: column; gap: 0.55rem; }
 .cta-more[hidden] { display: none; }
 
-/* Two choices, with one of them obviously first. Both go to the same file, so
- * the job of this pair is not to make a decision feel weighty: it is to say
- * what the difference is and get out of the way.
+/* Two choices, and they are not a matched pair.
  *
- * Name and badge on the top line, the detail under it, the round target on
- * the right spanning both rows. A grid rather than nested spans, so the
- * target is centred against the whole block and not against a line of it.
- * Both are the same height whatever their text, because a pair of choices
- * where one is taller reads as one of them mattering more than it does. */
+ * The thing good download cards get right is that there is one button. A
+ * second option of equal weight makes a visitor stop and compare rather than
+ * act, which is how the last version read: two panels, same size, same
+ * outline, pick one. So the free one is the button, filled and sitting on its
+ * own light, and the other is the quiet alternative under it. Both still go
+ * to the same file; the difference is which one a tired parent presses.
+ *
+ * Flex, not grid. The round target has to be at the right whatever the text
+ * does, and an areas grid put it mid-row the moment one of them had no badge. */
 .cta-tier {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-areas:
-    "name badge chip"
-    "line line  chip";
+  display: flex;
   align-items: center;
-  align-content: center;
-  min-height: 78px;
-  column-gap: 0.5rem;
-  row-gap: 0.2rem;
+  gap: 0.7rem;
   text-decoration: none;
   border-radius: 14px;
-  padding: 0.7rem 0.55rem 0.7rem 0.9rem;
-  background: var(--ground);
-  border: 1px solid var(--border-strong);
+  padding: 0.8rem 0.6rem 0.8rem 0.95rem;
   transition: background var(--ease-fast), border-color var(--ease-fast),
               box-shadow var(--ease-fast), transform var(--ease-fast);
 }
 .cta-tier:hover { transform: translateY(-2px); }
 .cta-tier:active { transform: translateY(0) scale(0.995); }
 
+.cta-tier-text { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; flex: 1 1 auto; }
+.cta-tier-head { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+
 .cta-tier-name {
-  grid-area: name;
-  font-size: 0.93rem;
+  font-size: 0.95rem;
   font-weight: 800;
   line-height: 1.2;
-  color: var(--text);
-  white-space: nowrap;
 }
 .cta-tier-badge {
-  grid-area: badge;
-  justify-self: start;
   font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.07em;
   text-transform: uppercase;
   line-height: 1;
-  padding: 0.24rem 0.44rem;
+  padding: 0.26rem 0.46rem;
   border-radius: 999px;
   white-space: nowrap;
 }
 .cta-tier-line {
-  grid-area: line;
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   line-height: 1.35;
-  color: var(--text-secondary);
 }
 
-/* The free one is the obvious first click, so it is the filled one, lit from
-   the top and sitting on its own shadow. Dark text on green, which is the
-   only way the brand allows green as a field. */
+/* The button. Filled, lit along its top edge, standing on a green shadow. */
 .cta-tier-primary {
   background: var(--primary);
-  border-color: transparent;
-  box-shadow: 0 6px 18px rgba(0, 168, 107, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  box-shadow: 0 8px 22px rgba(0, 168, 107, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 .cta-tier-primary .cta-tier-name { color: #06120d; }
 .cta-tier-primary .cta-tier-line { color: rgba(6, 18, 13, 0.85); font-weight: 600; }
@@ -295,35 +281,26 @@ a { color: var(--primary-emphasis); }
 .cta-tier-primary .cta-chip { background: rgba(6, 18, 13, 0.85); color: var(--primary-emphasis); }
 .cta-tier-primary:hover {
   background: var(--primary-emphasis);
-  box-shadow: 0 12px 28px rgba(0, 168, 107, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  box-shadow: 0 14px 32px rgba(0, 168, 107, 0.46), inset 0 1px 0 rgba(255, 255, 255, 0.34);
 }
 .cta-tier-primary:hover .cta-chip { transform: translateX(3px); }
 
-/* The considered one. Quiet until you point at it, and then it is as alive
-   as the other. */
-.cta-tier:not(.cta-tier-primary) .cta-chip {
-  background: rgba(255, 255, 255, 0.07);
-  color: var(--text-secondary);
+/* The alternative. An outline and nothing else, so there is no question which
+   of the two is the button, and it still answers a hover properly. */
+.cta-tier-quiet {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  margin-top: 0.15rem;
 }
-.cta-tier:not(.cta-tier-primary):hover {
+.cta-tier-quiet .cta-tier-name { color: var(--text); }
+.cta-tier-quiet .cta-tier-line { color: var(--text-muted); }
+.cta-tier-quiet .cta-chip { background: rgba(255, 255, 255, 0.07); color: var(--text-secondary); }
+.cta-tier-quiet:hover {
   background: var(--surface-raised);
   border-color: var(--primary);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
 }
-.cta-tier:not(.cta-tier-primary):hover .cta-chip {
-  background: var(--primary);
-  color: #06120d;
-  transform: translateX(3px);
-}
-
-/* Two buttons pointing at one address looks like a mistake unless you say so. */
-.cta-foot {
-  margin: 0.2rem 0 0;
-  font-size: 0.71rem;
-  line-height: 1.4;
-  color: var(--text-muted);
-  text-align: center;
-}
+.cta-tier-quiet:hover .cta-tier-line { color: var(--text-secondary); }
+.cta-tier-quiet:hover .cta-chip { background: var(--primary); color: #06120d; transform: translateX(3px); }
 
 /* ----------------------------------------------------------- first screen */
 

@@ -139,25 +139,31 @@ check('both tiers keep their full names',
   html.includes('Basic Kid&rsquo;s Browser') && html.includes('Custom Kid&rsquo;s Browser'));
 check('Basic lists what it does not ask for',
   html.includes('No email &middot; No credit card &middot; No data'));
-check('Custom says what Adam wrote',
-  html.includes('Parent input, and an investment in your child&rsquo;s future.'));
+check('Custom says what Adam wrote, on two lines',
+  html.includes('<span class="cta-tier-line">Parent input.</span>')
+  && html.includes('<span class="cta-tier-line">An investment in your kid&rsquo;s future.</span>'));
 check('the free option is the filled one, so there is an obvious first click',
   /class="cta-tier cta-tier-primary"/.test(html)
   && /\.cta-tier-primary \{[\s\S]*?background: var\(--primary\);/.test(cssSrc));
-check('each option says what it is on one line, and the free one is badged',
-  (html.match(/class="cta-tier-badge"/g) || []).length === 1
-  && (html.match(/class="cta-tier-line"/g) || []).length === 2);
-check('the two options are the same height whatever their text',
-  /\.cta-tier \{[\s\S]*?min-height: 78px;/.test(cssSrc));
+check('only the free one is badged',
+  (html.match(/class="cta-tier-badge"/g) || []).length === 1);
+// One button, one alternative. Two panels of equal weight make a visitor
+// compare rather than act.
+check('there is one filled option and one outlined one',
+  (html.match(/class="cta-tier cta-tier-primary"/g) || []).length === 1
+  && (html.match(/class="cta-tier cta-tier-quiet"/g) || []).length === 1
+  && /\.cta-tier-quiet \{[\s\S]*?background: transparent;/.test(cssSrc));
+check('the round target cannot drift out of the right-hand edge',
+  /\.cta-tier \{[\s\S]*?display: flex;/.test(cssSrc)
+  && /\.cta-tier-text \{ display: flex;[^}]*flex: 1 1 auto; \}/.test(cssSrc));
 check('everything pressable on the card ends in a round target',
   (html.match(/class="cta-chip"/g) || []).length === 3
   && /\.cta-chip \{[\s\S]*?border-radius: 50%;/.test(cssSrc));
 check('the primary sits on its own light, so it reads as raised',
-  /\.cta-tier-primary \{[\s\S]*?box-shadow: 0 6px 18px rgba\(0, 168, 107/.test(cssSrc)
+  /\.cta-tier-primary \{[\s\S]*?box-shadow: 0 8px 22px rgba\(0, 168, 107/.test(cssSrc)
   && /\.cta-go \{[\s\S]*?box-shadow: 0 6px 18px rgba\(0, 168, 107/.test(cssSrc));
 check('both options answer a press', (cssSrc.match(/\.cta-(tier|go):active/g) || []).length === 2);
-check('the card admits both buttons go to the same place',
-  /class="cta-foot"/.test(html) && html.includes('Same download either way'));
+check('the card carries no explanatory small print', !/class="cta-foot"/.test(html));
 check('the arrows are drawn, not typed', !/&rarr;|→/.test(html));
 check('the card has no coloured rail down its side',
   !/\.cta \{[^}]*border-left:/.test(cssSrc));
