@@ -40,7 +40,12 @@ check("Adam's three lines, as written",
     && h.includes('A custom browser for your kids.')
     && h.includes('A browser built like an infinite library, a school, and a workshop.'));
 check('"an an infinite" is fixed', !h.includes('an an infinite'));
-check('it is actually a screenful', /\.about-hero \{[\s\S]*?min-height: calc\(100svh/.test(h));
+check('it is exactly the screen under the header',
+    /\.about-hero \{[\s\S]*?min-height: calc\(100svh - var\(--ns-header/.test(h));
+check('the header height is measured, not guessed',
+    /setProperty\('--ns-header', header\.offsetHeight/.test(h)
+    && /ResizeObserver/.test(h));
+check('and it is remeasured when the fonts land', /document\.fonts\.ready\.then\(set\)/.test(h));
 check('the free one is the obvious first click',
     /class="hero-tier hero-tier-primary"/.test(h));
 

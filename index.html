@@ -40,10 +40,21 @@
 
         /* The first screen: what this is on the left, the two ways in on the
            right, and nothing else competing for the attention. */
+        /* Exactly the screen, minus the header.
+         *
+         * 72px was a guess at the header's height and it was wrong on both
+         * of Adam's screens: too tall, so the video below peeked in, and the
+         * copy sat low with slack above and beneath it. The header is
+         * measured at the bottom of this page and written into --ns-header,
+         * so this is right at any zoom, any text size, any phone. The value
+         * here is only what holds until that runs.
+         *
+         * The home page does not need this: its header sits inside the block
+         * that is 100svh tall, so the arithmetic is the browser's. */
         .about-hero {
-            min-height: calc(100svh - 72px);
+            min-height: calc(100svh - var(--ns-header, 74px));
             display: flex; align-items: center;
-            padding: 2rem 1.25rem 3rem;
+            padding: 1.5rem 1.25rem;
             background: var(--ns-ground);
         }
         .about-hero-inner {
@@ -604,6 +615,23 @@
     </div>
 
 
+    <script>
+        // The hero fills the screen under the header, so it has to know how
+        // tall the header is. Measured rather than assumed: it changes with
+        // the viewport, the text size and whether the tagline wraps.
+        (function measureHeader() {
+            var header = document.querySelector('body > header');
+            if (!header) return;
+            function set() {
+                document.documentElement.style.setProperty('--ns-header', header.offsetHeight + 'px');
+            }
+            set();
+            if (window.ResizeObserver) new ResizeObserver(set).observe(header);
+            else window.addEventListener('resize', set);
+            // Fonts land after first paint and can change the height.
+            if (document.fonts && document.fonts.ready) document.fonts.ready.then(set);
+        })();
+    </script>
     <script src="/scripts/site-chrome.js"></script>
     <script src="scripts.js"></script>
 </body>
