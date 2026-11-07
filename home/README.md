@@ -106,7 +106,21 @@ twelve categories always begin below the fold. `svh`, not `vh`: on a phone
 what anyone can actually see, and the last row of tiles would sit just off
 the bottom.
 
-**Every tile is exactly 84px tall, and holds two lines of text.** Not
+**There is one tile size for the whole page, and it is a token.** `--tile`
+and `--tile-h` are a `clamp`, so a card grows with the screen and then stops;
+`--block` is three tiles and two gaps, which is what the search bar and the
+picks block are both set to, so the bar is exactly as wide as the grid under
+it. Every grid uses `repeat(auto-fill, var(--tile))` with fixed tracks rather
+than `1fr`: a fraction stretches a track to fill whatever is left over, which
+is how a card in Look things up ended up wider than a card in Learn. On a
+phone the three columns share the width instead, because fixed tracks cannot
+fit.
+
+**The first screen centres what is under the header**, by `margin-block: auto`
+rather than `justify-content: center`. On a screen too short to hold it, auto
+margins collapse and the top stays reachable; centring would cut it off.
+
+**Every tile holds two lines of text and no more.** Not
 min-height: a tile that grows to fit its words makes the row around it look
 broken. The name gets one line and the tagline gets one, both clipped with an
 ellipsis if they ever overrun, and the catalogue export refuses to publish a

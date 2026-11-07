@@ -222,6 +222,8 @@ const html = `<!DOCTYPE html>
   </div>
 </header>
 
+  <div class="first-screen-body">
+
   <div class="finder">
     <h1 class="finder-title">${total} free websites for kids, hand picked</h1>
 
@@ -259,6 +261,8 @@ ${ageOptions}
     <div id="picks" class="picks-block">
 ${homePicks.rows.map(picksRow).join('\n')}
     </div>
+  </div>
+
   </div>
 </div>
 

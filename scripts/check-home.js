@@ -106,14 +106,27 @@ check('the logo bar is a capsule on the dark chrome, not a green field',
 check('green is an accent on this page, never a large surface',
   !/\.(brand|cta) \{[^}]*background: var\(--primary\);/.test(cssSrc));
 check('every tile is exactly the same height',
-  /\.app-button \{[\s\S]*?\n  height: 84px;/.test(cssSrc));
+  /\.app-button \{[\s\S]*?\n  height: var\(--tile-h\);/.test(cssSrc));
+// The whole point of fixed tracks: a card in a category is the same card as
+// one in Learn. 1fr stretches a track to fill the leftover, which is how the
+// two blocks ended up with different-sized cards in the first place.
+check('every grid uses the one tile width, not a stretched fraction',
+  /\.app-grid \{[\s\S]*?grid-template-columns: repeat\(auto-fill, var\(--tile\)\);/.test(cssSrc)
+  && /\.picks \.app-grid \{ grid-template-columns: repeat\(3, var\(--tile\)\); \}/.test(cssSrc));
+check('the tile grows with the screen and then stops',
+  /--tile: clamp\(/.test(cssSrc) && /--tile-h: clamp\(/.test(cssSrc));
+check('the search bar is exactly as wide as the three tiles under it',
+  /--block: calc\(3 \* var\(--tile\) \+ 2 \* var\(--tile-gap\)\);/.test(cssSrc)
+  && /\.capsule \{[\s\S]*?max-width: var\(--block\);/.test(cssSrc));
+check('the first screen centres by auto margins, which cannot clip the top',
+  /\.first-screen-body \{ margin-block: auto;/.test(cssSrc)
+  && /<div class="first-screen-body">/.test(html));
 check('a long name cannot stretch its column out of line with the others',
   /\.app-button \{ min-width: 0; \}/.test(cssSrc));
 check('a name and a tagline get one line each, and are clipped if longer',
   /\.app-name \{[\s\S]*?white-space: nowrap;[\s\S]*?text-overflow: ellipsis;/.test(cssSrc)
   && /\.app-description \{[\s\S]*?white-space: nowrap;[\s\S]*?text-overflow: ellipsis;/.test(cssSrc));
-check('the two picks rows are three across',
-  /\.picks \.app-grid \{ grid-template-columns: repeat\(3, 1fr\); \}/.test(cssSrc));
+
 check('the card drops over half a second, half a second after load',
   /\.cta \{[\s\S]*?transition: transform 500ms/.test(cssSrc) && /\}, 500\);/.test(jsSrc));
 check('the search box says Search', /placeholder="Search\.\.\."/.test(html));
