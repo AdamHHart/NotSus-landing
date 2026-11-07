@@ -74,10 +74,11 @@ check('the header is a capsule, not a full-width green band',
     /body > header \.header-left \{[\s\S]*?border-radius: 999px;/.test(h));
 check('it uses the home page colours',
     /--ns-cream: #fff3b1/.test(h) && /--ns-ground: #1a1a1a/.test(h));
-check('the menu is the five Adam set, and no others',
-    ['Download Browser', 'Radio', 'Blog', 'Resources', 'Contact Us']
-        .every((l) => h.includes(`class="nav-link">${l}</a>`))
-    && (h.match(/class="nav-link"/g) || []).length === 5);
+const MENU_ORDER = ['Download Browser', 'Contact Us', 'Resources', 'Radio', 'Blog'];
+const menuLabels = (h.match(/class="nav-link">([^<]+)</g) || []).map((m) => m.slice(17, -1));
+check(`the menu reads ${MENU_ORDER.join(', ')}, and nothing else`,
+    menuLabels.join('|') === MENU_ORDER.join('|'),
+    `it reads ${menuLabels.join(', ')}`);
 check('Download in the menu goes to the downloads page',
     h.includes('<a href="/downloads" class="nav-link">Download Browser</a>'));
 check('nothing in the menu is About or Tools',

@@ -45,7 +45,13 @@ function siteChrome() {
     // eslint-disable-next-line no-new-func
     return new Function(`return ${m[1]}`)();
   };
-  return { nav: grab('NAV_LINKS'), social: grab('SOCIAL_LINKS') };
+  const grabOne = (name) => {
+    const m = new RegExp(`const ${name} = (\\{[^;]*\\});`).exec(src);
+    if (!m) throw new Error(`Could not read ${name} from scripts/site-chrome.js`);
+    // eslint-disable-next-line no-new-func
+    return new Function(`return ${m[1]}`)();
+  };
+  return { nav: grab('NAV_LINKS'), social: grab('SOCIAL_LINKS'), footerExtra: grabOne('FOOTER_EXTRA') };
 }
 
 // server.js serves everything that is not .html with
@@ -170,7 +176,7 @@ const missData = {
   downloadLine: synonyms._asked_for_but_not_carried._download_line,
 };
 
-const { nav, social } = siteChrome();
+const { nav, social, footerExtra } = siteChrome();
 
 // Cloudflare Turnstile, baked in at build time. prestart runs this on every
 // boot, so the key is whatever Render has when the server starts. With no key
@@ -180,12 +186,11 @@ const total = catalog.apps.length;
 
 // Everything the old navigation held moves to the footer, except About, so the
 // top of the page is a brand, one link, and the card.
-// About left the menu on 2026-11-07, and the footer is where somebody goes
-// looking for it rather than being offered it. Added here rather than to
-// NAV_LINKS, so the menu stays the four links Adam set plus Contact.
-const footerNav = nav
+// Adam first, then the menu's own five, in the order site-chrome.js keeps
+// them. Reading that file rather than retyping it means the footer and the
+// menu cannot fall out of step.
+const footerNav = [footerExtra, ...nav]
   .map(({ href, label }) => `      <a href="${esc(href)}">${esc(label)}</a>`)
-  .concat('      <a href="/about">About</a>')
   .join('\n');
 const footerSocial = social
   .map(({ name, url, label }) => `      <a href="${esc(url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(label)}">${esc(name)}</a>`).join('\n');

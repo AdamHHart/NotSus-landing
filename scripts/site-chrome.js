@@ -10,13 +10,20 @@
     // footer, where a person goes looking for it rather than being offered it.
     // 'Download Browser' goes to /downloads and not to an anchor on a page
     // that no longer has one.
+    // Adam's order, 2026-11-07: the thing a visitor came for first, then the
+    // ways to reach us, then the things to read.
     const NAV_LINKS = [
         { href: '/downloads', label: 'Download Browser' },
-        { href: '/podcast/', label: 'Radio' },
-        { href: '/blog/', label: 'Blog' },
+        { href: '/about#contact-section', label: 'Contact Us' },
         { href: '/resources', label: 'Resources' },
-        { href: '/about#contact-section', label: 'Contact Us' }
+        { href: '/podcast/', label: 'Radio' },
+        { href: '/blog/', label: 'Blog' }
     ];
+
+    // The footer carries one more, in front: the page about the person who
+    // built this. It is not in the menu, which sits over a page a child is
+    // using.
+    const FOOTER_EXTRA = { href: '/about', label: 'Adam' };
 
     const SOCIAL_LINKS = [
         { name: 'LinkedIn', url: 'https://www.linkedin.com/company/notsus', label: 'NotSus on LinkedIn' },
