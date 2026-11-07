@@ -54,6 +54,8 @@ check('the video and the gif are one grid, side by side only where there is widt
     /\.about-show-inner \{[\s\S]*?grid-template-columns: 1fr;/.test(h)
     && /@media \(min-width: 900px\) \{ \.about-show-inner \{ grid-template-columns: 1fr 1fr; \} \}/.test(h));
 check('both hold the same shape whatever they contain', /aspect-ratio: 16 \/ 9/.test(h));
+check('the gif is cropped from the bottom, so its toolbar survives',
+    /\.about-show-frame img \{ object-position: top center; \}/.test(h));
 check('the founder video appears once, not twice', (h.match(/youtube\.com\/embed/g) || []).length === 1);
 
 console.log('\nThe old funnel is gone');
