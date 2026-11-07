@@ -521,9 +521,12 @@ app.get('/verify-email', async (req, res) => {
  * So Android sits with the rest rather than on a page of its own, and the
  * email is asked for once rather than per platform.
  *
- * `href` is built per request, because a visitor who came through the email
- * carries a token and one who guessed the address does not. Both get the
- * files; only the first is recorded against an address.
+ * Every button goes through /download/:platform, which counts the download and
+ * then redirects to the file. A visitor who came through an old email carries a
+ * token and is recorded against their address; everyone else is counted without
+ * one. Linking straight at the files would leave the count to Google Analytics
+ * alone, and honest download numbers were the only real reason the email gate
+ * existed.
  */
 const PLATFORMS = [
     {
@@ -568,7 +571,7 @@ function downloadsPage(token) {
     const links = PLATFORMS.map((entry) => {
         const href = entry.platform === 'ipad'
             ? IPAD_MAILTO
-            : (tokenEnc ? `/download/${entry.platform}?token=${tokenEnc}` : DOWNLOAD_URLS[entry.platform]);
+            : `/download/${entry.platform}${tokenEnc ? `?token=${tokenEnc}` : ''}`;
         return { ...entry, href };
     });
 
@@ -640,12 +643,17 @@ function downloadsPage(token) {
 </html>`;
 }
 
-// The page the verification email sends a parent to. The token is what records
-// the download against their address.
+// The page the verification email sends a parent to.
+//
+// The email gate was removed on 2026-11-06 (Adam: "I no longer ask for email
+// at download. Instead I prompt this in the browser"), so this address no
+// longer needs a token. A token still works, and still records the download
+// against the address it was issued to, because links in emails already sent
+// have to keep working.
 app.get('/download-now', async (req, res) => {
     const token = req.query.token;
     if (!token) {
-        return res.redirect(`${BASE_URL}/?download=token_required`);
+        return res.type('html').send(downloadsPage(null));
     }
     try {
         const tokenRow = await getDb().query(`
@@ -653,19 +661,20 @@ app.get('/download-now', async (req, res) => {
             WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP
         `, [token]);
         if (tokenRow.rows.length === 0) {
-            return res.redirect(`${BASE_URL}/?download=invalid`);
+            // Expired, most likely. The files are public now, so give them the
+            // page rather than an error about a token they never asked for.
+            return res.type('html').send(downloadsPage(null));
         }
         res.type('html').send(downloadsPage(token));
     } catch (err) {
         console.error('Downloads page error:', err);
-        return res.redirect(`${BASE_URL}/?download=error`);
+        return res.type('html').send(downloadsPage(null));
     }
 });
 
-// The same page without a token. "Download Now" on the home page still asks for
-// an email, which is the path nearly everyone takes and the one that records
-// who downloaded what. This is for the person who typed the address, and Adam
-// decided on 2026-10-06 that they should simply get the files.
+// The same page without a token, and since 2026-11-06 the only path that
+// matters: nobody is asked for an email any more. The new home screen's card
+// links here and promises "no email", so this has to be true.
 app.get('/downloads', (req, res) => {
     res.type('html').send(downloadsPage(null));
 });
@@ -693,8 +702,22 @@ app.get('/download/:platform', async (req, res) => {
         });
     }
 
+    // No token means we do not know who this is, which since the gate was
+    // removed is the normal case. Count it and hand over the file.
+    //
+    // Platform and browser, and deliberately not the IP address: a download
+    // nobody put their name to does not need one, and the count is the only
+    // thing this record is for.
     if (!downloadToken) {
-        return res.redirect(`${BASE_URL}/?download=token_required`);
+        try {
+            await getDb().query(`
+                INSERT INTO app_downloads (platform, email, download_time, user_agent)
+                VALUES ($1, NULL, CURRENT_TIMESTAMP, $2)
+            `, [platform, req.headers['user-agent']]);
+        } catch (err) {
+            console.error('Could not record an anonymous download:', err.message);
+        }
+        return res.redirect(downloadUrls[platform]);
     }
 
     try {
@@ -703,7 +726,8 @@ app.get('/download/:platform', async (req, res) => {
             WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP
         `, [downloadToken]);
         if (tokenRow.rows.length === 0) {
-            return res.redirect(`${BASE_URL}/?download=invalid`);
+            // An old link. The file is public, so send them to it.
+            return res.redirect(downloadUrls[platform]);
         }
         const email = tokenRow.rows[0].email;
 
