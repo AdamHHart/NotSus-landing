@@ -35,11 +35,11 @@ check('holds the copy and the two tiers, and nothing else',
     // The links themselves, not every span inside them whose class also
     // starts with hero-tier.
     heroMarkup.length > 0 && (heroMarkup.match(/<a class="hero-tier/g) || []).length === 2);
+// Adam's words, 2026-11-07. His to change, not mine to improve.
 check("Adam's three lines, as written",
-    h.includes('Media manipulating your young child.')
-    && h.includes('A custom browser for your kids.')
-    && h.includes('A browser built like an infinite library, a school, and a workshop.'));
-check('"an an infinite" is fixed', !h.includes('an an infinite'));
+    h.includes('Internet media is manipulating your young child.')
+    && h.includes('NotSus is a custom internet for your kids.')
+    && h.includes('It&rsquo;s designed as an infinite library, a school, and a workshop.'));
 check('it is exactly the screen under the header',
     /\.about-hero \{[\s\S]*?min-height: calc\(100svh - var\(--ns-header/.test(h));
 check('the header height is measured, not guessed',
