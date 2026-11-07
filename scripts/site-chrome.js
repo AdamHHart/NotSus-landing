@@ -2,18 +2,19 @@
  * Shared site chrome: navigation labels and footer social links.
  */
 (function initSiteChrome() {
-    // Five links, and none of them points at an anchor on a page that moves.
+    // The menu, as Adam set it on 2026-11-07. Four links, each to a page that
+    // exists.
     //
-    // 'Tools for Kids' is gone: the home page is that page now. 'Resources'
-    // is gone from the navigation too; the section is still on /about, and
-    // the Watchdog download in it needs a better home than a buried anchor.
-    // 'About' was /about#demo-gif, which pointed a person at a GIF and read
-    // like a mistake in the address bar.
+    // 'Tools for Kids' is gone: the home page is that page now, and the menu
+    // sits on top of it. 'About' is gone from the menu too, and lives in the
+    // footer, where a person goes looking for it rather than being offered it.
+    // 'Download Browser' goes to /downloads and not to an anchor on a page
+    // that no longer has one.
     const NAV_LINKS = [
         { href: '/downloads', label: 'Download Browser' },
-        { href: '/about', label: 'About' },
         { href: '/podcast/', label: 'Radio' },
         { href: '/blog/', label: 'Blog' },
+        { href: '/resources', label: 'Resources' },
         { href: '/about#contact-section', label: 'Contact Us' }
     ];
 

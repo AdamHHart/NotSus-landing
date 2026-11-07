@@ -148,15 +148,28 @@ app.get('/resources', (req, res) => {
     res.redirect(301, '/about#resources-section');
 });
 
-// Serve static files — long cache for assets, no cache for HTML (so deploys show up immediately)
+// Static files.
+//
+// Only a file asked for by a name that carries a hash of its contents may be
+// cached forever, because only then is a new version a new address. The home
+// page's assets are built that way. Everything else is asked for by a plain
+// name, so `immutable` meant a returning visitor kept last year's copy: this
+// is how the navigation in scripts/site-chrome.js stayed wrong in Adam's
+// browser for three deploys after it was fixed, and it would have done the
+// same to every visitor the site already has.
+//
+// The rest revalidates. With an ETag that is a conditional request and a 304,
+// which costs a round trip and no bandwidth, and it is never stale.
 app.use(express.static(path.join(__dirname), {
     etag: true,
     lastModified: true,
     setHeaders: (res, filePath) => {
         if (filePath.endsWith('.html')) {
             res.setHeader('Cache-Control', 'no-cache');
-        } else {
+        } else if (/[?&]v=[a-f0-9]{6,}/.test((res.req && res.req.url) || '')) {
             res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        } else {
+            res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
         }
     }
 }));

@@ -180,8 +180,13 @@ const total = catalog.apps.length;
 
 // Everything the old navigation held moves to the footer, except About, so the
 // top of the page is a brand, one link, and the card.
+// About left the menu on 2026-11-07, and the footer is where somebody goes
+// looking for it rather than being offered it. Added here rather than to
+// NAV_LINKS, so the menu stays the four links Adam set plus Contact.
 const footerNav = nav
-  .map(({ href, label }) => `      <a href="${esc(href)}">${esc(label)}</a>`).join('\n');
+  .map(({ href, label }) => `      <a href="${esc(href)}">${esc(label)}</a>`)
+  .concat('      <a href="/about">About</a>')
+  .join('\n');
 const footerSocial = social
   .map(({ name, url, label }) => `      <a href="${esc(url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(label)}">${esc(name)}</a>`).join('\n');
 

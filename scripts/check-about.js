@@ -40,8 +40,13 @@ check("Adam's three lines, as written",
     h.includes('Internet media is manipulating your young child.')
     && h.includes('NotSus is a custom internet for your kids.')
     && h.includes('It&rsquo;s designed as an infinite library, a school, and a workshop.'));
-check('it is exactly the screen under the header',
-    /\.about-hero \{[\s\S]*?min-height: calc\(100svh - var\(--ns-header/.test(h));
+// styles.css makes the header position: fixed, so it takes no room in the
+// flow. The section needs the whole screen and clears the header with
+// padding; subtracting it from the height left a gap the size of the header
+// at the bottom, which is where the video kept showing through.
+check('it is the whole screen, with the fixed header cleared by padding',
+    /\.about-hero \{[\s\S]*?min-height: 100svh;[\s\S]*?padding: calc\(var\(--ns-header/.test(h)
+    && !/min-height: calc\(100svh - var\(--ns-header/.test(h));
 check('the header height is measured, not guessed',
     /setProperty\('--ns-header', header\.offsetHeight/.test(h)
     && /ResizeObserver/.test(h));
@@ -69,9 +74,14 @@ check('the header is a capsule, not a full-width green band',
     /body > header \.header-left \{[\s\S]*?border-radius: 999px;/.test(h));
 check('it uses the home page colours',
     /--ns-cream: #fff3b1/.test(h) && /--ns-ground: #1a1a1a/.test(h));
-check('the navigation is the same five links',
-    ['Download Browser', 'About', 'Radio', 'Blog', 'Contact Us']
-        .every((l) => h.includes(`class="nav-link">${l}</a>`)));
+check('the menu is the five Adam set, and no others',
+    ['Download Browser', 'Radio', 'Blog', 'Resources', 'Contact Us']
+        .every((l) => h.includes(`class="nav-link">${l}</a>`))
+    && (h.match(/class="nav-link"/g) || []).length === 5);
+check('Download in the menu goes to the downloads page',
+    h.includes('<a href="/downloads" class="nav-link">Download Browser</a>'));
+check('nothing in the menu is About or Tools',
+    !/class="nav-link">(About|Tools for Kids)</.test(h));
 
 console.log(failures === 0 ? '\nAll checks passed.\n' : `\n${failures} check(s) failed.\n`);
 process.exit(failures === 0 ? 0 : 1);
