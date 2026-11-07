@@ -1,0 +1,458 @@
+/* home/home.css
+ *
+ * The NotSus home screen, as a web page. The colour, type and shape values are
+ * the app's own, copied from src/styles/tokens.css in the app repository so the
+ * page and the browser cannot look like two different products.
+ *
+ * The rule that matters most, from that file: green is an accent, never a
+ * surface. Tiles hold other people's logos and words, so they sit on white in
+ * both themes, with dark text, which is how the app does it too.
+ */
+
+:root {
+  --ground: #1a1a1a;
+  --surface: #2d2a2a;
+  --surface-raised: #3a3737;
+  --surface-light: #ffffff;
+
+  --primary: #00A86B;
+  --primary-hover: #008f5a;
+  --primary-emphasis: #1fc988;
+  --accent: #FFB300;
+  --cream: #fff3b1;
+
+  --text: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #989797;
+
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  --radius: 10px;
+  --radius-lg: 14px;
+  --ease-fast: 140ms ease;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--text);
+  font-family: var(--font-main);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: 1rem; top: 1rem;
+  z-index: 100;
+  background: var(--primary);
+  color: #08140f;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius);
+  font-weight: 700;
+}
+
+a { color: var(--primary-emphasis); }
+
+/* ---------------------------------------------------------------- header */
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--ground);
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  text-decoration: none;
+  color: inherit;
+}
+.brand img { display: block; border-radius: 8px; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+.brand-name { font-weight: 800; font-size: 1.15rem; color: var(--cream); }
+.brand-tagline { font-size: 0.78rem; color: var(--text-muted); }
+
+.site-nav { display: flex; gap: 1.1rem; align-items: center; flex-wrap: wrap; }
+.site-nav a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+.site-nav a:hover { color: var(--text); }
+.site-nav a:last-child {
+  color: #08140f;
+  background: var(--primary);
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+}
+.site-nav a:last-child:hover { background: var(--primary-hover); color: #fff; }
+
+/* ---------------------------------------------------------------- finder */
+
+/* This block is where a browser would put its address bar. The page gives the
+   space to the one thing an address bar cannot do here: turning "I want to
+   make a game" into a short list of sites that do that. */
+.finder {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 0.5rem;
+  text-align: center;
+}
+
+.finder-title {
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+  margin: 0 0 0.4rem;
+  color: var(--cream);
+  font-weight: 800;
+}
+.finder-sub {
+  margin: 0 0 1.5rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 640px;
+  margin: 0 auto 1.1rem;
+}
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  font-size: 1.15rem;
+  pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  padding: 0.95rem 2.8rem 0.95rem 3rem;
+  font-size: 1.05rem;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  border-radius: 999px;
+  outline: none;
+  transition: border-color var(--ease-fast), background var(--ease-fast);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.search-input::placeholder { color: var(--text-muted); }
+.search-input:focus {
+  border-color: var(--primary);
+  background: var(--surface-raised);
+}
+.search-input::-webkit-search-cancel-button { display: none; }
+
+.search-clear {
+  position: absolute;
+  right: 0.75rem;
+  width: 2rem; height: 2rem;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.search-clear:hover { background: var(--border-strong); color: var(--text); }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  max-width: 860px;
+}
+.chip {
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  /* 44px tall, which is the smallest a finger reliably hits on a tablet. */
+  padding: 0.6rem 0.95rem;
+  min-height: 44px;
+  cursor: pointer;
+  transition: background var(--ease-fast), color var(--ease-fast), border-color var(--ease-fast);
+}
+.chip:hover { border-color: var(--primary); color: var(--text); }
+.chip[aria-pressed="true"] {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #08140f;
+}
+
+.age-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.9rem;
+  flex-wrap: wrap;
+}
+.age-row select {
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.7rem;
+  min-height: 40px;
+}
+
+.result-count {
+  min-height: 1.4em;
+  margin: 0 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+/* A search that finds nothing is where the browser gets mentioned, because the
+   honest answer to "where is Minecraft" is that a parent can add any site in
+   the browser and this page cannot. */
+.miss {
+  max-width: 640px;
+  margin: 0.5rem auto 1.5rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  text-align: left;
+}
+.miss p { margin: 0 0 0.6rem; color: var(--text-secondary); }
+.miss p:last-child { margin-bottom: 0; }
+.miss-suggest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.2rem 0 0.9rem;
+}
+.miss-suggest a {
+  background: var(--surface-light);
+  color: #1a1a1a;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: var(--radius);
+}
+.miss-suggest a:hover { outline: 2px solid var(--primary); }
+.miss-get {
+  display: inline-block;
+  margin-top: 0.3rem;
+  background: var(--primary);
+  color: #08140f;
+  text-decoration: none;
+  font-weight: 700;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  min-height: 44px;
+  line-height: 1.8;
+}
+.miss-get:hover { background: var(--primary-hover); color: #fff; }
+
+/* ----------------------------------------------------------------- tiles */
+
+.tools {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0.5rem 1.25rem 3rem;
+}
+
+.app-section { margin: 0 0 2.25rem; }
+.app-section[hidden] { display: none; }
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--cream);
+  margin: 0 0 0.85rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 0.75rem;
+}
+
+/* Tiles hold other people's names, so they sit on white with dark text. That
+   is the app's rule for anything carrying a logo we did not make. */
+.app-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.3rem;
+  background: var(--surface-light);
+  color: #1a1a1a;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0.9rem 0.75rem;
+  text-decoration: none;
+  min-height: 118px;
+  justify-content: flex-start;
+  transition: transform var(--ease-fast), border-color var(--ease-fast), box-shadow var(--ease-fast);
+}
+.app-button:hover,
+.app-button:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  outline: none;
+}
+.app-button[hidden] { display: none; }
+
+.app-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 9px;
+}
+.app-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #1a1a1a;
+}
+.app-description {
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: #4a4a4a;
+}
+
+/* ------------------------------------------------------------------- CTA */
+
+.cta {
+  position: fixed;
+  top: 1rem; right: 1rem;
+  width: min(330px, calc(100vw - 2rem));
+  z-index: 60;
+  background: rgba(45, 42, 42, 0.94);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.1rem;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
+  transform: translateY(-14px);
+  opacity: 0;
+  transition: transform 280ms ease, opacity 280ms ease;
+}
+.cta.is-in { transform: translateY(0); opacity: 1; }
+.cta[hidden] { display: none; }
+
+.cta-close {
+  position: absolute;
+  top: 0.35rem; right: 0.45rem;
+  width: 2rem; height: 2rem;
+  border: 0; background: transparent;
+  color: var(--text-muted);
+  font-size: 1.4rem; line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.cta-close:hover { color: var(--text); background: var(--surface-raised); }
+
+.cta-lead { margin: 0 0 0.2rem; font-weight: 700; padding-right: 1.5rem; }
+.cta-sub { margin: 0 0 0.8rem; color: var(--text-secondary); font-size: 0.9rem; }
+
+.cta-go {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #08140f;
+  background: var(--primary);
+  border: 0;
+  border-radius: 999px;
+  padding: 0.6rem 1.2rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+.cta-go:hover { background: var(--primary-hover); color: #fff; }
+
+.cta-more { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 0.85rem; }
+.cta-more[hidden] { display: none; }
+.cta-tier {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  text-decoration: none;
+  color: var(--text);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.85rem;
+}
+.cta-tier strong { font-size: 0.95rem; color: var(--primary-emphasis); }
+.cta-tier span { font-size: 0.82rem; color: var(--text-secondary); }
+.cta-tier:hover { border-color: var(--primary); }
+.cta-tier-alt strong { color: var(--accent); }
+
+/* ---------------------------------------------------------------- footer */
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 1.25rem 2.5rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.footer-brand { margin: 0 0 0.5rem; font-weight: 800; color: var(--cream); font-size: 1rem; }
+.footer-note { max-width: 560px; margin: 0 auto 1rem; line-height: 1.6; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-bottom: 1rem; }
+.footer-links a { color: var(--text-secondary); text-decoration: none; }
+.footer-links a:hover { color: var(--text); }
+.footer-copy { margin: 0; }
+
+/* -------------------------------------------------------------- narrower */
+
+@media (max-width: 700px) {
+  .finder { padding-top: 1.75rem; }
+  .app-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.6rem; }
+  .app-button { min-height: 108px; padding: 0.75rem 0.6rem; }
+
+  /* Top right over a tile grid is tight on a phone, so the card becomes a bar
+     along the bottom with the same words. */
+  .cta {
+    top: auto; bottom: 0; right: 0; left: 0;
+    width: 100%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    transform: translateY(14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+  .app-button:hover { transform: none; }
+}

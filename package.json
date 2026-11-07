@@ -8,7 +8,10 @@
     "dev": "nodemon server.js",
     "migrate:dev": "NODE_ENV=development node migrations/runner.js",
     "migrate:prod": "NODE_ENV=production node migrations/runner.js",
-    "postinstall": "node scripts/patch-gopd.js"
+    "postinstall": "node scripts/patch-gopd.js",
+    "build:home": "node scripts/build-home.js",
+    "sync:catalog": "bash scripts/sync-catalog.sh",
+    "check:home": "node scripts/check-home.js"
   },
   "engines": {
     "node": "20.x"
