@@ -128,7 +128,7 @@ a { color: var(--primary-emphasis); }
   position: absolute;
   top: 0.75rem;
   right: 1.25rem;
-  width: 324px;
+  width: 348px;
   background: linear-gradient(180deg, var(--surface-raised) 0%, var(--surface) 62%);
   border: 1px solid var(--border-strong);
   border-radius: 18px;
@@ -161,132 +161,165 @@ a { color: var(--primary-emphasis); }
 
 .cta-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.6rem;
   margin-bottom: 0.85rem;
   padding-right: 1.5rem;
 }
-.cta-mark { display: block; border-radius: 50%; flex: 0 0 auto; margin-top: -1px; }
+.cta-mark { display: block; border-radius: 50%; flex: 0 0 auto; }
 
 .cta-lead {
   margin: 0;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.3;
   color: var(--cream);
 }
+
+/* The round target on the right of anything pressable here. A flat arrow
+   floating in a box is a direction; an arrow in a filled circle is a button,
+   and it is the difference between a card you read and a card you click. */
+.cta-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; height: 32px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  transition: background var(--ease-fast), transform var(--ease-fast);
+}
+.cta-chip .cta-arrow { width: 16px; height: 16px; }
 
 /* The one button, before it opens into two. */
 .cta-go {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
+  justify-content: space-between;
+  gap: 0.6rem;
   width: 100%;
   font-family: inherit;
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 800;
+  text-align: left;
   color: #06120d;
   background: var(--primary);
   border: 0;
   border-radius: 999px;
-  padding: 0.6rem 1.1rem;
-  min-height: 44px;
+  padding: 0.4rem 0.4rem 0.4rem 1.1rem;
+  min-height: 48px;
   cursor: pointer;
-  transition: background var(--ease-fast);
+  box-shadow: 0 6px 18px rgba(0, 168, 107, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  transition: background var(--ease-fast), box-shadow var(--ease-fast), transform var(--ease-fast);
 }
-.cta-go:hover { background: var(--primary-emphasis); }
-.cta-go .cta-arrow { width: 16px; height: 16px; transition: transform var(--ease-fast); }
-.cta-go:hover .cta-arrow { transform: translateX(3px); }
+.cta-go .cta-chip { background: rgba(6, 18, 13, 0.85); color: var(--primary-emphasis); }
+.cta-go:hover {
+  background: var(--primary-emphasis);
+  box-shadow: 0 10px 26px rgba(0, 168, 107, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  transform: translateY(-1px);
+}
+.cta-go:hover .cta-chip { transform: translateX(3px); }
+.cta-go:active { transform: translateY(0) scale(0.995); }
 
-.cta-more { display: flex; flex-direction: column; gap: 0.5rem; }
+.cta-more { display: flex; flex-direction: column; gap: 0.55rem; }
 .cta-more[hidden] { display: none; }
 
 /* Two choices, with one of them obviously first. Both go to the same file, so
  * the job of this pair is not to make a decision feel weighty: it is to say
- * what the difference is in four words and get out of the way.
+ * what the difference is and get out of the way.
  *
- * Name and badge on the top line, one line of plain words under it, an arrow
- * on the right spanning both. A grid rather than nested spans, so the arrow
- * is centred against the block and not against a line of it. */
+ * Name and badge on the top line, the detail under it, the round target on
+ * the right spanning both rows. A grid rather than nested spans, so the
+ * target is centred against the whole block and not against a line of it.
+ * Both are the same height whatever their text, because a pair of choices
+ * where one is taller reads as one of them mattering more than it does. */
 .cta-tier {
   display: grid;
   grid-template-columns: auto 1fr auto;
   grid-template-areas:
-    "name badge arrow"
-    "line line  arrow";
+    "name badge chip"
+    "line line  chip";
   align-items: center;
+  align-content: center;
+  min-height: 78px;
   column-gap: 0.5rem;
-  row-gap: 0.15rem;
+  row-gap: 0.2rem;
   text-decoration: none;
-  border-radius: 13px;
-  padding: 0.7rem 0.85rem;
+  border-radius: 14px;
+  padding: 0.7rem 0.55rem 0.7rem 0.9rem;
   background: var(--ground);
   border: 1px solid var(--border-strong);
-  transition: background var(--ease-fast), border-color var(--ease-fast), transform var(--ease-fast);
+  transition: background var(--ease-fast), border-color var(--ease-fast),
+              box-shadow var(--ease-fast), transform var(--ease-fast);
 }
-.cta-tier:hover { transform: translateY(-1px); }
+.cta-tier:hover { transform: translateY(-2px); }
+.cta-tier:active { transform: translateY(0) scale(0.995); }
 
 .cta-tier-name {
   grid-area: name;
-  font-size: 0.95rem;
+  font-size: 0.93rem;
   font-weight: 800;
   line-height: 1.2;
   color: var(--text);
+  white-space: nowrap;
 }
 .cta-tier-badge {
   grid-area: badge;
   justify-self: start;
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   line-height: 1;
-  padding: 0.22rem 0.42rem;
+  padding: 0.24rem 0.44rem;
   border-radius: 999px;
   white-space: nowrap;
 }
 .cta-tier-line {
   grid-area: line;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   line-height: 1.35;
   color: var(--text-secondary);
 }
-.cta-tier .cta-arrow {
-  grid-area: arrow;
-  width: 17px; height: 17px;
-  color: var(--text-muted);
-  transition: transform var(--ease-fast), color var(--ease-fast);
-}
-.cta-tier:hover .cta-arrow { transform: translateX(3px); }
 
-/* The free one is the obvious first click, so it is the filled one. Dark text
-   on green, which is the only way the brand allows green as a field. */
+/* The free one is the obvious first click, so it is the filled one, lit from
+   the top and sitting on its own shadow. Dark text on green, which is the
+   only way the brand allows green as a field. */
 .cta-tier-primary {
   background: var(--primary);
-  border-color: var(--primary);
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(0, 168, 107, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 .cta-tier-primary .cta-tier-name { color: #06120d; }
-.cta-tier-primary .cta-tier-line { color: rgba(6, 18, 13, 0.82); }
-.cta-tier-primary .cta-tier-badge { background: rgba(6, 18, 13, 0.82); color: var(--primary); }
-.cta-tier-primary .cta-arrow { color: #06120d; }
-.cta-tier-primary:hover { background: var(--primary-emphasis); border-color: var(--primary-emphasis); }
+.cta-tier-primary .cta-tier-line { color: rgba(6, 18, 13, 0.85); font-weight: 600; }
+.cta-tier-primary .cta-tier-badge { background: rgba(6, 18, 13, 0.85); color: var(--primary-emphasis); }
+.cta-tier-primary .cta-chip { background: rgba(6, 18, 13, 0.85); color: var(--primary-emphasis); }
+.cta-tier-primary:hover {
+  background: var(--primary-emphasis);
+  box-shadow: 0 12px 28px rgba(0, 168, 107, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+.cta-tier-primary:hover .cta-chip { transform: translateX(3px); }
 
-/* The considered one. Quiet until you point at it. */
-.cta-tier:not(.cta-tier-primary) .cta-tier-badge {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-muted);
+/* The considered one. Quiet until you point at it, and then it is as alive
+   as the other. */
+.cta-tier:not(.cta-tier-primary) .cta-chip {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-secondary);
 }
 .cta-tier:not(.cta-tier-primary):hover {
   background: var(--surface-raised);
   border-color: var(--primary);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
 }
-.cta-tier:not(.cta-tier-primary):hover .cta-arrow { color: var(--primary-emphasis); }
+.cta-tier:not(.cta-tier-primary):hover .cta-chip {
+  background: var(--primary);
+  color: #06120d;
+  transform: translateX(3px);
+}
 
 /* Two buttons pointing at one address looks like a mistake unless you say so. */
 .cta-foot {
-  margin: 0.15rem 0 0;
-  font-size: 0.72rem;
+  margin: 0.2rem 0 0;
+  font-size: 0.71rem;
   line-height: 1.4;
   color: var(--text-muted);
   text-align: center;

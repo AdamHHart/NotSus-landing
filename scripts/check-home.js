@@ -130,15 +130,32 @@ check('a name and a tagline get one line each, and are clipped if longer',
 check('the card drops over half a second, half a second after load',
   /\.cta \{[\s\S]*?transition: transform 500ms/.test(cssSrc) && /\}, 500\);/.test(jsSrc));
 check('the search box says Search', /placeholder="Search\.\.\."/.test(html));
+// Adam's own words, 2026-11-07, and they are his to change, not mine to
+// improve. The second line is in the button, which is where he asked for it.
 check('the card says what Adam wrote, with the second line in the button',
-  html.includes('<p class="cta-lead">This website is intended to be a browser.</p>')
+  html.includes('<p class="cta-lead">Designed to be a browser.</p>')
   && /class="cta-go"[\s\S]{0,200}>Setup now for your kids</.test(html));
+check('both tiers keep their full names',
+  html.includes('Basic Kid&rsquo;s Browser') && html.includes('Custom Kid&rsquo;s Browser'));
+check('Basic lists what it does not ask for',
+  html.includes('No email &middot; No credit card &middot; No data'));
+check('Custom says what Adam wrote',
+  html.includes('Parent input, and an investment in your child&rsquo;s future.'));
 check('the free option is the filled one, so there is an obvious first click',
   /class="cta-tier cta-tier-primary"/.test(html)
   && /\.cta-tier-primary \{[\s\S]*?background: var\(--primary\);/.test(cssSrc));
-check('each option says what it is in a badge and one plain line',
-  (html.match(/class="cta-tier-badge"/g) || []).length === 2
+check('each option says what it is on one line, and the free one is badged',
+  (html.match(/class="cta-tier-badge"/g) || []).length === 1
   && (html.match(/class="cta-tier-line"/g) || []).length === 2);
+check('the two options are the same height whatever their text',
+  /\.cta-tier \{[\s\S]*?min-height: 78px;/.test(cssSrc));
+check('everything pressable on the card ends in a round target',
+  (html.match(/class="cta-chip"/g) || []).length === 3
+  && /\.cta-chip \{[\s\S]*?border-radius: 50%;/.test(cssSrc));
+check('the primary sits on its own light, so it reads as raised',
+  /\.cta-tier-primary \{[\s\S]*?box-shadow: 0 6px 18px rgba\(0, 168, 107/.test(cssSrc)
+  && /\.cta-go \{[\s\S]*?box-shadow: 0 6px 18px rgba\(0, 168, 107/.test(cssSrc));
+check('both options answer a press', (cssSrc.match(/\.cta-(tier|go):active/g) || []).length === 2);
 check('the card admits both buttons go to the same place',
   /class="cta-foot"/.test(html) && html.includes('Same download either way'));
 check('the arrows are drawn, not typed', !/&rarr;|→/.test(html));

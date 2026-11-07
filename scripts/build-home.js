@@ -215,26 +215,25 @@ const html = `<!DOCTYPE html>
 
       <div class="cta-head">
         <img class="cta-mark" src="${stamp('public/logo-120.png')}" width="30" height="30" alt="" loading="lazy">
-        <p class="cta-lead">This website is intended to be a browser.</p>
+        <p class="cta-lead">Designed to be a browser.</p>
       </div>
 
       <button type="button" class="cta-go" id="cta-open" aria-expanded="false" aria-controls="cta-more">
         <span>Setup now for your kids</span>
-        ${ARROW}
+        <span class="cta-chip">${ARROW}</span>
       </button>
 
       <div class="cta-more" id="cta-more" hidden>
         <a class="cta-tier cta-tier-primary" href="/downloads">
-          <span class="cta-tier-name">Basic</span>
+          <span class="cta-tier-name">Basic Kid&rsquo;s Browser</span>
           <span class="cta-tier-badge">Free</span>
-          <span class="cta-tier-line">The sites we chose, ready to use.</span>
-          ${ARROW}
+          <span class="cta-tier-line">No email &middot; No credit card &middot; No data</span>
+          <span class="cta-chip">${ARROW}</span>
         </a>
         <a class="cta-tier" href="/downloads">
-          <span class="cta-tier-name">Custom</span>
-          <span class="cta-tier-badge">You choose</span>
-          <span class="cta-tier-line">Pick every site your child can open.</span>
-          ${ARROW}
+          <span class="cta-tier-name">Custom Kid&rsquo;s Browser</span>
+          <span class="cta-tier-line">Parent input, and an investment in your child&rsquo;s future.</span>
+          <span class="cta-chip">${ARROW}</span>
         </a>
         <p class="cta-foot">Same download either way. You choose inside the browser.</p>
       </div>
