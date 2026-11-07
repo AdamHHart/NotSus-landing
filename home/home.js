@@ -240,12 +240,32 @@
     }, 500);
   }
 
+  var ctaDevices = document.getElementById('cta-devices');
+  var ctaBack = document.getElementById('cta-back');
+
   if (ctaOpen) {
     ctaOpen.addEventListener('click', function () {
       ctaMore.hidden = false;
       ctaOpen.hidden = true;
       ctaOpen.setAttribute('aria-expanded', 'true');
+    });
+  }
+
+  // Both options lead to the same list of devices, because they lead to the
+  // same download. The difference between them is lived inside the browser,
+  // not chosen here.
+  Array.prototype.forEach.call(document.querySelectorAll('[data-to-devices]'), function (b) {
+    b.addEventListener('click', function () {
+      ctaMore.hidden = true;
+      ctaDevices.hidden = false;
       startHumanCheck();
+    });
+  });
+
+  if (ctaBack) {
+    ctaBack.addEventListener('click', function () {
+      ctaDevices.hidden = true;
+      ctaMore.hidden = false;
     });
   }
 
@@ -256,28 +276,30 @@
    * pay for a widget they never see, and a challenge that loads on every page
    * view is a challenge that runs for every child too.
    *
-   * The two links are inert until the server has checked the token and set
+   * It sits on the device step, immediately before a download, rather than
+   * two screens earlier where it would have been a toll on reading the page.
+   * The device links are inert until the server has checked the token and set
    * its cookie. The gate is not in the page at all unless a site key was set
    * when the page was built.
    */
   var gate = document.getElementById('cta-gate');
-  var tiers = Array.prototype.slice.call(document.querySelectorAll('.cta-tier'));
+  var devices = Array.prototype.slice.call(document.querySelectorAll('.cta-device'));
   var checkStarted = false;
 
-  function lockTiers() {
-    tiers.forEach(function (t) {
-      t.classList.add('is-locked');
-      t.setAttribute('aria-disabled', 'true');
-      t.dataset.href = t.getAttribute('href');
-      t.removeAttribute('href');
+  function lockDevices() {
+    devices.forEach(function (d) {
+      d.classList.add('is-locked');
+      d.setAttribute('aria-disabled', 'true');
+      d.dataset.href = d.getAttribute('href');
+      d.removeAttribute('href');
     });
   }
 
-  function unlockTiers() {
-    tiers.forEach(function (t) {
-      t.classList.remove('is-locked');
-      t.removeAttribute('aria-disabled');
-      if (t.dataset.href) t.setAttribute('href', t.dataset.href);
+  function unlockDevices() {
+    devices.forEach(function (d) {
+      d.classList.remove('is-locked');
+      d.removeAttribute('aria-disabled');
+      if (d.dataset.href) d.setAttribute('href', d.dataset.href);
     });
     if (gate) gate.remove();
   }
@@ -285,7 +307,7 @@
   function startHumanCheck() {
     if (!gate || checkStarted) return;
     checkStarted = true;
-    lockTiers();
+    lockDevices();
 
     function render() {
       if (!window.turnstile) { window.setTimeout(render, 120); return; }
@@ -299,7 +321,7 @@
             body: JSON.stringify({ token: token })
           })
             .then(function (r) { return r.json(); })
-            .then(function (d) { if (d.success) unlockTiers(); })
+            .then(function (d) { if (d.success) unlockDevices(); })
             .catch(function () { /* leave it locked; the page still works */ });
         }
       });

@@ -18,6 +18,9 @@ const ROOT = path.join(__dirname, '..');
 const catalog = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'catalog.json'), 'utf8'));
 const synonyms = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'search-synonyms.json'), 'utf8'));
 const homePicks = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'home-picks.json'), 'utf8'));
+// The same list server.js serves /downloads from, so the card and that page
+// cannot offer different platforms or different files.
+const { PLATFORMS, IPAD_MAILTO } = require('../lib/platforms');
 
 // The bands the app uses. A site shows for a band when its ageMin is at or
 // below that band's top age, which is the app's own rule: a child sees
@@ -230,11 +233,7 @@ ${turnstileKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/ap
       </button>
 
       <div class="cta-more" id="cta-more" hidden>
-        ${turnstileKey ? `<div class="cta-gate" id="cta-gate" data-sitekey="${esc(turnstileKey)}">
-          <p class="cta-gate-line">One quick check, so we know you are a person.</p>
-          <div id="cta-turnstile"></div>
-        </div>` : ''}
-        <a class="cta-tier cta-tier-primary" href="/downloads">
+        <button type="button" class="cta-tier cta-tier-primary" data-to-devices>
           <span class="cta-tier-text">
             <span class="cta-tier-head">
               <span class="cta-tier-name">Basic Kid&rsquo;s Browser</span>
@@ -243,8 +242,8 @@ ${turnstileKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/ap
             <span class="cta-tier-line">No email &middot; No credit card &middot; No data</span>
           </span>
           <span class="cta-chip">${ARROW}</span>
-        </a>
-        <a class="cta-tier cta-tier-quiet" href="/downloads">
+        </button>
+        <button type="button" class="cta-tier cta-tier-quiet" data-to-devices>
           <span class="cta-tier-text">
             <span class="cta-tier-head">
               <span class="cta-tier-name">Custom Kid&rsquo;s Browser</span>
@@ -253,7 +252,26 @@ ${turnstileKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/ap
             <span class="cta-tier-line">An investment in your kid&rsquo;s future.</span>
           </span>
           <span class="cta-chip">${ARROW}</span>
-        </a>
+        </button>
+      </div>
+
+      <div class="cta-devices" id="cta-devices" hidden>
+        <p class="cta-step">Which device will your child use?</p>
+        <div class="cta-device-list">
+${PLATFORMS.map((p) => {
+  const href = p.platform === 'ipad' ? IPAD_MAILTO : `/download/${p.platform}`;
+  return `          <a class="cta-device" href="${esc(href)}" style="--dl-colour: ${esc(p.colour)}">
+            <svg class="cta-device-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p.icon}</svg>
+            <span class="cta-device-name">${esc(p.label)}</span>
+            ${p.note ? `<span class="cta-device-note">${esc(p.note)}</span>` : ''}
+          </a>`;
+}).join('\n')}
+        </div>
+        ${turnstileKey ? `<div class="cta-gate" id="cta-gate" data-sitekey="${esc(turnstileKey)}">
+          <p class="cta-gate-line">One quick check, so we know you are a person.</p>
+          <div id="cta-turnstile"></div>
+        </div>` : ''}
+        <button type="button" class="cta-back" id="cta-back">Back</button>
       </div>
     </div>
   </div>

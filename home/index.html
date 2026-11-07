@@ -11,7 +11,7 @@
 <meta property="og:description" content="107 hand-picked free websites for children. Search by what you want to do.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.notsus.net/">
-<link rel="stylesheet" href="/home/home.css?v=d7a72fa972">
+<link rel="stylesheet" href="/home/home.css?v=a09572d0a2">
 
 </head>
 <body>
@@ -46,8 +46,7 @@
       </button>
 
       <div class="cta-more" id="cta-more" hidden>
-        
-        <a class="cta-tier cta-tier-primary" href="/downloads">
+        <button type="button" class="cta-tier cta-tier-primary" data-to-devices>
           <span class="cta-tier-text">
             <span class="cta-tier-head">
               <span class="cta-tier-name">Basic Kid&rsquo;s Browser</span>
@@ -56,8 +55,8 @@
             <span class="cta-tier-line">No email &middot; No credit card &middot; No data</span>
           </span>
           <span class="cta-chip"><svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 6l6 6-6 6"/></svg></span>
-        </a>
-        <a class="cta-tier cta-tier-quiet" href="/downloads">
+        </button>
+        <button type="button" class="cta-tier cta-tier-quiet" data-to-devices>
           <span class="cta-tier-text">
             <span class="cta-tier-head">
               <span class="cta-tier-name">Custom Kid&rsquo;s Browser</span>
@@ -66,7 +65,45 @@
             <span class="cta-tier-line">An investment in your kid&rsquo;s future.</span>
           </span>
           <span class="cta-chip"><svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 6l6 6-6 6"/></svg></span>
-        </a>
+        </button>
+      </div>
+
+      <div class="cta-devices" id="cta-devices" hidden>
+        <p class="cta-step">Which device will your child use?</p>
+        <div class="cta-device-list">
+          <a class="cta-device" href="/download/mac" style="--dl-colour: #a78bfa">
+            <svg class="cta-device-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M1 20h22"/></svg>
+            <span class="cta-device-name">Mac</span>
+            <span class="cta-device-note">Apple Silicon</span>
+          </a>
+          <a class="cta-device" href="/download/windows" style="--dl-colour: #38bdf8">
+            <svg class="cta-device-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+            <span class="cta-device-name">Windows</span>
+            
+          </a>
+          <a class="cta-device" href="mailto:contact@notsus.net?subject=iPad%20early%20access" style="--dl-colour: #2dd4bf">
+            <svg class="cta-device-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18.5h2"/></svg>
+            <span class="cta-device-name">iPad</span>
+            <span class="cta-device-note">write to us</span>
+          </a>
+          <a class="cta-device" href="/download/android" style="--dl-colour: #4ade80">
+            <svg class="cta-device-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="7" width="14" height="12" rx="3"/><path d="M8 7 6.5 4M16 7l1.5-3M9.5 12h.01M14.5 12h.01"/></svg>
+            <span class="cta-device-name">Android</span>
+            <span class="cta-device-note">not on Play yet</span>
+          </a>
+          <a class="cta-device" href="/download/linux" style="--dl-colour: #fbbf24">
+            <svg class="cta-device-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/></svg>
+            <span class="cta-device-name">Linux</span>
+            
+          </a>
+          <a class="cta-device" href="/download/macIntel" style="--dl-colour: #94a3b8">
+            <svg class="cta-device-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M1 20h22"/></svg>
+            <span class="cta-device-name">Mac</span>
+            <span class="cta-device-note">Intel</span>
+          </a>
+        </div>
+        
+        <button type="button" class="cta-back" id="cta-back">Back</button>
       </div>
     </div>
   </div>
@@ -1096,6 +1133,6 @@
 </footer>
 
 <script id="miss-data" type="application/json">{"notCarried":{"minecraft":["Tinkercad","Scratch"],"roblox":["Scratch","MakeCode Arcade","PixelPad"],"fortnite":["MakeCode Arcade","Godot Engine"],"youtube":["TED-Ed","PBS Learning Media"],"tiktok":["CapCut","Brush Ninja"],"photoshop":["Photopea","Krita"],"illustrator":["Canva","Photopea"],"chatgpt":["Perplexity"],"google":["Kiddle","DuckDuckGo"],"among us":["MakeCode Arcade","Scratch"],"discord":[],"snapchat":[],"instagram":[]},"missLine":"We do not have {asked}. These let you do something like it:","emptyLine":"We do not have {asked}, and there is nothing here like it.","downloadLine":"Looking for something that is not here? In the NotSus browser, a parent can add any site."}</script>
-<script src="/home/home.js?v=4fddc04a41" defer></script>
+<script src="/home/home.js?v=b8d799078f" defer></script>
 </body>
 </html>

@@ -13,10 +13,12 @@ back from the Render dashboard without a deploy:
 
 | `HOME_PAGE` | What `/` serves |
 |---|---|
-| unset, or anything else | `index.html`, the old home page. **The default.** |
-| `replica` | `home/index.html`, this page. |
+| unset, or anything else | `home/index.html`, this page. **The default since 2026-11-07.** |
+| `classic` | `index.html`, the old home page. The way back |
 
-`/home` serves this page either way, so a link to it never breaks.
+`/home` serves this page either way, so a link to it never breaks, and
+`/about` serves the old page, which is where the footer's About, Resources
+and Contact Us point.
 
 ## What is generated, and what is written
 
@@ -84,6 +86,15 @@ the height, or the end and the bite are arcs of different radii and the gap
 opens and closes around the curve. Everything inside is centred, never padded
 to height. Below 820px the search takes a line of its own and the two filters
 pair up underneath, still interlocking.
+
+**The downloads live in the card.** Three steps: the sentence and a button,
+then Basic or Custom, then the six devices. Both options lead to the same
+list, because they lead to the same file; the difference between them is
+lived inside the browser. The list comes from `lib/platforms.js`, which
+`server.js` also serves `/downloads` from, so the card and that page cannot
+offer different platforms or different files. The Turnstile check, when it is
+on, sits on the device step rather than two screens earlier, where it would
+have been a toll on reading the page.
 
 **The card hangs off the header, it does not sit in it.** `position: absolute`
 under `.header-right`. In the flow it added 300px to the header and shoved the

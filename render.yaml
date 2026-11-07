@@ -9,10 +9,10 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      # 'replica' serves the rebuilt home screen at '/'. Anything else, or
-      # unset, keeps the old home page. See the '/' route in server.js.
+      # The rebuilt home screen is the default. 'classic' puts the old page
+      # back at '/'. See the '/' route in server.js.
       - key: HOME_PAGE
-        value: classic
+        value: replica
       - key: JWT_SECRET
         generateValue: true
       - key: DATABASE_URL

@@ -153,6 +153,19 @@ check('there is one filled option and one outlined one',
   (html.match(/class="cta-tier cta-tier-primary"/g) || []).length === 1
   && (html.match(/class="cta-tier cta-tier-quiet"/g) || []).length === 1
   && /\.cta-tier-quiet \{[\s\S]*?background: transparent;/.test(cssSrc));
+
+// The downloads live in the card now, so a parent never leaves it.
+const platforms = require(path.join(ROOT, 'lib', 'platforms.js')).PLATFORMS;
+check(`the card offers all ${platforms.length} devices`,
+  (html.match(/class="cta-device"/g) || []).length === platforms.length);
+check('every device in the card is the one server.js serves',
+  platforms.every((p) => html.includes(p.platform === 'ipad'
+    ? 'mailto:contact@notsus.net'
+    : `href="/download/${p.platform}"`)));
+check('the card can be stepped back from the devices',
+  /id="cta-back"/.test(html) && /id="cta-devices" hidden/.test(html));
+check('the human check sits on the device step, not before the choice',
+  html.indexOf('id="cta-devices"') < html.indexOf('cta-gate') || !html.includes('cta-gate'));
 check('the round target cannot drift out of the right-hand edge',
   /\.cta-tier \{[\s\S]*?display: flex;/.test(cssSrc)
   && /\.cta-tier-text \{ display: flex;[^}]*flex: 1 1 auto; \}/.test(cssSrc));
