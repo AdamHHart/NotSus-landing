@@ -132,7 +132,16 @@ check('the card drops over half a second, half a second after load',
 check('the search box says Search', /placeholder="Search\.\.\."/.test(html));
 check('the card says what Adam wrote, with the second line in the button',
   html.includes('<p class="cta-lead">This website is intended to be a browser.</p>')
-  && /class="cta-go"[^>]*>Setup now for your kids</.test(html));
+  && /class="cta-go"[\s\S]{0,200}>Setup now for your kids</.test(html));
+check('the free option is the filled one, so there is an obvious first click',
+  /class="cta-tier cta-tier-primary"/.test(html)
+  && /\.cta-tier-primary \{[\s\S]*?background: var\(--primary\);/.test(cssSrc));
+check('each option says what it is in a badge and one plain line',
+  (html.match(/class="cta-tier-badge"/g) || []).length === 2
+  && (html.match(/class="cta-tier-line"/g) || []).length === 2);
+check('the card admits both buttons go to the same place',
+  /class="cta-foot"/.test(html) && html.includes('Same download either way'));
+check('the arrows are drawn, not typed', !/&rarr;|→/.test(html));
 check('the card has no coloured rail down its side',
   !/\.cta \{[^}]*border-left:/.test(cssSrc));
 check('the header, the bar and the two picks rows are one screenful',

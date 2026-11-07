@@ -59,6 +59,10 @@ function stamp(rel) {
   return out;
 }
 
+// One arrow, drawn rather than typed. A "->" glyph renders at a different
+// weight in every font on every platform.
+const ARROW = '<svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 6l6 6-6 6"/></svg>';
+
 const esc = (s) => String(s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -205,18 +209,34 @@ const html = `<!DOCTYPE html>
 
   <div class="header-right">
     <div id="cta" class="cta" hidden>
-      <button type="button" class="cta-close" id="cta-close" aria-label="Close">&times;</button>
-      <p class="cta-lead">This website is intended to be a browser.</p>
-      <button type="button" class="cta-go" id="cta-open" aria-expanded="false" aria-controls="cta-more">Setup now for your kids</button>
+      <button type="button" class="cta-close" id="cta-close" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+
+      <div class="cta-head">
+        <img class="cta-mark" src="${stamp('public/logo-120.png')}" width="30" height="30" alt="" loading="lazy">
+        <p class="cta-lead">This website is intended to be a browser.</p>
+      </div>
+
+      <button type="button" class="cta-go" id="cta-open" aria-expanded="false" aria-controls="cta-more">
+        <span>Setup now for your kids</span>
+        ${ARROW}
+      </button>
+
       <div class="cta-more" id="cta-more" hidden>
+        <a class="cta-tier cta-tier-primary" href="/downloads">
+          <span class="cta-tier-name">Basic</span>
+          <span class="cta-tier-badge">Free</span>
+          <span class="cta-tier-line">The sites we chose, ready to use.</span>
+          ${ARROW}
+        </a>
         <a class="cta-tier" href="/downloads">
-          <strong>Basic Kid's Browser</strong>
-          <span>Free. No email, no credit card, no data.</span>
+          <span class="cta-tier-name">Custom</span>
+          <span class="cta-tier-badge">You choose</span>
+          <span class="cta-tier-line">Pick every site your child can open.</span>
+          ${ARROW}
         </a>
-        <a class="cta-tier cta-tier-alt" href="/downloads">
-          <strong>Custom Kid's Browser</strong>
-          <span>You choose every site. Set up inside the browser.</span>
-        </a>
+        <p class="cta-foot">Same download either way. You choose inside the browser.</p>
       </div>
     </div>
   </div>

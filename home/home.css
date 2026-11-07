@@ -120,24 +120,20 @@ a { color: var(--primary-emphasis); }
 /* ------------------------------------------------------------------- card */
 
 /* Where the Download button used to be. It is the only sales pitch on the
-   page, so it sits in the one place a parent looks and a child does not. */
+ * page, so it sits in the one place a parent looks and a child does not.
+ *
+ * It starts level with the top of the logo bar, in the band the header leaves
+ * empty, rather than below the header. */
 .cta {
-  /* Hung under the right of the header, not placed in it. In the flow it
-     added 300px to the header and shoved the brand across when it appeared,
-     half a second after the page settled.
-     It starts level with the top of the logo bar, in the band the header
-     leaves empty, rather than below the header. The green button is the only
-     thing in it carrying colour; a coloured rail down the side was tried and
-     it just looked like decoration. */
   position: absolute;
   top: 0.75rem;
   right: 1.25rem;
-  width: 310px;
-  background: var(--surface);
+  width: 324px;
+  background: linear-gradient(180deg, var(--surface-raised) 0%, var(--surface) 62%);
   border: 1px solid var(--border-strong);
-  border-radius: var(--radius-lg);
-  padding: 0.85rem 1rem 0.95rem;
-  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.6);
+  border-radius: 18px;
+  padding: 1rem 1rem 1.05rem;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
   /* It arrives from behind the header, so it reads as having been pulled down
      rather than faded in. Half a second, and the easing settles rather than
      stops. */
@@ -150,19 +146,43 @@ a { color: var(--primary-emphasis); }
 
 .cta-close {
   position: absolute;
-  top: 0.2rem; right: 0.3rem;
-  width: 1.9rem; height: 1.9rem;
-  border: 0; background: transparent;
+  top: 0.55rem; right: 0.55rem;
+  display: flex; align-items: center; justify-content: center;
+  width: 1.75rem; height: 1.75rem;
+  border: 0;
+  background: transparent;
   color: var(--text-muted);
-  font-size: 1.35rem; line-height: 1;
   cursor: pointer;
   border-radius: 50%;
+  padding: 0;
 }
-.cta-close:hover { color: var(--text); background: var(--surface-raised); }
+.cta-close svg { width: 14px; height: 14px; }
+.cta-close:hover { color: var(--text); background: rgba(255, 255, 255, 0.08); }
 
-.cta-lead { margin: 0 0 0.75rem; font-weight: 800; font-size: 0.95rem; color: var(--cream); padding-right: 1.4rem; line-height: 1.3; }
+.cta-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
+  padding-right: 1.5rem;
+}
+.cta-mark { display: block; border-radius: 50%; flex: 0 0 auto; margin-top: -1px; }
 
+.cta-lead {
+  margin: 0;
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.3;
+  color: var(--cream);
+}
+
+/* The one button, before it opens into two. */
 .cta-go {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
   font-family: inherit;
   font-size: 0.92rem;
   font-weight: 800;
@@ -170,30 +190,107 @@ a { color: var(--primary-emphasis); }
   background: var(--primary);
   border: 0;
   border-radius: 999px;
-  padding: 0.55rem 1.3rem;
-  min-height: 42px;
+  padding: 0.6rem 1.1rem;
+  min-height: 44px;
   cursor: pointer;
-  width: 100%;
+  transition: background var(--ease-fast);
 }
 .cta-go:hover { background: var(--primary-emphasis); }
+.cta-go .cta-arrow { width: 16px; height: 16px; transition: transform var(--ease-fast); }
+.cta-go:hover .cta-arrow { transform: translateX(3px); }
 
-.cta-more { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem; }
+.cta-more { display: flex; flex-direction: column; gap: 0.5rem; }
 .cta-more[hidden] { display: none; }
+
+/* Two choices, with one of them obviously first. Both go to the same file, so
+ * the job of this pair is not to make a decision feel weighty: it is to say
+ * what the difference is in four words and get out of the way.
+ *
+ * Name and badge on the top line, one line of plain words under it, an arrow
+ * on the right spanning both. A grid rather than nested spans, so the arrow
+ * is centred against the block and not against a line of it. */
 .cta-tier {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "name badge arrow"
+    "line line  arrow";
+  align-items: center;
+  column-gap: 0.5rem;
+  row-gap: 0.15rem;
   text-decoration: none;
-  color: var(--text);
-  background: var(--surface-raised);
+  border-radius: 13px;
+  padding: 0.7rem 0.85rem;
+  background: var(--ground);
   border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
-  padding: 0.6rem 0.8rem;
+  transition: background var(--ease-fast), border-color var(--ease-fast), transform var(--ease-fast);
 }
-.cta-tier strong { font-size: 0.9rem; color: var(--primary-emphasis); }
-.cta-tier span { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; }
-.cta-tier:hover { border-color: var(--primary); }
-.cta-tier-alt strong { color: var(--accent); }
+.cta-tier:hover { transform: translateY(-1px); }
+
+.cta-tier-name {
+  grid-area: name;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text);
+}
+.cta-tier-badge {
+  grid-area: badge;
+  justify-self: start;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.22rem 0.42rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.cta-tier-line {
+  grid-area: line;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--text-secondary);
+}
+.cta-tier .cta-arrow {
+  grid-area: arrow;
+  width: 17px; height: 17px;
+  color: var(--text-muted);
+  transition: transform var(--ease-fast), color var(--ease-fast);
+}
+.cta-tier:hover .cta-arrow { transform: translateX(3px); }
+
+/* The free one is the obvious first click, so it is the filled one. Dark text
+   on green, which is the only way the brand allows green as a field. */
+.cta-tier-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.cta-tier-primary .cta-tier-name { color: #06120d; }
+.cta-tier-primary .cta-tier-line { color: rgba(6, 18, 13, 0.82); }
+.cta-tier-primary .cta-tier-badge { background: rgba(6, 18, 13, 0.82); color: var(--primary); }
+.cta-tier-primary .cta-arrow { color: #06120d; }
+.cta-tier-primary:hover { background: var(--primary-emphasis); border-color: var(--primary-emphasis); }
+
+/* The considered one. Quiet until you point at it. */
+.cta-tier:not(.cta-tier-primary) .cta-tier-badge {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+}
+.cta-tier:not(.cta-tier-primary):hover {
+  background: var(--surface-raised);
+  border-color: var(--primary);
+}
+.cta-tier:not(.cta-tier-primary):hover .cta-arrow { color: var(--primary-emphasis); }
+
+/* Two buttons pointing at one address looks like a mistake unless you say so. */
+.cta-foot {
+  margin: 0.15rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+  text-align: center;
+}
 
 /* ----------------------------------------------------------- first screen */
 
