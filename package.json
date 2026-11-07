@@ -11,7 +11,8 @@
     "postinstall": "node scripts/patch-gopd.js",
     "build:home": "node scripts/build-home.js",
     "sync:catalog": "bash scripts/sync-catalog.sh",
-    "check:home": "node scripts/check-home.js"
+    "check:home": "node scripts/check-home.js",
+    "prestart": "node scripts/build-home.js || echo \"build-home failed; serving the committed home/index.html\""
   },
   "engines": {
     "node": "20.x"

@@ -16,7 +16,7 @@ const BASE_URL = process.env.BASE_URL || 'https://www.notsus.net';
  */
 async function sendVerificationEmail(to, verificationToken) {
     const verificationLink = `${BASE_URL}/verify-email?token=${encodeURIComponent(verificationToken)}`;
-    const logoUrl = `${BASE_URL}/public/logo.png`;
+    const logoUrl = `${BASE_URL}/public/logo-120.png`;
 
     const { data, error } = await resend.emails.send({
         from: FROM_EMAIL,

@@ -3,12 +3,16 @@ services:
   - type: web
     name: notsus-web
     env: node
-    buildCommand: npm install && node scripts/patch-gopd.js && npm rebuild bcrypt --build-from-source
+    buildCommand: npm install && node scripts/patch-gopd.js && npm rebuild bcrypt --build-from-source && npm run build:home && npm run check:home
     startCommand: npm run migrate && npm start
     nodeVersion: 20.x
     envVars:
       - key: NODE_ENV
         value: production
+      # 'replica' serves the rebuilt home screen at '/'. Anything else, or
+      # unset, keeps the old home page. See the '/' route in server.js.
+      - key: HOME_PAGE
+        value: classic
       - key: JWT_SECRET
         generateValue: true
       - key: DATABASE_URL

@@ -30,11 +30,6 @@ const BANDS = [
   { id: '12plus', label: '12 and up', maxAge: 99 },
 ];
 
-// home/logo-96.png is a 96px copy of public/logo.png. The original is
-// 2000x2000 and 3.2 MB, and every page on the site renders it at 40px in the
-// header, which costs a visitor on a phone 3.2 MB before they see anything.
-// The small copy is 17 KB.
-//
 // server.js serves everything that is not .html with
 // `Cache-Control: immutable, max-age=31536000`, so a stylesheet changed after a
 // deploy would stay stale in a visitor's browser for a year. The page asks for
@@ -133,7 +128,7 @@ const html = `<!DOCTYPE html>
 
 <header class="site-header">
   <a class="brand" href="/">
-    <img src="${stamp('home/logo-96.png')}" width="40" height="40" alt="" fetchpriority="high">
+    <img src="${stamp('public/logo-120.png')}" width="40" height="40" alt="" fetchpriority="high">
     <span class="brand-text">
       <span class="brand-name">NotSus.net</span>
       <span class="brand-tagline">The better browser for kids.</span>

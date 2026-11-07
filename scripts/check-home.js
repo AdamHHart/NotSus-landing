@@ -75,6 +75,8 @@ check('the card starts hidden, so it cannot block a tile before it slides in',
   /<aside id="cta" class="cta" hidden/.test(html));
 check('assets are asked for by a content hash, so a deploy is not cached for a year',
   /home\.css\?v=[a-f0-9]{10}/.test(html) && /home\.js\?v=[a-f0-9]{10}/.test(html));
+check('the header logo is the small copy, not the 3.2 MB original',
+  /public\/logo-120\.png\?v=/.test(html) && !html.includes('/public/logo.png'));
 check('the public address is the one that may be published',
   html.includes('2015 Main Street') && !html.includes('Broadway'));
 

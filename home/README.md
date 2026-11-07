@@ -7,9 +7,16 @@ notsus.net rebuilt as a replica of the NotSus browser's home screen: every site
 in the catalogue as a tile, with a search and filters built for a child who
 knows what they want to do and not which site does it.
 
-**It is at `/home` while it is reviewed.** The live home page is untouched. When
-it is approved, the `/` route in `server.js` points here and `/home` stays as an
-alias.
+**It is at `/home`, and that address does not change.** Whether it is also the
+home page is an environment variable, so the switch can be thrown and thrown
+back from the Render dashboard without a deploy:
+
+| `HOME_PAGE` | What `/` serves |
+|---|---|
+| unset, or anything else | `index.html`, the old home page. **The default.** |
+| `replica` | `home/index.html`, this page. |
+
+`/home` serves this page either way, so a link to it never breaks.
 
 ## What is generated, and what is written
 
@@ -18,7 +25,6 @@ alias.
 | `index.html` | **Generated. Do not edit.** Run the build instead. |
 | `home.css` | Written by hand. The colour, type and shape values are the app's own, copied from `src/styles/tokens.css`. |
 | `home.js` | Written by hand. The filter and the card. |
-| `logo-96.png` | A 96px copy of `public/logo.png`, which is 2000px and 3.2 MB and was being rendered at 40px. |
 | `../data/catalog.json` | **Copied** from the app repository. |
 | `../data/search-synonyms.json` | **Copied** from the app repository. |
 
@@ -32,6 +38,27 @@ npm run check:home      # 51 checks, no browser needed
 
 `sync:catalog` assumes the app repository is at `~/Development/NotSusClean`.
 Pass another path as an argument if it has moved.
+
+## How it reaches the live site
+
+Three things keep the deployed page in step with the catalogue, so nobody has
+to remember a build step.
+
+1. **`prestart` builds the page.** Render's start command is
+   `npm run migrate && npm start`, and npm runs `prestart` before `start`, so
+   every boot regenerates `home/index.html` from `data/`. It reads two JSON
+   files and writes one HTML file, which costs nothing. If it ever fails it
+   says so and the committed page is served, so a bad build cannot take the
+   site down.
+2. **`render.yaml` builds and checks.** A service created from the blueprint
+   runs `build:home` and `check:home` at build time, and a failed check fails
+   the build rather than shipping a broken page.
+3. **The generated page is committed.** Nothing has to run for the site to
+   work. The two above are belt and braces.
+
+**Auto-deploy on Render is off.** A push does nothing on its own. Somebody has
+to open the Render dashboard for the `NotSus-landing` service and use Manual
+Deploy, Deploy latest commit.
 
 ## The three things worth knowing
 
@@ -47,7 +74,8 @@ and `check:home` fails if a tile ever ships hidden.
 
 **Assets carry a content hash.** `server.js` serves everything that is not
 `.html` with `Cache-Control: immutable, max-age=31536000`. Without the hash a
-changed stylesheet would stay stale in a visitor's browser for a year.
+changed stylesheet would stay stale in a visitor's browser for a year. That is
+also why the build, not the author, writes the `?v=` on each asset.
 
 ## Left out on purpose
 
