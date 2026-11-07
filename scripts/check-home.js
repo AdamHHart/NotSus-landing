@@ -220,9 +220,15 @@ for (const label of ['About', 'Blog', 'Radio']) {
   check(`"${label}" is in the footer, not the header`,
     !header.includes(`>${label}<`) && html.indexOf(`>${label}<`) > html.indexOf('</header>'));
 }
-for (const label of ['Download Browser', 'About', 'Tools for Kids', 'Radio', 'Blog', 'Resources', 'Contact Us']) {
+// Tools for Kids and Resources were dropped on 2026-11-07: the home page is
+// the tools page now, and Resources pointed at an anchor rather than a page.
+for (const label of ['Download Browser', 'About', 'Radio', 'Blog', 'Contact Us']) {
   check(`the footer carries "${label}"`, html.includes(`>${label}</a>`));
 }
+check('nothing in the footer points at the page that was removed',
+  !html.includes('/tools'));
+check('About points at a page, not at a GIF on one',
+  html.includes('<a href="/about">About</a>'));
 for (const name of ['LinkedIn', 'YouTube', 'Instagram', 'TikTok', 'X']) {
   check(`the footer carries ${name}`, new RegExp(`aria-label="NotSus on ${name}"`).test(html));
 }

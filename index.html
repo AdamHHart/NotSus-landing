@@ -10,6 +10,10 @@
            page because styles.css is shared with the blog and the legal
            pages, and none of them has a hero. */
         .hero-sidebar { display: flex; flex-direction: column; gap: 0.6rem; }
+        .tier-pair {
+            display: grid; gap: 0.75rem; max-width: 760px; margin: 2rem auto 0;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
         .hero-tier {
             display: flex; flex-direction: column; gap: 0.2rem;
             text-decoration: none;
@@ -84,12 +88,10 @@
         <!-- Navigation Menu -->
         <nav class="mobile-nav" id="mobileNav">
             <a href="/downloads" class="nav-link">Download Browser</a>
-            <a href="#demo-gif" class="nav-link">About</a>
-            <a href="/tools/" class="nav-link">Tools for Kids</a>
+            <a href="/about" class="nav-link">About</a>
             <a href="/podcast/" class="nav-link">Radio</a>
             <a href="/blog/" class="nav-link">Blog</a>
-            <a href="#resources-section" class="nav-link">Resources</a>
-            <a href="#contact-section" class="nav-link">Contact Us</a>
+            <a href="/about#contact-section" class="nav-link">Contact Us</a>
         </nav>
     </header>
 
@@ -405,91 +407,27 @@
     </section>
 
     <!-- Waitlist Section -->
-    <section class="waitlist-section" id="waitlist-section">
+    <!-- The two tiers, the same pair the card on the home page offers, so a
+         parent meets one offer wherever they land. The email form that used
+         to be here is gone with the download gate. -->
+    <section class="waitlist-section" id="get-notsus">
         <div class="container">
-            <h2>Help us design NotSus into the best browser for your kids!</h2>
-
-            <div class="waitlist-containers-wrapper">
-            <div class="waitlist-download-container">
-                <div class="waitlist-form-container">
-                    <form id="feedbackForm" class="feedback-form">
-                        <div id="form-step-1">
-                            <div class="form-inputs">
-                                <input type="text" placeholder="Your name" name="name" required class="name-input">
-                                <input type="email" placeholder="email@example.com" name="email" required>
-                            </div>
-                            <input type="hidden" name="concernDescription" value="">
-                            <input type="hidden" name="gainsDescription" value="">
-                            <button type="submit" class="submit-button">Download Now</button>
-                            <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; opacity: 0.8; color: rgba(255, 255, 255, 0.8);">*available for Mac, Windows, and Linux</p>
-                        </div>
-
-                        <!-- Legacy multi-step download form kept for rollback
-                        <div id="form-step-2" style="display: none;">
-                            <p>What concerns you most about how your kids interact with tech?</p>
-                            <div class="checkbox-group">
-                                <label><input type="checkbox" name="concern" value="screen-time"> screen-time addiction</label>
-                                <label><input type="checkbox" name="concern" value="consumptive"> consumptive habits</label>
-                                <label><input type="checkbox" name="concern" value="inappropriate"> inappropriate content</label>
-                                <label><input type="checkbox" name="concern" value="influences"> bad influences</label>
-                                <label><input type="checkbox" name="concern" value="safety"> safety</label>
-                                <label><input type="checkbox" name="concern" value="false-info"> false information</label>
-                                <label><input type="checkbox" name="concern" value="social"> social distortion</label>
-                                <label><input type="checkbox" name="concern" value="other"> other</label>
-                            </div>
-                            <input type="text" placeholder="What else concerns you?" name="concernDescription">
-                            <button type="button" class="submit-button" onclick="showNextStep(3)">Next</button>
-                        </div>
-
-                        <div id="form-step-3" style="display: none;">
-                            <p>What do you want your kids to get out of technology?</p>
-                            <div class="checkbox-group">
-                                <label><input type="checkbox" name="gains" value="valuable-skills"> Valuable skills</label>
-                                <label><input type="checkbox" name="gains" value="active-habits"> Active/Productive habits</label>
-                                <label><input type="checkbox" name="gains" value="educational-tools"> Good educational tools</label>
-                                <label><input type="checkbox" name="gains" value="safe-experience"> A safe experience</label>
-                            </div>
-                            <input type="text" placeholder="What else?" name="gainsDescription">
-                            <button type="submit" class="submit-button">Submit</button>
-                        </div>
-                        -->
-                        <div id="check-email-section" style="display: none; margin-top: 2rem;">
-                            <h3>Check your email</h3>
-                            <p>We sent a verification link to <strong id="check-email-address"></strong>. Click the link to get your download.</p>
-                            <p style="font-size: 0.9rem; opacity: 0.9;">The link expires in 24 hours. If you don't see it, check your spam folder.</p>
-                        </div>
-                        <div id="download-section" style="display: none; margin-top: 2rem;">
-                            <h3>Thank you for your submission!</h3>
-                            <p>Download the NotSus browser MVP for a safer browsing experience for your kids.</p>
-                            <p>We are currently developing the Beta version. Please contact us for feedback and suggestions.</p>
-                            <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; justify-content: center;">
-                                <a href="/download/windows" class="download-button">
-                                    <span>Download for Windows</span>
-                                </a>
-                                <a href="/download/mac" class="download-button">
-                                    <span>Download for Mac (Apple Silicon)</span>
-                                </a>
-                                <a href="/download/macIntel" class="download-button">
-                                    <span>Download for Mac (Intel)</span>
-                                </a>
-                                <a href="/download/linux" class="download-button">
-                                    <span>Download for Linux</span>
-                                </a>
-                            </div>
-                        </div>
-                    </form>
-                    <div class="waitlist-benefits">
-                        <p>By joining our community, you'll:</p>
-                        <ul>
-                            <li>Help let us know that you care about this issue</li>
-                            <li>Push us to make the right products for you</li>
-                            <li>Help design a better future for your kids</li>
-                        </ul>
-                        <p class="no-credit-card">No credit card required. Simple installation.</p>
-                    </div>
-                </div>
-            </div>
-
+            <h2>Get NotSus for your kids</h2>
+            <div class="tier-pair">
+                <a class="hero-tier hero-tier-primary" href="/downloads">
+                    <span class="hero-tier-head">
+                        <span class="hero-tier-name">Basic Kid&rsquo;s Browser</span>
+                        <span class="hero-tier-badge">Free</span>
+                    </span>
+                    <span class="hero-tier-line">No email &middot; No credit card &middot; No data</span>
+                </a>
+                <a class="hero-tier" href="/downloads">
+                    <span class="hero-tier-head">
+                        <span class="hero-tier-name">Custom Kid&rsquo;s Browser</span>
+                    </span>
+                    <span class="hero-tier-line">Parent input.</span>
+                    <span class="hero-tier-line">An investment in your kid&rsquo;s future.</span>
+                </a>
             </div>
         </div>
     </section>
@@ -517,7 +455,6 @@
                 <div class="footer-tagline">The better browser for kids.</div>
                 <div class="footer-links">
                     <a href="#how-it-works">How It Works</a>
-                    <a href="#resources-section">Resources</a>
                     <a href="/privacy" id="privacyPolicyLink">Privacy Policy</a>
                     <a href="/terms" id="termsOfServiceLink">Terms of Service</a>
                 </div>

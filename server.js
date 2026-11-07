@@ -132,6 +132,15 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'home', 'index.html'));
 });
 
+// /tools was a hand-kept page of the same sites the home page now generates
+// from the catalogue, so it was a second list to keep in step and it fell
+// behind. Removed 2026-11-07, and anybody holding a link to it lands on the
+// page that replaced it. Registered here, before express.static, for the same
+// reason '/' is.
+app.get(['/tools', '/tools/'], (req, res) => {
+    res.redirect(301, '/');
+});
+
 // Serve static files — long cache for assets, no cache for HTML (so deploys show up immediately)
 app.use(express.static(path.join(__dirname), {
     etag: true,
@@ -199,9 +208,7 @@ app.get('/about', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/tools', (req, res) => {
-    res.redirect(301, '/tools/');
-});
+
 
 app.get('/blog', (req, res) => {
     res.redirect(301, '/blog/');
@@ -996,7 +1003,7 @@ const PORT = process.env.PORT || 3000;
 console.log(`[NotSus] Binding to port ${PORT}...`);
 const server = app.listen(PORT, () => {
     console.log(`[NotSus] Server running at http://localhost:${PORT}`);
-    console.log('[NotSus] Blog: /blog/  Tools: /tools/  Podcast: /podcast/');
+    console.log('[NotSus] Blog: /blog/  Podcast: /podcast/');
     console.log('[NotSus] Static pages are ready. Waitlist/API routes load the database on first use.');
 });
 

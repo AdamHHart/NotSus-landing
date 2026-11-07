@@ -2,16 +2,18 @@
  * Shared site chrome: navigation labels and footer social links.
  */
 (function initSiteChrome() {
-    // The anchors point at /about rather than at '/', because the home page is
-    // about to stop being the page that holds those sections. /about serves the
-    // same document, so these work whichever page is at '/'.
+    // Five links, and none of them points at an anchor on a page that moves.
+    //
+    // 'Tools for Kids' is gone: the home page is that page now. 'Resources'
+    // is gone from the navigation too; the section is still on /about, and
+    // the Watchdog download in it needs a better home than a buried anchor.
+    // 'About' was /about#demo-gif, which pointed a person at a GIF and read
+    // like a mistake in the address bar.
     const NAV_LINKS = [
         { href: '/downloads', label: 'Download Browser' },
-        { href: '/about#demo-gif', label: 'About' },
-        { href: '/tools/', label: 'Tools for Kids' },
+        { href: '/about', label: 'About' },
         { href: '/podcast/', label: 'Radio' },
         { href: '/blog/', label: 'Blog' },
-        { href: '/about#resources-section', label: 'Resources' },
         { href: '/about#contact-section', label: 'Contact Us' }
     ];
 
