@@ -36,7 +36,8 @@ function check(name, ok, detail) {
 // than what the build intended.
 // Everything below the two picks rows. Those rows repeat fifteen sites on
 // purpose, so counting them would make every total wrong.
-const everything = html.slice(html.indexOf('<div class="everything">'));
+const EVERYTHING = '<div class="tools everything">';
+const everything = html.slice(html.indexOf(EVERYTHING));
 const tileRe = /<a class="app-button" href="([^"]+)"([^>]*)>/g;
 const tiles = [];
 let m;
@@ -76,7 +77,7 @@ check('no duplicate links', new Set(tiles.map((t) => t.href)).size === tiles.len
 const picks = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'home-picks.json'), 'utf8'));
 const pickNames = picks.rows.flatMap((r) => r.apps);
 check(`the browser's own ${pickNames.length} picks are above the categories`,
-  (html.slice(0, html.indexOf('<div class="everything">')).match(/class="app-button"/g) || []).length === pickNames.length);
+  (html.slice(0, html.indexOf(EVERYTHING)).match(/class="app-button"/g) || []).length === pickNames.length);
 check('every pick is a site the catalogue has',
   pickNames.every((n) => catalog.apps.some((a) => a.name === n)),
   pickNames.filter((n) => !catalog.apps.some((a) => a.name === n)).join(', '));
@@ -105,7 +106,9 @@ check('the logo bar is a capsule on the dark chrome, not a green field',
 check('green is an accent on this page, never a large surface',
   !/\.(brand|cta) \{[^}]*background: var\(--primary\);/.test(cssSrc));
 check('every tile is exactly the same height',
-  /\.app-button \{[\s\S]*?\n  height: 92px;/.test(cssSrc));
+  /\.app-button \{[\s\S]*?\n  height: 84px;/.test(cssSrc));
+check('a long name cannot stretch its column out of line with the others',
+  /\.app-button \{ min-width: 0; \}/.test(cssSrc));
 check('a name and a tagline get one line each, and are clipped if longer',
   /\.app-name \{[\s\S]*?white-space: nowrap;[\s\S]*?text-overflow: ellipsis;/.test(cssSrc)
   && /\.app-description \{[\s\S]*?white-space: nowrap;[\s\S]*?text-overflow: ellipsis;/.test(cssSrc));
@@ -114,8 +117,15 @@ check('the two picks rows are three across',
 check('the card drops over half a second, half a second after load',
   /\.cta \{[\s\S]*?transition: transform 500ms/.test(cssSrc) && /\}, 500\);/.test(jsSrc));
 check('the search box says Search', /placeholder="Search\.\.\."/.test(html));
-check('the card says what Adam wrote',
-  html.includes('This website is intended to be a browser.') && html.includes('Setup now for your kids.'));
+check('the card says what Adam wrote, with the second line in the button',
+  html.includes('<p class="cta-lead">This website is intended to be a browser.</p>')
+  && /class="cta-go"[^>]*>Setup now for your kids</.test(html));
+check('the card has no coloured rail down its side',
+  !/\.cta \{[^}]*border-left:/.test(cssSrc));
+check('the header, the bar and the two picks rows are one screenful',
+  /<div class="first-screen">/.test(html)
+  && /\.first-screen \{[\s\S]*?min-height: 100svh;/.test(cssSrc));
+check('the footer no longer explains who runs the sites', !html.includes('footer-note'));
 check('assets are asked for by a content hash, so a deploy is not cached for a year',
   /home\.css\?v=[a-f0-9]{10}/.test(html) && /home\.js\?v=[a-f0-9]{10}/.test(html));
 check('the header logo is the small copy, not the 3.2 MB original',

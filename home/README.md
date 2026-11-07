@@ -99,7 +99,14 @@ new editorial list; it is what the app puts on its home screen, read off
 once in their category, which is why the picks block disappears the moment any
 filter is on, and why `check:home` counts tiles only below it.
 
-**Every tile is exactly 92px tall, and holds two lines of text.** Not
+**The first screen is the header, the bar and the two picks rows, and nothing
+else.** They are wrapped in `.first-screen` at `min-height: 100svh`, so the
+twelve categories always begin below the fold. `svh`, not `vh`: on a phone
+`vh` is the height with the browser's own bars hidden, which is taller than
+what anyone can actually see, and the last row of tiles would sit just off
+the bottom.
+
+**Every tile is exactly 84px tall, and holds two lines of text.** Not
 min-height: a tile that grows to fit its words makes the row around it look
 broken. The name gets one line and the tagline gets one, both clipped with an
 ellipsis if they ever overrun, and the catalogue export refuses to publish a
@@ -114,7 +121,12 @@ width as six thin columns.
 **Everything is sized to put the two picks rows above the fold on a phone.**
 That is the constraint the numbers come from, not taste. On a 375x667 screen:
 55px of header, 30px of air, a 38px bar, and fifteen tiles three across at
-80px each comes to 636px, with 31px to spare. It only works because the bar
+74px each comes to 606px, with 61px to spare.
+
+One rule earns its keep more than the rest: `.app-button { min-width: 0 }`. A
+grid item is at least as wide as its widest unbreakable word, so a name set
+to `nowrap` stretched its own column and the three cards in a row stopped
+matching. With it, the name is clipped and the columns stay equal. It only works because the bar
 stays on one line at phone width (it used to wrap its filters onto a second
 row, costing 54px where it is dearest), because the tiles lost their padding,
 and because the empty result line collapses instead of reserving 21px. Change

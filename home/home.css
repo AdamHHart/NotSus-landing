@@ -116,16 +116,15 @@ a { color: var(--primary-emphasis); }
      added 300px to the header and shoved the brand across when it appeared,
      half a second after the page settled.
      It starts level with the top of the logo bar, in the band the header
-     leaves empty, rather than below the header. The amber edge is the one
-     highlight the page allows itself, and it is spent here because this is
-     the only thing on the page asking a parent for anything. */
+     leaves empty, rather than below the header. The green button is the only
+     thing in it carrying colour; a coloured rail down the side was tried and
+     it just looked like decoration. */
   position: absolute;
   top: 0.75rem;
   right: 1.25rem;
   width: 310px;
   background: var(--surface);
   border: 1px solid var(--border-strong);
-  border-left: 3px solid var(--accent);
   border-radius: var(--radius-lg);
   padding: 0.85rem 1rem 0.95rem;
   box-shadow: 0 16px 44px rgba(0, 0, 0, 0.6);
@@ -151,8 +150,7 @@ a { color: var(--primary-emphasis); }
 }
 .cta-close:hover { color: var(--text); background: var(--surface-raised); }
 
-.cta-lead { margin: 0 0 0.1rem; font-weight: 800; font-size: 0.95rem; color: var(--cream); padding-right: 1.4rem; line-height: 1.3; }
-.cta-sub { margin: 0 0 0.7rem; color: var(--text-secondary); font-size: 0.87rem; }
+.cta-lead { margin: 0 0 0.75rem; font-weight: 800; font-size: 0.95rem; color: var(--cream); padding-right: 1.4rem; line-height: 1.3; }
 
 .cta-go {
   font-family: inherit;
@@ -186,6 +184,21 @@ a { color: var(--primary-emphasis); }
 .cta-tier span { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; }
 .cta-tier:hover { border-color: var(--primary); }
 .cta-tier-alt strong { color: var(--accent); }
+
+/* ----------------------------------------------------------- first screen */
+
+/* The header, the search bar and the two rows the browser opens with are one
+   screenful, and the twelve categories start under it. svh rather than vh,
+   because on a phone vh is the height with the browser's own bars hidden,
+   which is taller than what anybody can actually see, and the last row of
+   tiles would sit just off the bottom. */
+.first-screen {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+.first-screen .tools { padding-bottom: 1rem; }
 
 /* ---------------------------------------------------------------- finder */
 
@@ -473,15 +486,17 @@ a { color: var(--primary-emphasis); }
   gap: 0.25rem;
   background: var(--surface-light);
   color: #1a1a1a;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  /* Barely any padding above and below. The height is fixed instead, so every
-     card in the grid is the same card: logo, one line of name, one line of
-     tagline. A tile that grows to fit its text makes the row around it look
-     broken. */
-  padding: 0.5rem 0.45rem;
+  /* No border. It was rgba(255,255,255,0.1) on a white card, which draws
+     nothing and costs 2px of every tile. The card is white on charcoal; that
+     is the edge. */
+  border: 0;
+  border-radius: var(--radius);
+  /* Barely any padding. The height is fixed instead, so every card in the
+     grid is the same card: logo, one line of name, one line of tagline. A
+     tile that grows to fit its text makes the row around it look broken. */
+  padding: 0.4rem 0.35rem;
   text-decoration: none;
-  height: 92px;
+  height: 84px;
   justify-content: center;
   transition: transform var(--ease-fast), border-color var(--ease-fast), box-shadow var(--ease-fast);
 }
@@ -493,18 +508,23 @@ a { color: var(--primary-emphasis); }
   outline: none;
 }
 .app-button[hidden] { display: none; }
+/* Without this a grid item is at least as wide as its widest unbreakable
+   word, so one long name stretched its column and the three cards in a row
+   stopped matching. This lets the name be clipped instead. */
+.app-button { min-width: 0; }
+.app-button > * { max-width: 100%; }
 
 /* The site's own logo, at whatever aspect it came in. Contain rather than
    cover, because half of a wordmark is worse than a small one. */
 .app-logo {
-  width: 28px; height: 28px;
+  width: 26px; height: 26px;
   object-fit: contain;
   display: block;
   flex: 0 0 auto;
 }
 .app-logo-emoji {
-  font-size: 1.3rem;
-  line-height: 28px;
+  font-size: 1.2rem;
+  line-height: 26px;
   text-align: center;
   background: rgba(0, 0, 0, 0.06);
   border-radius: 8px;
@@ -513,7 +533,7 @@ a { color: var(--primary-emphasis); }
 /* One line each, and clipped rather than wrapped if a name ever slips past
    the budget the catalogue export enforces. Two lines of text, never three. */
 .app-name {
-  font-size: 0.84rem;
+  font-size: 0.79rem;
   font-weight: 700;
   line-height: 1.2;
   color: #1a1a1a;
@@ -523,7 +543,7 @@ a { color: var(--primary-emphasis); }
   text-overflow: ellipsis;
 }
 .app-description {
-  font-size: 0.71rem;
+  font-size: 0.66rem;
   line-height: 1.25;
   color: #5a5a5a;
   max-width: 100%;
@@ -578,7 +598,6 @@ a { color: var(--primary-emphasis); }
 }
 .footer-social a:hover { color: var(--primary-emphasis); }
 
-.footer-note { max-width: 560px; margin: 0 auto 1rem; line-height: 1.6; }
 .footer-copy { margin: 0; font-size: 0.8rem; }
 
 /* -------------------------------------------------------------- narrower */
@@ -619,11 +638,11 @@ a { color: var(--primary-emphasis); }
 
   /* Three across everywhere on a phone, picks and categories alike. */
   .app-grid { grid-template-columns: repeat(3, 1fr); gap: 0.55rem; }
-  .app-button { height: 80px; padding: 0.4rem 0.25rem; gap: 0.15rem; border-radius: var(--radius); }
-  .app-logo { width: 24px; height: 24px; }
-  .app-logo-emoji { font-size: 1.15rem; line-height: 24px; }
-  .app-name { font-size: 0.72rem; }
-  .app-description { font-size: 0.62rem; }
+  .app-button { height: 74px; padding: 0.35rem 0.2rem; gap: 0.1rem; }
+  .app-logo { width: 22px; height: 22px; }
+  .app-logo-emoji { font-size: 1.05rem; line-height: 22px; }
+  .app-name { font-size: 0.67rem; }
+  .app-description { font-size: 0.57rem; }
   .picks-block { max-width: none; }
 
   /* Top right over a tile grid is tight on a phone, so the card leaves the

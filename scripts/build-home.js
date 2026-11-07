@@ -192,6 +192,8 @@ const html = `<!DOCTYPE html>
 
 <a class="skip" href="#tools">Skip to the tools</a>
 
+<main>
+<div class="first-screen">
 <header class="site-header">
   <a class="brand" href="/">
     <img src="${stamp('public/logo-120.png')}" width="32" height="32" alt="" fetchpriority="high">
@@ -205,8 +207,7 @@ const html = `<!DOCTYPE html>
     <div id="cta" class="cta" hidden>
       <button type="button" class="cta-close" id="cta-close" aria-label="Close">&times;</button>
       <p class="cta-lead">This website is intended to be a browser.</p>
-      <p class="cta-sub">Setup now for your kids.</p>
-      <button type="button" class="cta-go" id="cta-open" aria-expanded="false" aria-controls="cta-more">Set up</button>
+      <button type="button" class="cta-go" id="cta-open" aria-expanded="false" aria-controls="cta-more">Setup now for your kids</button>
       <div class="cta-more" id="cta-more" hidden>
         <a class="cta-tier" href="/downloads">
           <strong>Basic Kid's Browser</strong>
@@ -220,8 +221,6 @@ const html = `<!DOCTYPE html>
     </div>
   </div>
 </header>
-
-<main>
 
   <div class="finder">
     <h1 class="finder-title">${total} free websites for kids, hand picked</h1>
@@ -260,10 +259,11 @@ ${ageOptions}
     <div id="picks" class="picks-block">
 ${homePicks.rows.map(picksRow).join('\n')}
     </div>
+  </div>
+</div>
 
-    <div class="everything">
+  <div class="tools everything">
 ${catalog.categoryOrder.map(section).filter(Boolean).join('\n')}
-    </div>
   </div>
 
 </main>
@@ -289,8 +289,6 @@ ${footerNav}
 ${footerSocial}
   </nav>
 
-  <p class="footer-note">Every site here opens in a new tab and belongs to somebody else. We chose them;
-    we do not run them. The browser is where a parent decides what their child can open.</p>
   <p class="footer-copy">&copy; 2026 NotSus Education Inc. All rights reserved. 2015 Main Street, Vancouver, BC, Canada.</p>
 </footer>
 
