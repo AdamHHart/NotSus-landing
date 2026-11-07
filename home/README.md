@@ -28,6 +28,7 @@ back from the Render dashboard without a deploy:
 | `icons/` | **Fetched, once.** Each site's own icon, downloaded by `scripts/fetch-icons.js` and committed. |
 | `../data/catalog.json` | **Copied** from the app repository. |
 | `../data/search-synonyms.json` | **Copied** from the app repository. |
+| `../data/home-picks.json` | **Copied** from the app repository. The two rows above the categories. |
 
 The taglines under each tile come from `docs/catalog/taglines.json` in the app
 repository, one to three words each, and the export refuses to run if one is
@@ -73,6 +74,22 @@ Deploy, Deploy latest commit.
 the app repository, because that is what fills the database the browser reads.
 `scripts/export-catalog.js` over there turns it into data this build can read.
 A hand-kept second copy would drift within a month.
+
+**The bar is three capsules, not one box with dividers.** The search keeps a
+full capsule. Each filter is a capsule whose left edge is a concave bite the
+exact shape of the one before it, so the convex end nests inside with an even
+hairline of page showing through. The bite is a `radial-gradient` mask, and it
+only stays even because the bar's height is pinned: `--cap` has to *be* half
+the height, or the end and the bite are arcs of different radii and the gap
+opens and closes around the curve. Everything inside is centred, never padded
+to height. Below 820px the search takes a line of its own and the two filters
+pair up underneath, still interlocking.
+
+**The two rows at the top are the browser's own.** `home-picks.json` is not a
+new editorial list; it is what the app puts on its home screen, read off
+`src/index.html`. Fifteen sites appear twice on the page, once up there and
+once in their category, which is why the picks block disappears the moment any
+filter is on, and why `check:home` counts tiles only below it.
 
 **The icons are ours to serve.** Pointing the tiles at each site's own favicon,
 or at an icon service, would mean a child opening this page sends a request to

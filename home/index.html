@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NotSus.net - 106 free tools and libraries for kids</title>
-<meta name="description" content="106 free websites for children to learn, make and look things up. Chosen by hand, no ads to click through, nothing to sign up for. The same list that opens inside the NotSus browser.">
+<title>NotSus.net - 107 free tools and libraries for kids</title>
+<meta name="description" content="107 free websites for children to learn, make and look things up. Chosen by hand, no ads to click through, nothing to sign up for. The same list that opens inside the NotSus browser.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:title" content="NotSus.net - free tools and libraries for kids">
-<meta property="og:description" content="106 hand-picked free websites for children. Search by what you want to do.">
+<meta property="og:description" content="107 hand-picked free websites for children. Search by what you want to do.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.notsus.net/">
-<link rel="stylesheet" href="/home/home.css?v=61bec1d838">
+<link rel="stylesheet" href="/home/home.css?v=cdc51b1459">
 </head>
 <body>
 
@@ -52,21 +52,22 @@
 
   <div class="finder">
     <h1 class="finder-title">What do you want to do?</h1>
-    <p class="finder-sub">106 free websites for kids. Hand picked, no sign up, nothing to pay.</p>
+    <p class="finder-sub">107 free websites for kids. Hand picked, no sign up, nothing to pay.</p>
 
     <div class="capsule">
-      <span class="capsule-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      </span>
-      <input type="search" id="q" class="capsule-input" autocomplete="off"
-             placeholder="Try: make a game, draw, times tables, dinosaurs"
-             aria-label="Search the tools" aria-describedby="result-count">
-      <button type="button" id="clear" class="capsule-clear" hidden aria-label="Clear the search">&times;</button>
+      <div class="capsule-search">
+        <span class="capsule-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </span>
+        <input type="search" id="q" class="capsule-input" autocomplete="off"
+               placeholder="Try: make a game, draw, times tables, dinosaurs"
+               aria-label="Search the tools" aria-describedby="result-count">
+        <button type="button" id="clear" class="capsule-clear" hidden aria-label="Clear the search">&times;</button>
+      </div>
 
-      <div class="capsule-picks">
-        <div class="capsule-pick">
-          <label class="visually-hidden" for="cat">What it is for</label>
-          <select id="cat">
+      <div class="capsule-pick">
+        <label class="visually-hidden" for="cat">What it is for</label>
+        <select id="cat">
         <option value="">Everything</option>
         <option value="REFERENCE">🔎 Look things up</option>
         <option value="LEARN">📚 Learn</option>
@@ -80,19 +81,18 @@
         <option value="MUSIC">🎵 Music</option>
         <option value="UTILITY">📝 Get work done</option>
         <option value="DOWNLOAD">💾 Bigger tools</option>
-          </select>
-        </div>
-        <div class="capsule-pick">
-          <label class="visually-hidden" for="age">Age</label>
-          <select id="age">
+        </select>
+      </div>
+      <div class="capsule-pick">
+        <label class="visually-hidden" for="age">Age</label>
+        <select id="age">
         <option value="99" selected>Any age</option>
         <option value="5">Not reading yet</option>
         <option value="7">Starting to read</option>
         <option value="9">8 and 9</option>
         <option value="11">10 and 11</option>
         <option value="99">12 and up</option>
-          </select>
-        </div>
+        </select>
       </div>
     </div>
 
@@ -102,6 +102,127 @@
   </div>
 
   <div id="tools" class="tools">
+    <div id="picks" class="picks-block">
+      <p class="picks-lead">What the browser opens with</p>
+      <section class="app-section picks" data-picks="LEARN">
+        <h2 class="section-title"><span aria-hidden="true">📚</span> Learn</h2>
+        <div class="app-grid">
+          <a class="app-button" href="https://www.khanacademy.org" target="_blank" rel="noopener noreferrer"
+             data-cat="LEARN" data-agemin="5"
+             data-terms="khan academy free school lessons free world-class education in math, science, history, and more math science history art computer-science khan khan academy lessons maths lessons free school learn learning lessons study school homework class teach course practice practise revision quiz learn">
+            <img class="app-logo" src="/home/icons/khan-academy.png?v=b882437bce" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">Khan Academy</span>
+            <span class="app-description">Free school lessons</span>
+          </a>
+          <a class="app-button" href="https://www.perplexity.ai" target="_blank" rel="noopener noreferrer"
+             data-cat="REFERENCE" data-agemin="10"
+             data-terms="perplexity ask anything ai-powered research assistant for instant, sourced answers ai search research answers ai chatbot ask ai answers search look up lookup find out facts information info encyclopedia encyclopaedia dictionary research homework help what is who was google look things up">
+            <img class="app-logo" src="/home/icons/perplexity.png?v=35c14a3d53" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">Perplexity</span>
+            <span class="app-description">Ask anything</span>
+          </a>
+          <a class="app-button" href="https://www.wikipedia.org" target="_blank" rel="noopener noreferrer"
+             data-cat="REFERENCE" data-agemin="8"
+             data-terms="wikipedia encyclopedia the free encyclopedia — millions of articles on every topic research knowledge encyclopedia wiki wikipedia encyclopedia look it up search look up lookup find out facts information info encyclopedia encyclopaedia dictionary research homework help what is who was google look things up">
+            <img class="app-logo" src="/home/icons/wikipedia.png?v=470cb76f60" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">Wikipedia</span>
+            <span class="app-description">Encyclopedia</span>
+          </a>
+          <a class="app-button" href="https://kids.nationalgeographic.com" target="_blank" rel="noopener noreferrer"
+             data-cat="SCIENCE" data-agemin="4"
+             data-terms="national geographic kids animals and nature explore amazing animals, science, nature, and geography nature animals science geography exploration nat geo natgeo national geographic animals animal facts science space planets animals nature experiments biology chemistry physics dinosaurs weather volcano ocean stars nasa science">
+            <img class="app-logo" src="/home/icons/national-geographic-kids.png?v=0e43b12806" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">National Geographic Kids</span>
+            <span class="app-description">Animals and nature</span>
+          </a>
+          <a class="app-button" href="https://storylineonline.net" target="_blank" rel="noopener noreferrer"
+             data-cat="READING" data-agemin="4"
+             data-terms="storyline online books read aloud watch famous actors read children&#39;s books aloud reading literature storytelling language storyline read to me story time stories read aloud read reading story stories books book bedtime audiobook write a story storybook stories">
+            <img class="app-logo" src="/home/icons/storyline-online.png?v=2ea15a4a2c" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">Storyline Online</span>
+            <span class="app-description">Books read aloud</span>
+          </a>
+          <a class="app-button" href="https://www.windy.com" target="_blank" rel="noopener noreferrer"
+             data-cat="SCIENCE" data-agemin="8"
+             data-terms="windy live weather maps interactive global weather and wind maps in real time weather climate environment maps windy weather wind storm rain radar forecast science space planets animals nature experiments biology chemistry physics dinosaurs weather volcano ocean stars nasa science">
+            <img class="app-logo" src="/home/icons/windy.png?v=cdbfb038e1" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">Windy</span>
+            <span class="app-description">Live weather maps</span>
+          </a>
+        </div>
+      </section>
+      <section class="app-section picks" data-picks="CREATE">
+        <h2 class="section-title"><span aria-hidden="true">🎨</span> Create</h2>
+        <div class="app-grid">
+          <a class="app-button" href="https://scratch.mit.edu" target="_blank" rel="noopener noreferrer"
+             data-cat="CODING" data-agemin="6"
+             data-terms="scratch make games create stories, games, and animations with block-based programming coding programming creativity games animation scratch scratch mit make a game block coding sprites cat game code coding program programming make a game make games game maker build a game computer developer javascript python html robot robotics app make an app hacking minecraft mods make games and code">
+            <img class="app-logo" src="/home/icons/scratch.png?v=2af6fed749" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">Scratch</span>
+            <span class="app-description">Make games</span>
+          </a>
+          <a class="app-button" href="https://replit.com" target="_blank" rel="noopener noreferrer"
+             data-cat="CODING" data-agemin="10"
+             data-terms="replit write real code online ide for coding in python, javascript, and 50+ languages coding ide python javascript collaboration replit repl write code python javascript code coding program programming make a game make games game maker build a game computer developer javascript python html robot robotics app make an app hacking minecraft mods make games and code">
+            <img class="app-logo" src="/home/icons/replit.png?v=40ce361b90" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">Replit</span>
+            <span class="app-description">Write real code</span>
+          </a>
+          <a class="app-button" href="https://www.tinkercad.com" target="_blank" rel="noopener noreferrer"
+             data-cat="CREATE" data-agemin="6"
+             data-terms="tinkercad 3d design the easiest way to start 3d modeling and circuit design — browser-based 3d-modeling circuits engineering beginner tinkercad tinker cad 3d 3d design minecraft build things 3d print make making create build building 3d three d model modelling modeling print 3d print video videos edit video movie film youtube video tiktok video house design a room invent make things">
+            <img class="app-logo" src="/home/icons/tinkercad.png?v=ef9c7f96c8" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">Tinkercad</span>
+            <span class="app-description">3D design</span>
+          </a>
+          <a class="app-button" href="https://www.photopea.com" target="_blank" rel="noopener noreferrer"
+             data-cat="ART" data-agemin="10"
+             data-terms="photopea photo editor professional-grade image editor that works right in the browser photo-editing design art layers photopea photoshop edit a photo photo editor layers draw drawing paint painting art sketch doodle colour color colouring coloring photo photos picture pictures edit photos pixel art pixels animation animate cartoon comic poster design logo draw and paint">
+            <img class="app-logo" src="/home/icons/photopea.png?v=44540661c5" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">Photopea</span>
+            <span class="app-description">Photo editor</span>
+          </a>
+          <a class="app-button" href="https://www.capcut.com" target="_blank" rel="noopener noreferrer"
+             data-cat="CREATE" data-agemin="9"
+             data-terms="capcut video editor easy, powerful video editor — great for storytelling and projects video-editing multimedia storytelling content-creation capcut cap cut edit video tiktok video editor make making create build building 3d three d model modelling modeling print 3d print video videos edit video movie film youtube video tiktok video house design a room invent make things">
+            <img class="app-logo" src="/home/icons/capcut.png?v=3487c395c7" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">CapCut</span>
+            <span class="app-description">Video editor</span>
+          </a>
+          <a class="app-button" href="https://docs.google.com" target="_blank" rel="noopener noreferrer"
+             data-cat="UTILITY" data-agemin="7"
+             data-terms="google docs write documents write, edit, and collaborate on documents in real time writing documents collaboration productivity docs google docs write essay word write writing document documents essay typing notes homework report slides presentation get work done">
+            <img class="app-logo" src="/home/icons/google-docs.png?v=2b3233e6db" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">Google Docs</span>
+            <span class="app-description">Write documents</span>
+          </a>
+          <a class="app-button" href="https://sheets.google.com" target="_blank" rel="noopener noreferrer"
+             data-cat="UTILITY" data-agemin="9"
+             data-terms="google sheets spreadsheets create and analyze spreadsheets — formulas, charts, and data spreadsheets data math organization sheets google sheets spreadsheet table excel write writing document documents essay typing notes homework report slides presentation get work done">
+            <img class="app-logo" src="/home/icons/google-sheets.png?v=b2f709af6f" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">Google Sheets</span>
+            <span class="app-description">Spreadsheets</span>
+          </a>
+          <a class="app-button" href="https://slides.google.com" target="_blank" rel="noopener noreferrer"
+             data-cat="UTILITY" data-agemin="7"
+             data-terms="google slides slideshows create and present slideshows — collaborate and share easily presentations design communication collaboration slides google slides presentation slideshow powerpoint write writing document documents essay typing notes homework report slides presentation get work done">
+            <img class="app-logo" src="/home/icons/google-slides.png?v=b2f709af6f" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">Google Slides</span>
+            <span class="app-description">Slideshows</span>
+          </a>
+          <a class="app-button" href="https://www.canva.com" target="_blank" rel="noopener noreferrer"
+             data-cat="ART" data-agemin="8"
+             data-terms="canva posters and designs drag-and-drop graphic design for posters, presentations, and more design graphics presentations posters canva poster design presentation card invitation draw drawing paint painting art sketch doodle colour color colouring coloring photo photos picture pictures edit photos pixel art pixels animation animate cartoon comic poster design logo draw and paint">
+            <img class="app-logo" src="/home/icons/canva.png?v=0c5a4519b0" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">Canva</span>
+            <span class="app-description">Posters and designs</span>
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <div class="everything">
+      <p class="picks-lead">Everything else, by what it is for</p>
       <section class="app-section" data-section="REFERENCE">
         <h2 class="section-title"><span aria-hidden="true">🔎</span> Look things up</h2>
         <div class="app-grid">
@@ -139,6 +260,13 @@
             <img class="app-logo" src="/home/icons/dictionary-com.png?v=5464b7904f" alt="" width="34" height="34" loading="lazy" decoding="async">
             <span class="app-name">Dictionary.com</span>
             <span class="app-description">Word meanings</span>
+          </a>
+          <a class="app-button" href="https://safe.duckduckgo.com" target="_blank" rel="noopener noreferrer"
+             data-cat="REFERENCE" data-agemin="10"
+             data-terms="duckduckgo private web search web search with strict safe search locked on, and no tracking search research privacy safe-search duckduckgo duck duck go ddg search the web private search search engine search look up lookup find out facts information info encyclopedia encyclopaedia dictionary research homework help what is who was google look things up">
+            <img class="app-logo" src="/home/icons/duckduckgo.png?v=54c028b844" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span class="app-name">DuckDuckGo</span>
+            <span class="app-description">Private web search</span>
           </a>
           <a class="app-button" href="https://archive.org" target="_blank" rel="noopener noreferrer"
              data-cat="REFERENCE" data-agemin="12"
@@ -904,6 +1032,7 @@
           </a>
         </div>
       </section>
+    </div>
   </div>
 
 </main>
@@ -944,7 +1073,7 @@
   <p class="footer-copy">&copy; 2026 NotSus Education Inc. All rights reserved. 2015 Main Street, Vancouver, BC, Canada.</p>
 </footer>
 
-<script id="miss-data" type="application/json">{"notCarried":{"minecraft":["Tinkercad","Scratch"],"roblox":["Scratch","MakeCode Arcade","PixelPad"],"fortnite":["MakeCode Arcade","Godot Engine"],"youtube":["TED-Ed","PBS Learning Media"],"tiktok":["CapCut","Brush Ninja"],"photoshop":["Photopea","Krita"],"illustrator":["Canva","Photopea"],"chatgpt":["Perplexity"],"google":["Kiddle"],"among us":["MakeCode Arcade","Scratch"],"discord":[],"snapchat":[],"instagram":[]},"missLine":"We do not have {asked}. These let you do something like it:","emptyLine":"We do not have {asked}, and there is nothing here like it.","downloadLine":"Looking for something that is not here? In the NotSus browser, a parent can add any site."}</script>
-<script src="/home/home.js?v=10ec540591" defer></script>
+<script id="miss-data" type="application/json">{"notCarried":{"minecraft":["Tinkercad","Scratch"],"roblox":["Scratch","MakeCode Arcade","PixelPad"],"fortnite":["MakeCode Arcade","Godot Engine"],"youtube":["TED-Ed","PBS Learning Media"],"tiktok":["CapCut","Brush Ninja"],"photoshop":["Photopea","Krita"],"illustrator":["Canva","Photopea"],"chatgpt":["Perplexity"],"google":["Kiddle","DuckDuckGo"],"among us":["MakeCode Arcade","Scratch"],"discord":[],"snapchat":[],"instagram":[]},"missLine":"We do not have {asked}. These let you do something like it:","emptyLine":"We do not have {asked}, and there is nothing here like it.","downloadLine":"Looking for something that is not here? In the NotSus browser, a parent can add any site."}</script>
+<script src="/home/home.js?v=ad1ae7d9d1" defer></script>
 </body>
 </html>

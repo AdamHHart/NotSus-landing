@@ -106,6 +106,24 @@
       ]
     },
     {
+      "name": "DuckDuckGo",
+      "url": "https://safe.duckduckgo.com",
+      "icon": "🦆",
+      "category": "REFERENCE",
+      "description": "Web search with strict safe search locked on, and no tracking",
+      "short": "Private web search",
+      "ageMin": 10,
+      "ageMax": 18,
+      "requiresApproval": true,
+      "featured": false,
+      "tags": [
+        "search",
+        "research",
+        "privacy",
+        "safe-search"
+      ]
+    },
+    {
       "name": "Internet Archive",
       "url": "https://archive.org",
       "icon": "🗂️",

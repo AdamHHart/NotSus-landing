@@ -201,30 +201,55 @@ a { color: var(--primary-emphasis); }
   font-size: 1rem;
 }
 
-/* One capsule. The search runs as you type, so there is no button to press;
-   the two dropdowns sit inside the same shape, on the right, divided by a
-   hairline rather than by a gap. */
+/* One bar, three capsules that interlock.
+ *
+ * The search keeps a full capsule. Each filter after it is a capsule too, and
+ * the two meet: the filter's left edge is a concave bite the exact shape of
+ * the capsule to its left, so the convex end nests inside it with an even
+ * hairline of page between them. No dividing lines, no square corners.
+ *
+ * The bite is a radial-gradient mask. --cap is half the bar's height, which is
+ * the radius of every rounded end; --gap is the hairline, so the bite is drawn
+ * at --cap + --gap and the two curves stay parallel all the way round.
+ *
+ * Each segment is then pulled back by --cap, which puts its box edge on the
+ * centre of the previous capsule's round end, exactly where the bite is
+ * centred. Padding has to clear the bite, so it starts at --cap + --gap.
+ */
 .capsule {
+  --cap: 27px;
+  --gap: 5px;
   display: flex;
   align-items: stretch;
-  max-width: 760px;
+  max-width: 820px;
   margin: 0 auto 0.9rem;
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  border-radius: 999px;
-  transition: border-color var(--ease-fast), background var(--ease-fast), box-shadow var(--ease-fast);
-  overflow: hidden;
+  /* The ground shows through the joints, so the bar itself has no fill. */
+  background: transparent;
 }
-.capsule:focus-within {
-  border-color: var(--primary);
+
+.capsule-search {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  /* Pinned, because --cap has to BE half the height. If the content decided
+     the height, the rounded ends and the bite would be arcs of different
+     radii and the hairline between them would open and close around the
+     curve. Everything in the bar is centred inside this instead of padded. */
+  height: calc(var(--cap) * 2);
+  background: var(--surface);
+  border-radius: 999px;
+  transition: background var(--ease-fast), box-shadow var(--ease-fast);
+}
+.capsule-search:focus-within {
   background: var(--surface-raised);
-  box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.18);
+  box-shadow: 0 0 0 2px var(--primary);
 }
 
 .capsule-icon {
   display: flex;
   align-items: center;
-  padding-left: 1.1rem;
+  padding-left: 1.2rem;
   color: var(--text-muted);
   flex: 0 0 auto;
 }
@@ -233,7 +258,8 @@ a { color: var(--primary-emphasis); }
 .capsule-input {
   flex: 1 1 auto;
   min-width: 0;
-  padding: 0.95rem 0.6rem 0.95rem 0.75rem;
+  height: 100%;
+  padding: 0 0.6rem 0 0.8rem;
   font-size: 1.02rem;
   font-family: inherit;
   color: var(--text);
@@ -250,7 +276,7 @@ a { color: var(--primary-emphasis); }
   flex: 0 0 auto;
   align-self: center;
   width: 1.75rem; height: 1.75rem;
-  margin-right: 0.3rem;
+  margin-right: 0.55rem;
   border: 0;
   border-radius: 50%;
   background: var(--surface-raised);
@@ -261,44 +287,54 @@ a { color: var(--primary-emphasis); }
 }
 .capsule-clear:hover { background: var(--border-strong); color: var(--text); }
 
-.capsule-picks { display: flex; flex: 0 0 auto; }
-
 .capsule-pick {
   position: relative;
   display: flex;
   align-items: center;
-  border-left: 1px solid var(--border-strong);
+  flex: 0 0 auto;
+  height: calc(var(--cap) * 2);
+  background: var(--surface);
+  border-radius: 999px;
+  margin-left: calc(var(--cap) * -1);
+  /* The concave left edge. Transparent out to the bite, solid after it. */
+  -webkit-mask-image: radial-gradient(circle at left center, transparent 0 calc(var(--cap) + var(--gap)), #000 calc(var(--cap) + var(--gap)));
+  mask-image: radial-gradient(circle at left center, transparent 0 calc(var(--cap) + var(--gap)), #000 calc(var(--cap) + var(--gap)));
+  transition: background var(--ease-fast);
 }
-/* The chevron, drawn once rather than per select. */
+.capsule-pick:hover { background: var(--surface-raised); }
+
+/* The chevron, drawn once rather than once per select. */
 .capsule-pick::after {
   content: '';
   position: absolute;
-  right: 0.95rem;
+  right: 1.1rem;
   width: 8px; height: 8px;
   border-right: 2px solid var(--text-muted);
   border-bottom: 2px solid var(--text-muted);
   transform: translateY(-2px) rotate(45deg);
   pointer-events: none;
 }
-.capsule-pick:last-child { padding-right: 0.3rem; }
 
 .capsule-pick select {
   font-family: inherit;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.92rem;
+  font-weight: 700;
   color: var(--text-secondary);
   background: transparent;
   border: 0;
   outline: none;
   cursor: pointer;
-  padding: 0.95rem 2.2rem 0.95rem 1.1rem;
+  height: 100%;
+  /* Clear of the bite on the left, clear of the chevron on the right. */
+  padding: 0 2.4rem 0 calc(var(--cap) + var(--gap) + 0.4rem);
   -webkit-appearance: none;
   appearance: none;
-  max-width: 180px;
+  max-width: 190px;
   text-overflow: ellipsis;
 }
 .capsule-pick select:hover { color: var(--text); }
-.capsule-pick select:focus-visible { color: var(--text); text-decoration: underline; }
+/* A mask clips an outline, so focus is shown in the type instead. */
+.capsule-pick select:focus-visible { color: var(--primary-emphasis); text-decoration: underline; }
 /* A native menu draws itself, and on a dark page it needs telling. */
 .capsule-pick option { background: var(--surface); color: var(--text); }
 /* A dropdown that is doing something should look like it is. */
@@ -368,6 +404,22 @@ a { color: var(--primary-emphasis); }
 .miss-get:hover { background: var(--primary-hover); color: #fff; }
 
 /* ----------------------------------------------------------------- tiles */
+
+/* The two rows the browser itself opens with, above the twelve categories. */
+.picks-lead {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.picks-block { margin-bottom: 2.75rem; }
+.picks-block[hidden] { display: none; }
+.picks .section-title { border-bottom: 0; padding-bottom: 0; }
+.everything > .picks-lead { margin-top: 0; }
 
 .tools {
   max-width: 1180px;
@@ -499,17 +551,20 @@ a { color: var(--primary-emphasis); }
 
 /* -------------------------------------------------------------- narrower */
 
-@media (max-width: 860px) {
-  /* The capsule stops being one row: the search keeps the top, and the two
-     dropdowns share the line below, still inside the one shape. */
-  .capsule { flex-wrap: wrap; border-radius: var(--radius-lg); }
-  .capsule-input { flex: 1 1 100%; order: 2; padding-left: 0.3rem; }
-  .capsule-icon { order: 1; padding: 0.95rem 0 0.95rem 1rem; align-items: flex-start; }
-  .capsule-clear { order: 3; }
-  .capsule-picks { order: 4; flex: 1 1 100%; border-top: 1px solid var(--border-strong); }
-  .capsule-pick { flex: 1 1 50%; border-left: 0; }
-  .capsule-pick + .capsule-pick { border-left: 1px solid var(--border-strong); }
-  .capsule-pick select { width: 100%; max-width: none; padding-top: 0.8rem; padding-bottom: 0.8rem; }
+@media (max-width: 820px) {
+  /* Three capsules in a row need width this screen does not have. The search
+     takes the first line on its own, and the two filters sit under it as a
+     pair, still interlocking with each other. */
+  .capsule { flex-wrap: wrap; gap: 0.5rem 0; }
+  .capsule-search { flex: 1 1 100%; }
+  .capsule-pick { flex: 1 1 0; margin-left: 0; -webkit-mask-image: none; mask-image: none; }
+  .capsule-pick:last-of-type {
+    margin-left: calc(var(--cap) * -1);
+    -webkit-mask-image: radial-gradient(circle at left center, transparent 0 calc(var(--cap) + var(--gap)), #000 calc(var(--cap) + var(--gap)));
+    mask-image: radial-gradient(circle at left center, transparent 0 calc(var(--cap) + var(--gap)), #000 calc(var(--cap) + var(--gap)));
+  }
+  .capsule-pick:first-of-type select { padding-left: 1.3rem; }
+  .capsule-pick select { width: 100%; max-width: none; }
 }
 
 @media (max-width: 700px) {

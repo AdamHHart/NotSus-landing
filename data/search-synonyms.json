@@ -96,6 +96,7 @@
   "apps": {
     "Britannica Kids": ["britannica","encyclopedia for kids"],
     "Kiddle": ["safe search","kid search","search for kids","google for kids"],
+    "DuckDuckGo": ["duckduckgo","duck duck go","ddg","search the web","private search","search engine"],
     "Perplexity": ["ai","chatbot","ask ai","answers"],
     "Wikipedia": ["wiki","wikipedia","encyclopedia","look it up"],
     "Dictionary.com": ["dictionary","what does it mean","definition","spelling","word meaning"],
@@ -227,7 +228,7 @@
     "photoshop": ["Photopea", "Krita"],
     "illustrator": ["Canva", "Photopea"],
     "chatgpt": ["Perplexity"],
-    "google": ["Kiddle"],
+    "google": ["Kiddle","DuckDuckGo"],
     "among us": ["MakeCode Arcade", "Scratch"],
     "discord": [],
     "snapchat": [],

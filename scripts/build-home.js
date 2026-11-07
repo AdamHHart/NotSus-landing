@@ -17,6 +17,7 @@ const crypto = require('crypto');
 const ROOT = path.join(__dirname, '..');
 const catalog = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'catalog.json'), 'utf8'));
 const synonyms = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'search-synonyms.json'), 'utf8'));
+const homePicks = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'home-picks.json'), 'utf8'));
 
 // The bands the app uses. A site shows for a band when its ageMin is at or
 // below that band's top age, which is the app's own rule: a child sees
@@ -118,6 +119,26 @@ ${apps.map(tile).join('\n')}
       </section>`;
 }
 
+// The two rows the browser itself opens with, above the twelve categories.
+// They are the view when nobody has typed anything, and the script hides them
+// the moment a filter is on, so a site never shows up twice in a result.
+function picksRow(row) {
+  const apps = row.apps.map((name) => {
+    const app = catalog.apps.find((a) => a.name === name);
+    if (!app) {
+      console.error(`home-picks.json names "${name}", which is not in the catalogue.`);
+      process.exit(1);
+    }
+    return app;
+  });
+  return `      <section class="app-section picks" data-picks="${esc(row.key)}">
+        <h2 class="section-title"><span aria-hidden="true">${esc(row.emoji)}</span> ${esc(row.label)}</h2>
+        <div class="app-grid">
+${apps.map(tile).join('\n')}
+        </div>
+      </section>`;
+}
+
 const categoryOptions = ['        <option value="">Everything</option>']
   .concat(catalog.categoryOrder.map((c) => {
     const m = synonyms.categories[c] || { label: c, emoji: '' };
@@ -208,27 +229,27 @@ const html = `<!DOCTYPE html>
     <p class="finder-sub">${total} free websites for kids. Hand picked, no sign up, nothing to pay.</p>
 
     <div class="capsule">
-      <span class="capsule-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      </span>
-      <input type="search" id="q" class="capsule-input" autocomplete="off"
-             placeholder="Try: make a game, draw, times tables, dinosaurs"
-             aria-label="Search the tools" aria-describedby="result-count">
-      <button type="button" id="clear" class="capsule-clear" hidden aria-label="Clear the search">&times;</button>
+      <div class="capsule-search">
+        <span class="capsule-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </span>
+        <input type="search" id="q" class="capsule-input" autocomplete="off"
+               placeholder="Try: make a game, draw, times tables, dinosaurs"
+               aria-label="Search the tools" aria-describedby="result-count">
+        <button type="button" id="clear" class="capsule-clear" hidden aria-label="Clear the search">&times;</button>
+      </div>
 
-      <div class="capsule-picks">
-        <div class="capsule-pick">
-          <label class="visually-hidden" for="cat">What it is for</label>
-          <select id="cat">
+      <div class="capsule-pick">
+        <label class="visually-hidden" for="cat">What it is for</label>
+        <select id="cat">
 ${categoryOptions}
-          </select>
-        </div>
-        <div class="capsule-pick">
-          <label class="visually-hidden" for="age">Age</label>
-          <select id="age">
+        </select>
+      </div>
+      <div class="capsule-pick">
+        <label class="visually-hidden" for="age">Age</label>
+        <select id="age">
 ${ageOptions}
-          </select>
-        </div>
+        </select>
       </div>
     </div>
 
@@ -238,7 +259,15 @@ ${ageOptions}
   </div>
 
   <div id="tools" class="tools">
+    <div id="picks" class="picks-block">
+      <p class="picks-lead">What the browser opens with</p>
+${homePicks.rows.map(picksRow).join('\n')}
+    </div>
+
+    <div class="everything">
+      <p class="picks-lead">Everything else, by what it is for</p>
 ${catalog.categoryOrder.map(section).filter(Boolean).join('\n')}
+    </div>
   </div>
 
 </main>
@@ -278,9 +307,11 @@ ${footerSocial}
 fs.mkdirSync(path.join(ROOT, 'home'), { recursive: true });
 fs.writeFileSync(path.join(ROOT, 'home', 'index.html'), html);
 
+const pickCount = homePicks.rows.reduce((n, r) => n + r.apps.length, 0);
 const withLogos = catalog.apps.filter((a) => logoFor(a)).length;
 console.log(`home/index.html  ${total} tiles, ${(Buffer.byteLength(html) / 1024).toFixed(0)} KB`);
 console.log(`  ${withLogos} of ${total} tiles carry the site's own logo; the rest fall back to an emoji`);
+console.log(`  ${pickCount} picks above the categories, from ${homePicks.rows.map((r) => r.label).join(' and ')}`);
 for (const c of catalog.categoryOrder) {
   const n = catalog.apps.filter((a) => a.category === c).length;
   const m = synonyms.categories[c] || {};

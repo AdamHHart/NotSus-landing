@@ -9,14 +9,17 @@
 (function () {
   'use strict';
 
-  var tiles = Array.prototype.slice.call(document.querySelectorAll('.app-button'));
-  var sections = Array.prototype.slice.call(document.querySelectorAll('.app-section'));
+  var tiles = Array.prototype.slice.call(document.querySelectorAll('.everything .app-button'));
+  // Only the twelve category sections. The two picks rows are shown or hidden
+  // as a block, not swept one heading at a time.
+  var sections = Array.prototype.slice.call(document.querySelectorAll('.app-section:not(.picks)'));
   var q = document.getElementById('q');
   var clearBtn = document.getElementById('clear');
   var age = document.getElementById('age');
   var cat = document.getElementById('cat');
   var count = document.getElementById('result-count');
   var miss = document.getElementById('miss');
+  var picks = document.getElementById('picks');
 
   var missData = {};
   try {
@@ -136,6 +139,12 @@
       if (ok) shown++;
     });
 
+    // The two rows the browser opens with are the view for someone who has
+    // not asked for anything yet. The moment a filter is on they go, so a
+    // site cannot appear twice in one result.
+    var filtering = words.length > 0 || Boolean(cat.value) || age.selectedIndex > 0;
+    if (picks) picks.hidden = filtering;
+
     // A heading with nothing under it reads like a broken page.
     sections.forEach(function (sec) {
       var any = sec.querySelector('.app-button:not([hidden])');
@@ -149,7 +158,6 @@
     cat.parentNode.className = 'capsule-pick' + (cat.value ? ' is-set' : '');
     age.parentNode.className = 'capsule-pick' + (age.selectedIndex > 0 ? ' is-set' : '');
 
-    var filtering = words.length > 0 || Boolean(cat.value) || age.selectedIndex > 0;
     if (!filtering) {
       count.textContent = '';
     } else if (shown === 0) {

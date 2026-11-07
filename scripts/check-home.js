@@ -31,10 +31,13 @@ function check(name, ok, detail) {
 
 // Pull the tiles back out of the page, so the checks read what shipped rather
 // than what the build intended.
+// Everything below the two picks rows. Those rows repeat fifteen sites on
+// purpose, so counting them would make every total wrong.
+const everything = html.slice(html.indexOf('<div class="everything">'));
 const tileRe = /<a class="app-button" href="([^"]+)"([^>]*)>/g;
 const tiles = [];
 let m;
-while ((m = tileRe.exec(html)) !== null) {
+while ((m = tileRe.exec(everything)) !== null) {
   const attrs = m[2];
   const get = (k) => {
     const found = new RegExp(`data-${k}="([^"]*)"`).exec(attrs);
@@ -67,6 +70,16 @@ check('no duplicate sites', new Set(names).size === names.length,
 check('no duplicate links', new Set(tiles.map((t) => t.href)).size === tiles.length,
   tiles.map((t) => t.href).filter((h, i, a) => a.indexOf(h) !== i).join(', '));
 
+const picks = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'home-picks.json'), 'utf8'));
+const pickNames = picks.rows.flatMap((r) => r.apps);
+check(`the browser's own ${pickNames.length} picks are above the categories`,
+  (html.slice(0, html.indexOf('<div class="everything">')).match(/class="app-button"/g) || []).length === pickNames.length);
+check('every pick is a site the catalogue has',
+  pickNames.every((n) => catalog.apps.some((a) => a.name === n)),
+  pickNames.filter((n) => !catalog.apps.some((a) => a.name === n)).join(', '));
+check('the picks block can be hidden as one thing when a filter is on',
+  /<div id="picks" class="picks-block">/.test(html));
+
 // A page that needs JavaScript to show its links is invisible to a search
 // engine and to a child on a slow connection.
 check('no tile is hidden in the markup', !/class="app-button"[^>]*hidden/.test(html));
@@ -97,14 +110,15 @@ check('nothing in the footer points at an anchor on a page that may move',
   !/href="\/#/.test(html));
 
 console.log('\nThe tiles');
-const logos = (html.match(/class="app-logo" src="/g) || []).length;
+const logos = (everything.match(/class="app-logo" src="/g) || []).length;
 check(`most tiles carry the site's own logo (${logos} of ${tiles.length})`, logos >= tiles.length * 0.85,
   `only ${logos}`);
 check('every logo is served from this site, not from the site it belongs to',
   (html.match(/class="app-logo" src="([^"]*)"/g) || []).every((m) => m.includes('/home/icons/')));
-check('every logo carries a content hash', (html.match(/\/home\/icons\/[^"?]+\?v=[a-f0-9]{10}/g) || []).length === logos);
+check('every logo carries a content hash',
+  (html.match(/\/home\/icons\/[^"?]+\?v=[a-f0-9]{10}/g) || []).length === (html.match(/class="app-logo" src="/g) || []).length);
 check('a tile with no logo falls back to its emoji',
-  (html.match(/app-logo-emoji/g) || []).length === tiles.length - logos);
+  (everything.match(/app-logo-emoji/g) || []).length === tiles.length - logos);
 const longDesc = (html.match(/<span class="app-description">([^<]*)<\/span>/g) || [])
   .map((m) => m.replace(/<[^>]+>/g, ''))
   .filter((d) => d.split(/\s+/).length > 3);
@@ -142,8 +156,27 @@ check('the download line and the mapping both reached the page',
   html.includes('"notCarried"') && html.includes('miss-data'));
 
 console.log('\nThe catalogue and the synonyms agree');
-check('the capsule holds the search and both dropdowns in one shape',
+check('the capsule holds the search and both dropdowns',
   /class="capsule"/.test(html) && /id="q"/.test(html) && /id="cat"/.test(html) && /id="age"/.test(html));
+check('the search keeps a capsule of its own, and each filter is a segment',
+  /class="capsule-search"/.test(html) && (html.match(/class="capsule-pick"/g) || []).length === 2);
+const css = fs.readFileSync(path.join(ROOT, 'home', 'home.css'), 'utf8');
+check('each filter has a concave left edge, and the vendor-prefixed twin',
+  /\.capsule-pick \{[\s\S]*?-webkit-mask-image: radial-gradient\(circle at left center/.test(css)
+  && /\.capsule-pick \{[\s\S]*?\n  mask-image: radial-gradient\(circle at left center/.test(css));
+check('the filters are pulled back so the bite lands on the capsule before them',
+  /margin-left: calc\(var\(--cap\) \* -1\)/.test(css));
+// 999px is a capsule end; 50% is the round clear button, which is the same
+// curve. A square corner anywhere in the bar is the thing being watched for.
+check('every piece of the bar is a capsule, at every width',
+  (css.match(/\.capsule[^{]*\{[^}]*border-radius:[^;]+;/g) || [])
+    .every((r) => /border-radius:\s*(999px|50%)\s*;/.test(r)));
+check('DuckDuckGo is in Look things up',
+  catalog.apps.some((a) => a.name === 'DuckDuckGo' && a.category === 'REFERENCE'));
+check('DuckDuckGo forces safe search',
+  catalog.apps.some((a) => a.name === 'DuckDuckGo' && a.url === 'https://safe.duckduckgo.com'));
+check('DuckDuckGo waits for a parent to turn it on',
+  catalog.apps.some((a) => a.name === 'DuckDuckGo' && a.requiresApproval === true));
 check('there is no search button to press', !/type="submit"/.test(html));
 check('every site has synonyms', names.every((n) => synonyms.apps[n]),
   names.filter((n) => !synonyms.apps[n]).join(', '));

@@ -1,0 +1,54 @@
+{
+  "_about": [
+    "The two rows at the top of notsus.net, above the twelve categories.",
+    "",
+    "These are not a new editorial list. They are exactly what the browser puts",
+    "on its own home screen, read off src/index.html: the Learn section and the",
+    "Create section, in their order. The website is a replica of that screen, so",
+    "a visitor should meet the same tiles a child meets when they open the app.",
+    "",
+    "Every name here must also be in docs/catalog/featured.json, and the website",
+    "build fails if one is not. A site appears twice on the page, once up here",
+    "and once in its category, which is intended: these rows are the view when",
+    "nobody has typed anything, and they disappear the moment a filter is on.",
+    "",
+    "The app's two headings do not map onto the catalogue's twelve categories.",
+    "Its Create holds Scratch (CODING), Photopea (ART), Tinkercad (CREATE) and",
+    "Google Docs (UTILITY), because a child thinks in 'making things', not in",
+    "our filing. That is the point of the rows.",
+    "",
+    "Written 2026-11-06. If the app's home screen changes, change this to match."
+  ],
+
+  "rows": [
+    {
+      "key": "LEARN",
+      "label": "Learn",
+      "emoji": "📚",
+      "apps": [
+        "Khan Academy",
+        "Perplexity",
+        "Wikipedia",
+        "National Geographic Kids",
+        "Storyline Online",
+        "Windy"
+      ]
+    },
+    {
+      "key": "CREATE",
+      "label": "Create",
+      "emoji": "🎨",
+      "apps": [
+        "Scratch",
+        "Replit",
+        "Tinkercad",
+        "Photopea",
+        "CapCut",
+        "Google Docs",
+        "Google Sheets",
+        "Google Slides",
+        "Canva"
+      ]
+    }
+  ]
+}
