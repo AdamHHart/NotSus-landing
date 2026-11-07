@@ -141,6 +141,13 @@ app.get(['/tools', '/tools/'], (req, res) => {
     res.redirect(301, '/');
 });
 
+// A fragment never reaches the server, so a bookmark for /#resources-section
+// now lands on the new home page and does nothing. This gives that section an
+// address of its own.
+app.get('/resources', (req, res) => {
+    res.redirect(301, '/about#resources-section');
+});
+
 // Serve static files — long cache for assets, no cache for HTML (so deploys show up immediately)
 app.use(express.static(path.join(__dirname), {
     etag: true,

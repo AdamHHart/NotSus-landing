@@ -1,0 +1,70 @@
+#!/usr/bin/env node
+// scripts/check-about.js
+//
+// The about page, checked the way check-home.js checks the home page.
+//
+// It is the old home page and it carried the old funnel with it: an email
+// form, a Free Trial, links to anchors that stopped existing when '/' became
+// the new page. This is what keeps those from creeping back, and what holds
+// the page to the same colours and shapes as the home page, so the two read
+// as one product rather than two.
+//
+// Run: npm run check:about
+
+const fs = require('fs');
+const path = require('path');
+
+const ROOT = path.join(__dirname, '..');
+const h = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+
+let failures = 0;
+function check(name, ok, detail) {
+    if (ok) {
+        console.log(`  ok    ${name}`);
+    } else {
+        failures++;
+        console.log(`  FAIL  ${name}${detail ? `\n          ${detail}` : ''}`);
+    }
+}
+
+// The markup, not the stylesheet above it.
+const heroMarkup = h.slice(h.indexOf('<section class="about-hero">'), h.indexOf('<section class="about-show"'));
+
+console.log('\nThe first screen');
+check('holds the copy and the two tiers, and nothing else',
+    // The links themselves, not every span inside them whose class also
+    // starts with hero-tier.
+    heroMarkup.length > 0 && (heroMarkup.match(/<a class="hero-tier/g) || []).length === 2);
+check("Adam's three lines, as written",
+    h.includes('Media manipulating your young child.')
+    && h.includes('A custom browser for your kids.')
+    && h.includes('A browser built like an infinite library, a school, and a workshop.'));
+check('"an an infinite" is fixed', !h.includes('an an infinite'));
+check('it is actually a screenful', /\.about-hero \{[\s\S]*?min-height: calc\(100svh/.test(h));
+check('the free one is the obvious first click',
+    /class="hero-tier hero-tier-primary"/.test(h));
+
+console.log('\nThe second screen');
+check('the video and the gif are one grid, side by side only where there is width',
+    /\.about-show-inner \{[\s\S]*?grid-template-columns: 1fr;/.test(h)
+    && /@media \(min-width: 900px\) \{ \.about-show-inner \{ grid-template-columns: 1fr 1fr; \} \}/.test(h));
+check('both hold the same shape whatever they contain', /aspect-ratio: 16 \/ 9/.test(h));
+check('the founder video appears once, not twice', (h.match(/youtube\.com\/embed/g) || []).length === 1);
+
+console.log('\nThe old funnel is gone');
+check('no email form', !/type="email"/.test(h) && !/feedbackForm/.test(h));
+check('no Free Trial', !/Free Trial/i.test(h));
+check('nothing points at an anchor on a page that moved', !/href="\/#/.test(h));
+check('nothing points at the removed tools page', !/\/tools/.test(h));
+
+console.log('\nIt matches the home page');
+check('the header is a capsule, not a full-width green band',
+    /body > header \.header-left \{[\s\S]*?border-radius: 999px;/.test(h));
+check('it uses the home page colours',
+    /--ns-cream: #fff3b1/.test(h) && /--ns-ground: #1a1a1a/.test(h));
+check('the navigation is the same five links',
+    ['Download Browser', 'About', 'Radio', 'Blog', 'Contact Us']
+        .every((l) => h.includes(`class="nav-link">${l}</a>`)));
+
+console.log(failures === 0 ? '\nAll checks passed.\n' : `\n${failures} check(s) failed.\n`);
+process.exit(failures === 0 ? 0 : 1);

@@ -6,9 +6,109 @@
     <title>NotSus.net - The Better Browser for Kids</title>
     <link rel="stylesheet" href="/styles.css">
     <style>
-        /* The two tiers, matching the card on the home page. Local to this
-           page because styles.css is shared with the blog and the legal
-           pages, and none of them has a hero. */
+        /* This page and the home page have to read as one product, so the
+           colour, type and shape here are the home page's own. Local to this
+           file because styles.css is shared with the blog and the legal
+           pages, and changing it would move all of them at once. */
+        :root {
+            --ns-ground: #1a1a1a;
+            --ns-surface: #2d2a2a;
+            --ns-surface-raised: #3a3737;
+            --ns-primary: #00A86B;
+            --ns-primary-hi: #1fc988;
+            --ns-cream: #fff3b1;
+            --ns-text: #ffffff;
+            --ns-text-2: #e0e0e0;
+            --ns-muted: #989797;
+            --ns-border: rgba(255, 255, 255, 0.2);
+        }
+
+        /* The header, as the home page wears it: a capsule on the left of a
+           dark bar, not a full-width green band. */
+        body > header { background: var(--ns-ground) !important; border-bottom: 0 !important; }
+        body > header .header-container { padding: 0.75rem 1.25rem !important; }
+        body > header .header-left {
+            display: inline-flex; align-items: center; gap: 0.55rem;
+            background: var(--ns-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            padding: 0.3rem 1rem 0.3rem 0.35rem;
+        }
+        body > header .logo-img { border-radius: 50%; }
+        body > header .logo { color: var(--ns-cream) !important; font-weight: 800; }
+        body > header .logo-tagline { color: var(--ns-muted) !important; }
+
+        /* The first screen: what this is on the left, the two ways in on the
+           right, and nothing else competing for the attention. */
+        .about-hero {
+            min-height: calc(100svh - 72px);
+            display: flex; align-items: center;
+            padding: 2rem 1.25rem 3rem;
+            background: var(--ns-ground);
+        }
+        .about-hero-inner {
+            width: 100%; max-width: 1100px; margin: 0 auto;
+            display: grid; gap: clamp(2rem, 5vw, 4rem);
+            grid-template-columns: 1fr;
+            align-items: center;
+        }
+        @media (min-width: 900px) { .about-hero-inner { grid-template-columns: 1.1fr 0.9fr; } }
+
+        .about-pain {
+            margin: 0 0 0.5rem;
+            font-size: clamp(1rem, 1.6vw, 1.15rem);
+            font-weight: 600;
+            color: var(--ns-muted);
+        }
+        .about-solution {
+            margin: 0 0 1rem;
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            line-height: 1.08;
+            font-weight: 800;
+            color: var(--ns-cream);
+        }
+        .about-note {
+            margin: 0; max-width: 34ch;
+            font-size: clamp(0.98rem, 1.4vw, 1.12rem);
+            line-height: 1.55;
+            color: var(--ns-text-2);
+        }
+
+        .about-hero-cta { display: flex; flex-direction: column; gap: 0.6rem; }
+        .about-cta-head {
+            display: flex; align-items: center; gap: 0.45rem;
+            margin: 0 0 0.2rem;
+            font-size: 1.05rem; font-weight: 800; color: var(--ns-text);
+        }
+        .about-cta-head svg { width: 18px; height: 18px; color: var(--ns-primary-hi); }
+
+        /* The second screen: the founder and the browser, side by side where
+           there is width and stacked where there is height. */
+        .about-show { background: var(--ns-ground); padding: 1rem 1.25rem 4rem; }
+        .about-show-inner {
+            max-width: 1100px; margin: 0 auto;
+            display: grid; gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+        @media (min-width: 900px) { .about-show-inner { grid-template-columns: 1fr 1fr; } }
+        .about-show-item { margin: 0; }
+        .about-show-frame {
+            position: relative; width: 100%; aspect-ratio: 16 / 9;
+            background: #000; border-radius: 14px; overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .about-show-frame iframe,
+        .about-show-frame img {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%; border: 0;
+            object-fit: cover; display: block;
+        }
+        .about-show-item figcaption {
+            margin-top: 0.6rem; text-align: center;
+            font-size: 0.85rem; font-weight: 700; color: var(--ns-muted);
+        }
+
+        /* The two tiers, matching the card on the home page. */
         .hero-sidebar { display: flex; flex-direction: column; gap: 0.6rem; }
         .tier-pair {
             display: grid; gap: 0.75rem; max-width: 760px; margin: 2rem auto 0;
@@ -96,47 +196,61 @@
     </header>
 
     <!-- Hero Section -->
-        <section class="hero">
-            <div class="container">
-                <div class="hero-content-wrapper">
-                    <!-- Main Content -->
-                    <div class="hero-main-content">
-                        <h1 class="hero-title">The best web environment for your kids</h1>
-                        <p class="hero-subtitle">NotSus gives children the best educational and creative tools, without the distractions.</p>
-                    </div>
-
-                    <!-- The two tiers, the same pair the card on the home page
-                         offers, so a parent meets one offer and not two. -->
-                    <div class="hero-sidebar">
-                        <a class="hero-tier hero-tier-primary" href="/downloads">
-                            <span class="hero-tier-head">
-                                <span class="hero-tier-name">Basic Kid&rsquo;s Browser</span>
-                                <span class="hero-tier-badge">Free</span>
-                            </span>
-                            <span class="hero-tier-line">No email &middot; No credit card &middot; No data</span>
-                        </a>
-                        <a class="hero-tier" href="/downloads">
-                            <span class="hero-tier-head">
-                                <span class="hero-tier-name">Custom Kid&rsquo;s Browser</span>
-                            </span>
-                            <span class="hero-tier-line">Parent input.</span>
-                            <span class="hero-tier-line">An investment in your kid&rsquo;s future.</span>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Demo GIF Section - ADD id="demo-gif" here -->
-                <div class="demo-section" id="demo-gif">
-                    <h2 class="demo-title">See NotSus in Action</h2>
-                    <div class="demo-gif-container">
-                        <img src="/public/notsus_gif_demo.gif"
-                            alt="NotSus Browser Demo"
-                            class="demo-gif"
-                            onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div style=\'padding: 4rem; color: #9dcfd0; font-size: 1.2rem;\'>🧐 NotSus Browser Demo<br><small style=\'opacity: 0.7;\'>GIF will load when available</small></div>';">
-                    </div>
-                </div>
+    <!-- The first screen, and all it has to do is say what this is and offer
+         the two ways in. Adam's words, 2026-11-07; the "Pain" and "Solution"
+         labels in his note are the structure, not the copy. -->
+    <section class="about-hero">
+        <div class="about-hero-inner">
+            <div class="about-hero-copy">
+                <p class="about-pain">Media manipulating your young child.</p>
+                <h1 class="about-solution">A custom browser for your kids.</h1>
+                <p class="about-note">A browser built like an infinite library, a school, and a workshop.</p>
             </div>
-        </section>
+
+            <div class="about-hero-cta">
+                <p class="about-cta-head">Setup for your kids
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 6l6 6-6 6"/></svg>
+                </p>
+                <a class="hero-tier hero-tier-primary" href="/downloads">
+                    <span class="hero-tier-head">
+                        <span class="hero-tier-name">Basic Kid&rsquo;s Browser</span>
+                        <span class="hero-tier-badge">Free</span>
+                    </span>
+                    <span class="hero-tier-line">No email &middot; No credit card &middot; No data</span>
+                </a>
+                <a class="hero-tier" href="/downloads">
+                    <span class="hero-tier-head">
+                        <span class="hero-tier-name">Custom Kid&rsquo;s Browser</span>
+                    </span>
+                    <span class="hero-tier-line">Parent input.</span>
+                    <span class="hero-tier-line">An investment in your kid&rsquo;s future.</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- The second screen: the founder on the left, the browser working on
+         the right. Side by side where there is width, stacked where there is
+         not. id="demo-gif" is kept for anybody holding an old link. -->
+    <section class="about-show" id="demo-gif">
+        <div class="about-show-inner">
+            <figure class="about-show-item">
+                <div class="about-show-frame">
+                    <iframe src="https://www.youtube.com/embed/mtlJAzD6NkI"
+                        title="NotSus Browser Introduction" loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen></iframe>
+                </div>
+                <figcaption>Meet the founder</figcaption>
+            </figure>
+            <figure class="about-show-item">
+                <div class="about-show-frame">
+                    <img src="/public/notsus_gif_demo.gif" alt="The NotSus browser being used" loading="lazy">
+                </div>
+                <figcaption>NotSus in action</figcaption>
+            </figure>
+        </div>
+    </section>
 
     <!-- Stats Impact Section -->
     <!-- <section class="stats-section">
@@ -335,22 +449,7 @@
     </section>
 
      <!-- Video Section -->
-     <section class="video-section">
-        <div class="container">
-            <h2>Meet the Founder</h2>
-            <div class="video-container">
-                <iframe
-                    width="960"
-                    height="540"
-                    src="https://www.youtube.com/embed/mtlJAzD6NkI"
-                    title="NotSus Browser Introduction"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen>
-                </iframe>
-            </div>
-        </div>
-    </section>
+     <!-- The founder video moved into .about-show at the top of the page. -->
 
     <!-- Parent Control Preview -->
     <section class="dashboard-preview">
