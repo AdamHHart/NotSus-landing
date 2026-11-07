@@ -1,0 +1,826 @@
+/* home/home.css
+ *
+ * The NotSus home screen, as a web page. The colour, type and shape values are
+ * the app's own, copied from src/styles/tokens.css in the app repository so the
+ * page and the browser cannot look like two different products.
+ *
+ * The rule that matters most, from that file: green is an accent, never a
+ * surface. Tiles hold other people's logos and words, so they sit on white in
+ * both themes, with dark text, which is how the app does it too.
+ */
+
+:root {
+  --ground: #1a1a1a;
+  --surface: #2d2a2a;
+  --surface-raised: #3a3737;
+  --surface-light: #ffffff;
+
+  --primary: #00A86B;
+  --primary-hover: #008f5a;
+  --primary-emphasis: #1fc988;
+  --accent: #FFB300;
+  --cream: #fff3b1;
+
+  --text: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #989797;
+
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  --radius: 10px;
+  --radius-lg: 14px;
+
+  /* One tile size for the whole page. Every grid uses this exact width, so a
+     card in Look things up is the same card as one in Learn, and the search
+     bar above them is three tiles wide. It grows with the screen and stops:
+     a 340px letterbox holding two short words is not a bigger card, it is a
+     stretched one. */
+  --tile: clamp(150px, 15.5vw, 228px);
+  --tile-h: clamp(84px, 8vw, 118px);
+  --tile-gap: 0.85rem;
+  --block: calc(3 * var(--tile) + 2 * var(--tile-gap));
+  --ease-fast: 140ms ease;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--text);
+  font-family: var(--font-main);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: 1rem; top: 1rem;
+  z-index: 100;
+  background: var(--primary);
+  color: #08140f;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius);
+  font-weight: 700;
+}
+
+a { color: var(--primary-emphasis); }
+
+/* ---------------------------------------------------------------- header */
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--ground);
+  position: relative;
+  z-index: 50;
+}
+
+/* The logo bar, as a capsule. Green was tried on 2026-11-07 and taken off
+ * again: on a charcoal page a green bar and a green card are two bright
+ * objects competing, and the one that should win is the card. The bar is the
+ * dark chrome with the cream wordmark, which is the app's default theme. */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  background: var(--surface);
+  color: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.3rem 1rem 0.3rem 0.35rem;
+  transition: background var(--ease-fast), border-color var(--ease-fast);
+}
+.brand:hover { background: var(--surface-raised); border-color: var(--border-strong); }
+.brand img { display: block; border-radius: 50%; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+.brand-name { font-weight: 800; font-size: 1.02rem; color: var(--cream); }
+.brand-tagline { font-size: 0.7rem; color: var(--text-muted); }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  /* The card is positioned against the header itself now, level with the top
+     of the logo bar, so this holds nothing and reserves nothing. */
+  position: static;
+}
+
+/* ------------------------------------------------------------------- card */
+
+/* Where the Download button used to be. It is the only sales pitch on the
+ * page, so it sits in the one place a parent looks and a child does not.
+ *
+ * It starts level with the top of the logo bar, in the band the header leaves
+ * empty, rather than below the header. */
+.cta {
+  position: absolute;
+  top: 0.75rem;
+  right: 1.25rem;
+  width: 348px;
+  background: linear-gradient(180deg, var(--surface-raised) 0%, var(--surface) 62%);
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  padding: 1rem 1rem 1.05rem;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+  /* It arrives from behind the header, so it reads as having been pulled down
+     rather than faded in. Half a second, and the easing settles rather than
+     stops. */
+  transform: translateY(-26px);
+  opacity: 0;
+  transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1), opacity 500ms ease-out;
+}
+.cta.is-in { transform: translateY(0); opacity: 1; }
+.cta[hidden] { display: none; }
+
+.cta-close {
+  position: absolute;
+  top: 0.55rem; right: 0.55rem;
+  display: flex; align-items: center; justify-content: center;
+  width: 1.75rem; height: 1.75rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0;
+}
+.cta-close svg { width: 14px; height: 14px; }
+.cta-close:hover { color: var(--text); background: rgba(255, 255, 255, 0.08); }
+
+.cta-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
+  padding-right: 1.5rem;
+}
+.cta-mark { display: block; border-radius: 50%; flex: 0 0 auto; }
+
+.cta-lead {
+  margin: 0;
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1.3;
+  color: var(--cream);
+}
+
+/* The round target on the right of anything pressable here. A flat arrow
+   floating in a box is a direction; an arrow in a filled circle is a button,
+   and it is the difference between a card you read and a card you click. */
+.cta-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; height: 32px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  transition: background var(--ease-fast), transform var(--ease-fast);
+}
+.cta-chip .cta-arrow { width: 16px; height: 16px; }
+
+/* The one button, before it opens into two. */
+.cta-go {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-align: left;
+  color: #06120d;
+  background: var(--primary);
+  border: 0;
+  border-radius: 999px;
+  padding: 0.4rem 0.4rem 0.4rem 1.1rem;
+  min-height: 48px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 168, 107, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  transition: background var(--ease-fast), box-shadow var(--ease-fast), transform var(--ease-fast);
+}
+.cta-go .cta-chip { background: rgba(6, 18, 13, 0.85); color: var(--primary-emphasis); }
+.cta-go:hover {
+  background: var(--primary-emphasis);
+  box-shadow: 0 10px 26px rgba(0, 168, 107, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  transform: translateY(-1px);
+}
+.cta-go:hover .cta-chip { transform: translateX(3px); }
+.cta-go:active { transform: translateY(0) scale(0.995); }
+
+.cta-more { display: flex; flex-direction: column; gap: 0.55rem; }
+.cta-more[hidden] { display: none; }
+
+/* Two choices, and they are not a matched pair.
+ *
+ * The thing good download cards get right is that there is one button. A
+ * second option of equal weight makes a visitor stop and compare rather than
+ * act, which is how the last version read: two panels, same size, same
+ * outline, pick one. So the free one is the button, filled and sitting on its
+ * own light, and the other is the quiet alternative under it. Both still go
+ * to the same file; the difference is which one a tired parent presses.
+ *
+ * Flex, not grid. The round target has to be at the right whatever the text
+ * does, and an areas grid put it mid-row the moment one of them had no badge. */
+.cta-tier {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  text-decoration: none;
+  border-radius: 14px;
+  padding: 0.8rem 0.6rem 0.8rem 0.95rem;
+  transition: background var(--ease-fast), border-color var(--ease-fast),
+              box-shadow var(--ease-fast), transform var(--ease-fast);
+}
+.cta-tier:hover { transform: translateY(-2px); }
+.cta-tier:active { transform: translateY(0) scale(0.995); }
+
+.cta-tier-text { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; flex: 1 1 auto; }
+.cta-tier-head { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+
+.cta-tier-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.cta-tier-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.26rem 0.46rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.cta-tier-line {
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+/* The button. Filled, lit along its top edge, standing on a green shadow. */
+.cta-tier-primary {
+  background: var(--primary);
+  box-shadow: 0 8px 22px rgba(0, 168, 107, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.cta-tier-primary .cta-tier-name { color: #06120d; }
+.cta-tier-primary .cta-tier-line { color: rgba(6, 18, 13, 0.85); font-weight: 600; }
+.cta-tier-primary .cta-tier-badge { background: rgba(6, 18, 13, 0.85); color: var(--primary-emphasis); }
+.cta-tier-primary .cta-chip { background: rgba(6, 18, 13, 0.85); color: var(--primary-emphasis); }
+.cta-tier-primary:hover {
+  background: var(--primary-emphasis);
+  box-shadow: 0 14px 32px rgba(0, 168, 107, 0.46), inset 0 1px 0 rgba(255, 255, 255, 0.34);
+}
+.cta-tier-primary:hover .cta-chip { transform: translateX(3px); }
+
+/* The human check, when it is switched on. It sits above the two options and
+   takes them with it when it goes. */
+.cta-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem 0 0.4rem;
+}
+.cta-gate-line {
+  margin: 0;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+.cta-tier.is-locked {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+  transform: none;
+  box-shadow: none;
+}
+
+/* The alternative. An outline and nothing else, so there is no question which
+   of the two is the button, and it still answers a hover properly. */
+.cta-tier-quiet {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  margin-top: 0.15rem;
+}
+.cta-tier-quiet .cta-tier-name { color: var(--text); }
+.cta-tier-quiet .cta-tier-line { color: var(--text-muted); }
+.cta-tier-quiet .cta-chip { background: rgba(255, 255, 255, 0.07); color: var(--text-secondary); }
+.cta-tier-quiet:hover {
+  background: var(--surface-raised);
+  border-color: var(--primary);
+}
+.cta-tier-quiet:hover .cta-tier-line { color: var(--text-secondary); }
+.cta-tier-quiet:hover .cta-chip { background: var(--primary); color: #06120d; transform: translateX(3px); }
+
+/* ----------------------------------------------------------- first screen */
+
+/* The header, the search bar and the two rows the browser opens with are one
+   screenful, and the twelve categories start under it. svh rather than vh,
+   because on a phone vh is the height with the browser's own bars hidden,
+   which is taller than what anybody can actually see, and the last row of
+   tiles would sit just off the bottom. */
+.first-screen {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+/* Centred in whatever is left under the header, by auto margins rather than
+   justify-content: on a screen too short to hold it, auto margins collapse
+   and the top stays reachable, where centring would cut it off. */
+.first-screen-body { margin-block: auto; width: 100%; }
+.first-screen .tools { padding-bottom: 1rem; }
+
+/* ---------------------------------------------------------------- finder */
+
+/* This block is where a browser would put its address bar. The page gives the
+   space to the one thing an address bar cannot do here: turning "I want to
+   make a game" into a short list of sites that do that. */
+/* Pushed down off the header so the bar is not the first thing against the
+   top edge, and so the page has a frame at any size. clamp rather than a
+   fixed value: a phone cannot spare 3rem, a desktop looks cramped without
+   it. */
+.finder {
+  max-width: var(--block);
+  margin: 0 auto;
+  padding: clamp(1.1rem, 4.5vh, 2.6rem) 1.25rem 0.25rem;
+  text-align: center;
+}
+
+/* The page says what it is in its title and its tiles. A heading saying "What
+   do you want to do?" over a search box saying "Try: make a game" is the same
+   sentence twice, so it is here for a screen reader and a search engine and
+   nowhere else. */
+.finder-title {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* One bar, three capsules that interlock.
+ *
+ * The search keeps a full capsule. Each filter after it is a capsule too, and
+ * the two meet: the filter's left edge is a concave bite the exact shape of
+ * the capsule to its left, so the convex end nests inside it with an even
+ * hairline of page between them. No dividing lines, no square corners.
+ *
+ * The bite is a radial-gradient mask. --cap is half the bar's height, which is
+ * the radius of every rounded end; --gap is the hairline, so the bite is drawn
+ * at --cap + --gap and the two curves stay parallel all the way round.
+ *
+ * Each segment is then pulled back by --cap, which puts its box edge on the
+ * centre of the previous capsule's round end, exactly where the bite is
+ * centred. Padding has to clear the bite, so it starts at --cap + --gap.
+ */
+.capsule {
+  /* Half the bar's height. Everything in the bar is measured off it, so the
+     bar shrinks by changing this one number. */
+  --cap: 23px;
+  --gap: 4px;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  max-width: var(--block);
+  margin: 0 auto 0.9rem;
+  /* The ground shows through the joints, so the bar itself has no fill. */
+  background: transparent;
+}
+
+.capsule-search {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  /* Pinned, because --cap has to BE half the height. If the content decided
+     the height, the rounded ends and the bite would be arcs of different
+     radii and the hairline between them would open and close around the
+     curve. Everything in the bar is centred inside this instead of padded. */
+  height: calc(var(--cap) * 2);
+  background: var(--surface);
+  border-radius: 999px;
+  transition: background var(--ease-fast), box-shadow var(--ease-fast);
+}
+.capsule-search:focus-within {
+  background: var(--surface-raised);
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.capsule-icon {
+  display: flex;
+  align-items: center;
+  padding-left: 1rem;
+  color: var(--text-muted);
+  flex: 0 0 auto;
+}
+.capsule-icon svg { width: 17px; height: 17px; display: block; }
+
+.capsule-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0 0.5rem 0 0.65rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.capsule-input::placeholder { color: var(--text-muted); }
+.capsule-input::-webkit-search-cancel-button { display: none; }
+
+.capsule-clear {
+  flex: 0 0 auto;
+  align-self: center;
+  width: 1.5rem; height: 1.5rem;
+  margin-right: 0.45rem;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.capsule-clear:hover { background: var(--border-strong); color: var(--text); }
+
+.capsule-pick {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  height: calc(var(--cap) * 2);
+  background: var(--surface);
+  border-radius: 999px;
+  margin-left: calc(var(--cap) * -1);
+  /* The concave left edge. Transparent out to the bite, solid after it. */
+  -webkit-mask-image: radial-gradient(circle at left center, transparent 0 calc(var(--cap) + var(--gap)), #000 calc(var(--cap) + var(--gap)));
+  mask-image: radial-gradient(circle at left center, transparent 0 calc(var(--cap) + var(--gap)), #000 calc(var(--cap) + var(--gap)));
+  transition: background var(--ease-fast);
+}
+.capsule-pick:hover { background: var(--surface-raised); }
+
+/* The chevron, drawn once rather than once per select. */
+.capsule-pick::after {
+  content: '';
+  position: absolute;
+  right: 0.9rem;
+  width: 7px; height: 7px;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  transform: translateY(-2px) rotate(45deg);
+  pointer-events: none;
+}
+
+.capsule-pick select {
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 0;
+  outline: none;
+  cursor: pointer;
+  height: 100%;
+  /* Clear of the bite on the left, clear of the chevron on the right. */
+  padding: 0 1.9rem 0 calc(var(--cap) + var(--gap) + 0.25rem);
+  -webkit-appearance: none;
+  appearance: none;
+  max-width: 170px;
+  text-overflow: ellipsis;
+}
+.capsule-pick select:hover { color: var(--text); }
+/* A mask clips an outline, so focus is shown in the type instead. */
+.capsule-pick select:focus-visible { color: var(--primary-emphasis); text-decoration: underline; }
+/* A native menu draws itself, and on a dark page it needs telling. */
+.capsule-pick option { background: var(--surface); color: var(--text); }
+/* A dropdown that is doing something should look like it is. */
+.capsule-pick.is-set select { color: var(--primary-emphasis); }
+.capsule-pick.is-set::after { border-color: var(--primary-emphasis); }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.result-count {
+  min-height: 1.2em;
+  margin: 0 0 0.25rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+/* Before anybody has typed there is nothing to say, and the reserved line
+   costs 21px at the top of the screen, which is where it is dearest. */
+.result-count:empty { min-height: 0; margin: 0; }
+
+/* A search that finds nothing is where the browser gets mentioned, because the
+   honest answer to "where is Minecraft" is that a parent can add any site in
+   the browser and this page cannot. */
+.miss {
+  max-width: 640px;
+  margin: 0.5rem auto 1.5rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  text-align: left;
+}
+.miss p { margin: 0 0 0.6rem; color: var(--text-secondary); }
+.miss p:last-child { margin-bottom: 0; }
+.miss-suggest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.2rem 0 0.9rem;
+}
+.miss-suggest a {
+  background: var(--surface-light);
+  color: #1a1a1a;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: var(--radius);
+}
+.miss-suggest a:hover { outline: 2px solid var(--primary); }
+.miss-get {
+  display: inline-block;
+  margin-top: 0.3rem;
+  background: var(--primary);
+  color: #08140f;
+  text-decoration: none;
+  font-weight: 700;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  min-height: 44px;
+  line-height: 1.8;
+}
+.miss-get:hover { background: var(--primary-hover); color: #fff; }
+
+/* ----------------------------------------------------------------- tiles */
+
+/* The two rows the browser itself opens with, above the twelve categories.
+   They carried a line of explanation each. They do not need one: a row of
+   tiles under a heading explains itself. */
+.picks-block { margin-bottom: 1.1rem; }
+.picks-block[hidden] { display: none; }
+.picks .section-title { border-bottom: 0; padding-bottom: 0; }
+
+.tools {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0.25rem 1rem 3rem;
+}
+
+.app-section { margin: 0 0 1.4rem; }
+.app-section[hidden] { display: none; }
+
+.section-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--cream);
+  margin: 0 0 0.6rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Fixed tracks, not 1fr. A card in a category has to be the same card as one
+   in Learn, and 1fr stretches a track to fill whatever is left over, which is
+   how the two blocks ended up with different-sized cards. */
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--tile));
+  justify-content: center;
+  gap: var(--tile-gap);
+}
+
+/* The two rows the browser opens with are three across, the way the app lays
+   out its own home screen. */
+.picks-block { max-width: var(--block); margin-left: auto; margin-right: auto; }
+.picks .app-grid { grid-template-columns: repeat(3, var(--tile)); }
+
+/* Tiles hold other people's logos, so they sit on white with dark text. That
+   is the app's rule for anything carrying a mark we did not make. */
+.app-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.25rem;
+  background: var(--surface-light);
+  color: #1a1a1a;
+  /* No border. It was rgba(255,255,255,0.1) on a white card, which draws
+     nothing and costs 2px of every tile. The card is white on charcoal; that
+     is the edge. */
+  border: 0;
+  border-radius: var(--radius);
+  /* Barely any padding. The height is fixed instead, so every card in the
+     grid is the same card: logo, one line of name, one line of tagline. A
+     tile that grows to fit its text makes the row around it look broken. */
+  padding: 0.4rem 0.35rem;
+  text-decoration: none;
+  height: var(--tile-h);
+  justify-content: center;
+  transition: transform var(--ease-fast), border-color var(--ease-fast), box-shadow var(--ease-fast);
+}
+.app-button:hover,
+.app-button:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  outline: none;
+}
+.app-button[hidden] { display: none; }
+/* Without this a grid item is at least as wide as its widest unbreakable
+   word, so one long name stretched its column and the three cards in a row
+   stopped matching. This lets the name be clipped instead. */
+.app-button { min-width: 0; }
+.app-button > * { max-width: 100%; }
+
+/* The site's own logo, at whatever aspect it came in. Contain rather than
+   cover, because half of a wordmark is worse than a small one. */
+.app-logo {
+  width: clamp(26px, 2.3vw, 36px);
+  height: clamp(26px, 2.3vw, 36px);
+  object-fit: contain;
+  display: block;
+  flex: 0 0 auto;
+}
+.app-logo-emoji {
+  font-size: clamp(1.2rem, 1.9vw, 1.7rem);
+  line-height: clamp(26px, 2.3vw, 36px);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+}
+
+/* One line each, and clipped rather than wrapped if a name ever slips past
+   the budget the catalogue export enforces. Two lines of text, never three. */
+.app-name {
+  font-size: clamp(0.79rem, 0.95vw, 1rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #1a1a1a;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.app-description {
+  font-size: clamp(0.66rem, 0.78vw, 0.84rem);
+  line-height: 1.25;
+  color: #5a5a5a;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------------------------------------------------------------- footer */
+
+/* Everything the old navigation held lives down here now. */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 1.25rem 2.5rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.footer-top { margin-bottom: 1.25rem; }
+.footer-top img { display: block; margin: 0 auto 0.5rem; border-radius: 10px; }
+.footer-brand { margin: 0; font-weight: 800; color: var(--cream); font-size: 1.05rem; }
+.footer-tagline { margin: 0.1rem 0 0; color: var(--text-muted); }
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.4rem;
+  justify-content: center;
+  margin-bottom: 0.9rem;
+}
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.3rem 0;
+}
+.footer-links a:hover { color: var(--text); text-decoration: underline; }
+.footer-legal a { font-weight: 400; color: var(--text-muted); }
+
+.footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  justify-content: center;
+  margin: 0.4rem 0 1.4rem;
+}
+.footer-social a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.82rem;
+  padding: 0.3rem 0;
+}
+.footer-social a:hover { color: var(--primary-emphasis); }
+
+.footer-copy { margin: 0; font-size: 0.8rem; }
+
+/* -------------------------------------------------------------- narrower */
+
+/* The target below: on a phone, the two rows the browser opens with should be
+   there before anybody scrolls. On a 375x667 screen that is roughly 52px of
+   header, 68px of search, and 15 tiles at three across. It only works if the
+   bar stays on one line and the tiles lose their padding, which is why the
+   numbers below are as small as they are and not smaller. */
+
+@media (max-width: 760px) {
+  .site-header { padding: 0.6rem 0.85rem; }
+  /* The card is a bottom bar down here, so the header has nothing to leave
+     room for. */
+  .header-right { min-height: 0; }
+  .brand { padding: 0.25rem 0.8rem 0.25rem 0.25rem; gap: 0.45rem; }
+  .brand img { width: 28px; height: 28px; }
+  .brand-name { font-size: 0.92rem; }
+  .brand-tagline { display: none; }
+
+  /* The bar stays one line. It used to wrap the filters onto a second row,
+     which cost 54px at the top of the screen where it is most expensive. */
+  .capsule { --cap: 19px; --gap: 3px; }
+  .capsule-icon { padding-left: 0.7rem; }
+  .capsule-icon svg { width: 15px; height: 15px; }
+  .capsule-input { font-size: 0.85rem; padding: 0 0.3rem 0 0.45rem; }
+  .capsule-clear { width: 1.3rem; height: 1.3rem; margin-right: 0.3rem; font-size: 1rem; }
+  .capsule-pick::after { right: 0.6rem; width: 6px; height: 6px; }
+  .capsule-pick select {
+    font-size: 0.72rem;
+    max-width: 94px;
+    padding: 0 1.3rem 0 calc(var(--cap) + var(--gap) + 0.15rem);
+  }
+
+  .tools { padding: 0.25rem 0.75rem 2.5rem; }
+  .section-title { font-size: 0.86rem; margin-bottom: 0.45rem; padding-bottom: 0.25rem; }
+  .app-section { margin-bottom: 1rem; }
+
+  /* Three across everywhere on a phone, picks and categories alike. */
+  /* Fixed tracks cannot fit three across on a phone, so here they share the
+     width. They are still all the same size as each other. */
+  .app-grid,
+  .picks .app-grid { grid-template-columns: repeat(3, 1fr); gap: 0.55rem; }
+  .app-button { height: 74px; padding: 0.35rem 0.2rem; gap: 0.1rem; }
+  .app-logo { width: 22px; height: 22px; }
+  .app-logo { width: 22px; height: 22px; }
+  .app-logo-emoji { font-size: 1.05rem; line-height: 22px; }
+  .app-name { font-size: 0.67rem; }
+  .app-description { font-size: 0.57rem; }
+  .picks-block { max-width: none; }
+
+  /* Top right over a tile grid is tight on a phone, so the card leaves the
+     header and becomes a bar along the bottom with the same words. */
+  .cta {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    top: auto;
+    width: 100%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    transform: translateY(100%);
+    z-index: 70;
+  }
+
+  .site-footer { padding: 1.75rem 1rem 4.5rem; }
+}
+
+/* Below this the third column stops being readable, so it drops to two. */
+@media (max-width: 330px) {
+  .app-grid,
+  .picks .app-grid { grid-template-columns: repeat(2, 1fr); }
+  .capsule-pick select { max-width: 78px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+  .app-button:hover { transform: none; }
+}

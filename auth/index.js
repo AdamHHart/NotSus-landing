@@ -1,8 +1,11 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
-// Load JWT secret from environment variables
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'; // In production, always use environment variable!
+// Fail closed, 2026-11-07. This used to fall back to 'your-secret-key', and
+// this is the verifying side, which is the dangerous half: with the variable
+// unset, a token anybody signed with that published string would have been
+// accepted as a valid admin. Without a secret, nothing verifies.
+const JWT_SECRET = process.env.JWT_SECRET;
 const SALT_ROUNDS = 10;
 
 // Simple email regex (no external validator dependency)
@@ -33,6 +36,11 @@ const registrationRules = [
 
 // Middleware to verify JWT
 const authenticateToken = (req, res, next) => {
+    if (!JWT_SECRET) {
+        console.error('JWT_SECRET is not set. Refusing to verify a token.');
+        return res.status(500).json({ success: false, error: 'Server is not configured for sign-in.' });
+    }
+
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 

@@ -4,9 +4,23 @@ const jwt = require('jsonwebtoken');
 const db = require('../db');
 const router = express.Router();
 
+// Fail closed. This used to read `process.env.JWT_SECRET || 'your-secret-key'`,
+// so a deploy that lost the variable would have carried on signing admin
+// tokens with a string that is published in this file's history and in every
+// tutorial on the internet. Anyone could then have minted themselves an admin
+// token. Better to refuse to sign anything.
+const JWT_SECRET = process.env.JWT_SECRET;
+
 router.post('/login', async (req, res) => {
-    console.log('Login attempt:', req.body);
+    // Never log req.body here. It carries the password in plain text, and
+    // Render keeps these logs. Found 2026-11-07.
+    console.log('Login attempt received');
     try {
+        if (!JWT_SECRET) {
+            console.error('JWT_SECRET is not set. Refusing to sign a token.');
+            return res.status(500).json({ success: false, error: 'Server is not configured for sign-in.' });
+        }
+
         const { email, password } = req.body;
 
         if (!email || !password) {
@@ -17,7 +31,8 @@ router.post('/login', async (req, res) => {
         }
 
         const userResult = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-        console.log('User query result:', userResult.rows);
+        // And never log the row: it carries password_hash.
+        console.log('User lookup:', userResult.rows.length === 1 ? 'found' : 'no match');
 
         if (userResult.rows.length === 0) {
             return res.status(401).json({ 
@@ -28,7 +43,7 @@ router.post('/login', async (req, res) => {
 
         const user = userResult.rows[0];
         const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-        console.log('Password validation:', { isValid: isPasswordValid });
+
 
         if (!isPasswordValid) {
             return res.status(401).json({ 
@@ -52,7 +67,7 @@ router.post('/login', async (req, res) => {
                 email: user.email,
                 is_admin: user.is_admin 
             },
-            process.env.JWT_SECRET || 'your-secret-key',
+            JWT_SECRET,
             { expiresIn: '24h' }
         );
 
