@@ -16,6 +16,14 @@ back from the Render dashboard without a deploy:
 | unset, or anything else | `home/index.html`, this page. **The default since 2026-11-07.** |
 | `classic` | `index.html`, the old home page. The way back |
 
+**The `/` route must stay registered before `express.static`.** That is not a
+style preference. `express.static` serves `__dirname/index.html` for a request
+to `/` all by itself, so with the static middleware first the route was never
+reached and the old page kept being served whatever `HOME_PAGE` said. It
+looked like it worked for as long as both answers were the same file.
+`npm run check:routes` dispatches a real request for `/` through the real app
+and fails if it ever goes back to the old page.
+
 `/home` serves this page either way, so a link to it never breaks, and
 `/about` serves the old page, which is where the footer's About, Resources
 and Contact Us point.

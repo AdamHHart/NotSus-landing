@@ -108,6 +108,30 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// The home page.
+//
+// This has to be registered BEFORE express.static, and that is the whole
+// reason it is up here rather than with the other pages. express.static
+// serves __dirname/index.html for a request to '/' all by itself, so with the
+// static middleware first this route was never reached: the old page kept
+// being served no matter what HOME_PAGE said. It looked like it worked for as
+// long as both answers were the same file.
+//
+// Setting index: false on the static middleware would also have fixed '/' and
+// would have broken /blog/, /tools/ and /podcast/, which rely on it finding
+// their index.html. Ordering fixes one path and leaves the rest alone.
+//
+// The rebuilt home screen is the default from 2026-11-07. HOME_PAGE=classic
+// puts the old page back, from the Render dashboard, without a deploy.
+const HOME_PAGE = (process.env.HOME_PAGE || 'replica').toLowerCase();
+
+app.get('/', (req, res) => {
+    if (HOME_PAGE === 'classic') {
+        return res.sendFile(path.join(__dirname, 'index.html'));
+    }
+    res.sendFile(path.join(__dirname, 'home', 'index.html'));
+});
+
 // Serve static files — long cache for assets, no cache for HTML (so deploys show up immediately)
 app.use(express.static(path.join(__dirname), {
     etag: true,
@@ -121,20 +145,6 @@ app.use(express.static(path.join(__dirname), {
     }
 }));
 
-// The home page.
-//
-// The rebuilt home screen is the default from 2026-11-07, when Adam saw it on
-// the live site and said to make the switch. HOME_PAGE=classic puts the old
-// page back, from the Render dashboard, without a deploy, which is the way
-// back if something is wrong with it on a device nobody tested.
-const HOME_PAGE = (process.env.HOME_PAGE || 'replica').toLowerCase();
-
-app.get('/', (req, res) => {
-    if (HOME_PAGE === 'classic') {
-        return res.sendFile(path.join(__dirname, 'index.html'));
-    }
-    res.sendFile(path.join(__dirname, 'home', 'index.html'));
-});
 // The admin login page, served to anyone, which is correct: it is a login
 // form and nothing else. Everything behind it needs a token.
 //

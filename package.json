@@ -14,7 +14,8 @@
     "check:home": "node scripts/check-home.js",
     "prestart": "node scripts/build-home.js || echo \"build-home failed; serving the committed home/index.html\"",
     "fetch:icons": "node scripts/fetch-icons.js",
-    "preview:home": "node scripts/preview-home.js"
+    "preview:home": "node scripts/preview-home.js",
+    "check:routes": "node scripts/check-routes.js"
   },
   "engines": {
     "node": "20.x"
