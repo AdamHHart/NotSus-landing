@@ -135,9 +135,16 @@ is how a card in Look things up ended up wider than a card in Learn. On a
 phone the three columns share the width instead, because fixed tracks cannot
 fit.
 
-**The first screen centres what is under the header**, by `margin-block: auto`
-rather than `justify-content: center`. On a screen too short to hold it, auto
-margins collapse and the top stays reachable; centring would cut it off.
+**The search bar is anchored and only what is under it is centred.** The
+whole block used to be centred with auto margins, which looked right until
+somebody typed: hiding the picks made the block shorter, the centring
+recalculated, and the bar slid down the screen while it was being used.
+Now the bar sits under the header and the picks are centred in what is left.
+
+**While a filter is on, `body.is-filtering` drops the first screen's
+`min-height`**, so the results begin directly under the bar rather than a
+screenful away. The rule touches nothing at or above the bar, which is what
+keeps it still, and `check:home` fails if that ever stops being true.
 
 **Every tile holds two lines of text and no more.** Not
 min-height: a tile that grows to fit its words makes the row around it look

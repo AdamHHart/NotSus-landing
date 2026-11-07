@@ -394,11 +394,35 @@ button.cta-tier {
   display: flex;
   flex-direction: column;
 }
-/* Centred in whatever is left under the header, by auto margins rather than
-   justify-content: on a screen too short to hold it, auto margins collapse
-   and the top stays reachable, where centring would cut it off. */
-.first-screen-body { margin-block: auto; width: 100%; }
-.first-screen .tools { padding-bottom: 1rem; }
+.first-screen-body {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The search bar is anchored under the header and the two picks rows are
+   centred in whatever is left below it.
+ *
+ * It used to be the whole block that was centred, with auto margins. That
+ * looked right until somebody typed: hiding the picks made the block shorter,
+ * the centring recalculated, and the search bar slid down the screen while a
+ * person was still using it. Anchoring the bar and centring only what is
+ * under it means nothing moves.
+ */
+.first-screen .tools {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: 1rem;
+}
+
+/* While a filter is on, the first screen stops reserving a screenful. The
+   results then begin directly under the search bar instead of a scroll away,
+   which is where somebody who has just typed is looking. */
+body.is-filtering .first-screen { min-height: 0; }
+body.is-filtering .first-screen .tools { flex: 0 0 auto; padding-bottom: 0; }
 
 /* ---------------------------------------------------------------- finder */
 

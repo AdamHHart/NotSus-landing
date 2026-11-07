@@ -145,6 +145,18 @@
     var filtering = words.length > 0 || Boolean(cat.value) || age.selectedIndex > 0;
     if (picks) picks.hidden = filtering;
 
+    // The first screen stops holding a screenful open while a filter is on,
+    // so the results start under the search bar rather than below the fold.
+    var wasFiltering = document.body.classList.contains('is-filtering');
+    document.body.classList.toggle('is-filtering', filtering);
+
+    // Somebody who scrolled down and then typed is looking at the search bar,
+    // not at wherever they had got to. Only on the way in, and only if they
+    // had actually scrolled, so it never fights with typing.
+    if (filtering && !wasFiltering && window.scrollY > 0) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     // A heading with nothing under it reads like a broken page.
     sections.forEach(function (sec) {
       var any = sec.querySelector('.app-button:not([hidden])');

@@ -118,9 +118,15 @@ check('the tile grows with the screen and then stops',
 check('the search bar is exactly as wide as the three tiles under it',
   /--block: calc\(3 \* var\(--tile\) \+ 2 \* var\(--tile-gap\)\);/.test(cssSrc)
   && /\.capsule \{[\s\S]*?max-width: var\(--block\);/.test(cssSrc));
-check('the first screen centres by auto margins, which cannot clip the top',
-  /\.first-screen-body \{ margin-block: auto;/.test(cssSrc)
-  && /<div class="first-screen-body">/.test(html));
+// The bar used to slide down the screen as somebody typed: the whole block
+// was centred, hiding the picks made it shorter, and the centring moved.
+check('the search bar is anchored, and only what is under it is centred',
+  /<div class="first-screen-body">/.test(html)
+  && !/\.first-screen-body \{[^}]*margin-block: auto/.test(cssSrc)
+  && /\.first-screen \.tools \{[\s\S]*?justify-content: center;/.test(cssSrc));
+check('a filter stops the first screen reserving a screenful',
+  /body\.is-filtering \.first-screen \{ min-height: 0; \}/.test(cssSrc)
+  && /classList\.toggle\('is-filtering', filtering\)/.test(jsSrc));
 check('a long name cannot stretch its column out of line with the others',
   /\.app-button \{ min-width: 0; \}/.test(cssSrc));
 check('a name and a tagline get one line each, and are clipped if longer',
