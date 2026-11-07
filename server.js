@@ -40,6 +40,59 @@ function lazyRequireAdmin(req, res, next) {
 console.log('[NotSus] Loading Express app...');
 const app = express();
 
+// Express tells every visitor what it is, which is free reconnaissance.
+app.disable('x-powered-by');
+
+// Security headers. Deliberately no Content-Security-Policy: the pages carry
+// inline scripts and styles, Google Analytics and a YouTube embed, so a
+// policy written blind would break the site rather than protect it. That one
+// is worth doing properly, page by page, as its own piece of work.
+app.use((req, res, next) => {
+    // A year, and Cloudflare is already terminating TLS, so this only closes
+    // the first plain-HTTP request a browser makes before it learns better.
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    // Stops a browser deciding a .txt is really a script.
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    // Nobody has a reason to frame notsus.net but us.
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), interest-cohort=()');
+    next();
+});
+
+/**
+ * A small fixed-window limiter, in memory.
+ *
+ * In memory is honest about what it is: the site runs as one Render instance,
+ * so one counter is the whole picture, and it resets on deploy. It is here to
+ * stop a password being guessed ten thousand times and a form being hammered,
+ * not to survive a determined attack. If the site ever runs on more than one
+ * instance this has to move to the database or to Cloudflare.
+ */
+function rateLimit({ windowMs, max, message }) {
+    const hits = new Map();
+    return (req, res, next) => {
+        const now = Date.now();
+        const key = req.headers['x-forwarded-for']?.split(',')[0].trim()
+            || req.socket.remoteAddress
+            || 'unknown';
+        const entry = hits.get(key);
+        if (!entry || now > entry.resetAt) {
+            hits.set(key, { count: 1, resetAt: now + windowMs });
+        } else if (entry.count >= max) {
+            res.setHeader('Retry-After', Math.ceil((entry.resetAt - now) / 1000));
+            return res.status(429).json({ success: false, error: message });
+        } else {
+            entry.count++;
+        }
+        // The map would otherwise grow for every address that ever called.
+        if (hits.size > 5000) {
+            for (const [k, v] of hits) if (now > v.resetAt) hits.delete(k);
+        }
+        return next();
+    };
+}
+
 const corsOptions = {
     origin: [
         'https://www.notsus.net', 
@@ -82,9 +135,10 @@ app.get('/', (req, res) => {
     }
     res.sendFile(path.join(__dirname, 'index.html'));
 });
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin.html'));
-});
+// /admin is registered once, further down, behind authenticateToken and
+// requireAdmin. An unauthenticated copy used to sit here, and because Express
+// takes the first route that matches, it was the one that answered: the admin
+// page was served to anyone who asked. Found 2026-11-07.
 
 // Legal pages at short URLs (the /docs/ paths keep working; the homepage modals load them)
 app.get('/privacy', (req, res) => {
@@ -168,7 +222,12 @@ app.get('/api/podcast/episodes', async (req, res) => {
 app.use('/downloads', express.static(path.join(__dirname, 'downloads')));
 
 // Auth routes (loaded on first /auth request)
-app.use('/auth', (req, res, next) => getAuthRoutes()(req, res, next));
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: 'Too many sign-in attempts. Try again in a few minutes.',
+});
+app.use('/auth', loginLimiter, (req, res, next) => getAuthRoutes()(req, res, next));
 
 console.log('[NotSus] Core routes registered...');
 
@@ -197,9 +256,18 @@ const validateFeedback = (req, res, next) => {
 };
 
 // API endpoint for submitting feedback - Updated to handle all fields
-app.post('/api/feedback', validateFeedback, async (req, res, next) => {
+const formLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 20,
+    message: 'Too many submissions. Try again shortly.',
+});
+
+app.post('/api/feedback', formLimiter, validateFeedback, async (req, res, next) => {
     try {
-        console.log('Received feedback submission:', req.body);
+        // The body carries a name and an email address, so it does not go in
+        // the logs. Render keeps those, and they are not the right home for
+        // somebody's details.
+        console.log('Received feedback submission');
         
         const result = await getDb().transaction(async (client) => {
             const {
@@ -305,7 +373,7 @@ app.post('/api/feedback', validateFeedback, async (req, res, next) => {
 });
 
 // API endpoint for tracking download attempts (email or token for verified users)
-app.post('/api/track-download', async (req, res) => {
+app.post('/api/track-download', formLimiter, async (req, res) => {
     try {
         const { email, token, platform, action, browserInfo } = req.body;
         let resolvedEmail = email;
