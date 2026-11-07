@@ -135,10 +135,18 @@ app.get('/', (req, res) => {
     }
     res.sendFile(path.join(__dirname, 'index.html'));
 });
-// /admin is registered once, further down, behind authenticateToken and
-// requireAdmin. An unauthenticated copy used to sit here, and because Express
-// takes the first route that matches, it was the one that answered: the admin
-// page was served to anyone who asked. Found 2026-11-07.
+// The admin login page, served to anyone, which is correct: it is a login
+// form and nothing else. Everything behind it needs a token.
+//
+// There used to be a second registration of this route further down, wrapped
+// in authenticateToken and requireAdmin. It read the token from an
+// Authorization header, and a browser typing /admin into the address bar
+// sends no such header, so that route could only ever have answered 401. The
+// unwrapped one above it was the reason the page worked at all. The wrapped
+// one is deleted rather than this one. 2026-11-07.
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
+});
 
 // Legal pages at short URLs (the /docs/ paths keep working; the homepage modals load them)
 app.get('/privacy', (req, res) => {
@@ -553,10 +561,6 @@ app.get('/api/admin/downloads/export', lazyAuthenticateToken, lazyRequireAdmin, 
     }
 });
 
-app.get('/admin', lazyAuthenticateToken, lazyRequireAdmin, (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin.html'));
-});
-
 // Verify email: validate token, mark used, create download token, redirect to home with download_token
 const BASE_URL = process.env.BASE_URL || 'https://www.notsus.net';
 app.get('/verify-email', async (req, res) => {
@@ -630,6 +634,19 @@ const PLATFORMS = [
         icon: '<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M1 20h22"/>',
     },
 ];
+
+/**
+ * Does this look like a crawler rather than a parent?
+ *
+ * Only used to decide whether a download is worth counting. It is not a
+ * defence and must never be used as one: a user agent is a string the client
+ * chooses, and anything that wanted past this would simply say Chrome.
+ */
+function looksLikeABot(userAgent) {
+    if (!userAgent) return true;
+    return /bot|crawler|spider|crawling|slurp|curl|wget|python-requests|httpclient|headless|scrapy|facebookexternalhit|preview|monitor|uptime|pingdom|lighthouse|semrush|ahrefs/i
+        .test(userAgent);
+}
 
 /** Where a platform's file actually lives. iPad has none yet; it is an email. */
 const DOWNLOAD_URLS = {
@@ -784,14 +801,22 @@ app.get('/download/:platform', async (req, res) => {
     // Platform and browser, and deliberately not the IP address: a download
     // nobody put their name to does not need one, and the count is the only
     // thing this record is for.
+    //
+    // Crawlers are handed the file like anyone else and simply not counted.
+    // Blocking them would be theatre, because the installers sit on
+    // download.notsus.net and anything can fetch them straight from there
+    // without passing through here at all. The only thing worth protecting is
+    // the honesty of the number.
     if (!downloadToken) {
-        try {
-            await getDb().query(`
-                INSERT INTO app_downloads (platform, email, download_time, user_agent)
-                VALUES ($1, NULL, CURRENT_TIMESTAMP, $2)
-            `, [platform, req.headers['user-agent']]);
-        } catch (err) {
-            console.error('Could not record an anonymous download:', err.message);
+        if (!looksLikeABot(req.headers['user-agent'])) {
+            try {
+                await getDb().query(`
+                    INSERT INTO app_downloads (platform, email, download_time, user_agent)
+                    VALUES ($1, NULL, CURRENT_TIMESTAMP, $2)
+                `, [platform, req.headers['user-agent']]);
+            } catch (err) {
+                console.error('Could not record an anonymous download:', err.message);
+            }
         }
         return res.redirect(downloadUrls[platform]);
     }
