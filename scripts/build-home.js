@@ -193,7 +193,7 @@ const html = `<!DOCTYPE html>
 
 <header class="site-header">
   <a class="brand" href="/">
-    <img src="${stamp('public/logo-120.png')}" width="40" height="40" alt="" fetchpriority="high">
+    <img src="${stamp('public/logo-120.png')}" width="32" height="32" alt="" fetchpriority="high">
     <span class="brand-text">
       <span class="brand-name">NotSus.net</span>
       <span class="brand-tagline">The better browser for kids.</span>
@@ -201,8 +201,6 @@ const html = `<!DOCTYPE html>
   </a>
 
   <div class="header-right">
-    <a class="header-about" href="/about">About</a>
-
     <div id="cta" class="cta" hidden>
       <button type="button" class="cta-close" id="cta-close" aria-label="Close">&times;</button>
       <p class="cta-lead">This website is intended to be a browser.</p>
@@ -233,7 +231,7 @@ const html = `<!DOCTYPE html>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         </span>
         <input type="search" id="q" class="capsule-input" autocomplete="off"
-               placeholder="Try: make a game, draw, times tables, dinosaurs"
+               placeholder="Search..."
                aria-label="Search the tools" aria-describedby="result-count">
         <button type="button" id="clear" class="capsule-clear" hidden aria-label="Clear the search">&times;</button>
       </div>

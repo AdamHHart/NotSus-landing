@@ -99,6 +99,15 @@ new editorial list; it is what the app puts on its home screen, read off
 once in their category, which is why the picks block disappears the moment any
 filter is on, and why `check:home` counts tiles only below it.
 
+**Everything is sized to put the two picks rows above the fold on a phone.**
+That is the constraint the numbers come from, not taste. On a 375x667 screen:
+55px of header, 30px of air, a 38px bar, and fifteen tiles three across at
+78px each comes to 623px, with 44px to spare. It only works because the bar
+stays on one line at phone width (it used to wrap its filters onto a second
+row, costing 54px where it is dearest), because the tiles lost their padding,
+and because the empty result line collapses instead of reserving 21px. Change
+any of those and check the sum again.
+
 **The icons are ours to serve.** Pointing the tiles at each site's own favicon,
 or at an icon service, would mean a child opening this page sends a request to
 a hundred companies before touching anything, and one of those to Google. So
@@ -131,11 +140,20 @@ also why the build, not the author, writes the `?v=` on each asset.
 
 ## The header, and where the old navigation went
 
-The header holds three things: the brand, **About**, and the card. Everything
-the old navigation carried is in the footer now, along with the social links
-and the legal pages.
+The header holds two things: the green logo bar and the card. Every link that
+used to be up there, About included, is in the footer now, along with the
+social links and the legal pages.
 
-`About` and the footer's `Resources`, `Contact Us` and `How It Works` point at
+**The logo bar is green on purpose, and the text on it is dark.** That is the
+original NotSus look and the one place the brand allows green as a surface:
+`tokens.css` says green behind light text is where every contrast failure in
+the 2026 review started, while dark text on the same green reads 5.65:1. Cream
+on green is 2.75:1 and the bible names it as the mistake, so the wordmark here
+is near-black, not cream. The card is green for the same reason: it is the
+only thing on the page asking a parent for anything, and a charcoal card on a
+charcoal page asked very quietly.
+
+The footer's `Resources`, `Contact Us` and `How It Works` point at
 **`/about`**, which serves the old home page. Those sections live on that
 document, and pointing them at `/#resources-section` would break the moment the
 new page takes over `/`. `scripts/site-chrome.js` holds that list, and this

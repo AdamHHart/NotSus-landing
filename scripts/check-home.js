@@ -19,6 +19,9 @@ const html = fs.readFileSync(path.join(ROOT, 'home', 'index.html'), 'utf8');
 const catalog = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'catalog.json'), 'utf8'));
 const synonyms = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'search-synonyms.json'), 'utf8'));
 
+const cssSrc = fs.readFileSync(path.join(ROOT, 'home', 'home.css'), 'utf8');
+const jsSrc = fs.readFileSync(path.join(ROOT, 'home', 'home.js'), 'utf8');
+
 let failures = 0;
 function check(name, ok, detail) {
   if (ok) {
@@ -91,11 +94,17 @@ check('the tiles are in the HTML', tiles.length > 0);
 check('the card starts hidden, so it cannot block a tile before it slides in',
   /<div id="cta" class="cta" hidden>/.test(html));
 check('the card hangs off the header rather than sitting in it',
-  /\.cta \{[\s\S]*?position: absolute;[\s\S]*?top: calc\(100% \+/.test(
-    fs.readFileSync(path.join(ROOT, 'home', 'home.css'), 'utf8')));
-check('the card is the last thing in the header, after About',
-  html.indexOf('header-about') < html.indexOf('id="cta"')
-  && html.indexOf('id="cta"') < html.indexOf('</header>'));
+  /\.cta \{[\s\S]*?position: absolute;[\s\S]*?top: calc\(100% \+/.test(cssSrc));
+check('the bar does not wrap to a second line on a phone',
+  !/@media \(max-width: 760px\)[\s\S]*?\.capsule \{[^}]*flex-wrap/.test(cssSrc));
+check('the card is in the header, hung off its right',
+  html.indexOf('id="cta"') < html.indexOf('</header>'));
+check('the logo bar is a green capsule with dark text on it, never cream',
+  /\.brand \{[\s\S]*?background: var\(--primary\);[\s\S]*?border-radius: 999px;/.test(cssSrc)
+  && !/\.brand-name \{[^}]*var\(--cream\)/.test(cssSrc));
+check('the card drops over half a second, half a second after load',
+  /\.cta \{[\s\S]*?transition: transform 500ms/.test(cssSrc) && /\}, 500\);/.test(jsSrc));
+check('the search box says Search', /placeholder="Search\.\.\."/.test(html));
 check('the card says what Adam wrote',
   html.includes('This website is intended to be a browser.') && html.includes('Setup now for your kids.'));
 check('assets are asked for by a content hash, so a deploy is not cached for a year',
@@ -106,10 +115,18 @@ check('the public address is the one that may be published',
   html.includes('2015 Main Street') && !html.includes('Broadway'));
 
 console.log('\nThe chrome');
-check('the header holds the brand, About and the card, and nothing else',
-  /class="header-about"/.test(html) && !/>Blog<\/a>[\s\S]{0,200}<\/header>/.test(html));
-check('Blog and Radio are in the footer, not the header',
-  html.indexOf('>Blog<') > html.indexOf('</header>') && html.indexOf('>Radio<') > html.indexOf('</header>'));
+// The header is the logo bar and the card. Every link that used to live up
+// there, About included, is in the footer now.
+const header = html.slice(html.indexOf('<header'), html.indexOf('</header>'));
+// The two links inside the card both go to /downloads and are the card, not
+// navigation, so they are counted out before the rest is checked.
+const headerOutsideCard = header.slice(0, header.indexOf('<div id="cta"'));
+check('the header holds the logo bar and the card, and no navigation',
+  (headerOutsideCard.match(/<a /g) || []).length === 1 && /class="brand"/.test(headerOutsideCard));
+for (const label of ['About', 'Blog', 'Radio']) {
+  check(`"${label}" is in the footer, not the header`,
+    !header.includes(`>${label}<`) && html.indexOf(`>${label}<`) > html.indexOf('</header>'));
+}
 for (const label of ['Download Browser', 'About', 'Tools for Kids', 'Radio', 'Blog', 'Resources', 'Contact Us']) {
   check(`the footer carries "${label}"`, html.includes(`>${label}</a>`));
 }
@@ -170,7 +187,7 @@ check('the capsule holds the search and both dropdowns',
   /class="capsule"/.test(html) && /id="q"/.test(html) && /id="cat"/.test(html) && /id="age"/.test(html));
 check('the search keeps a capsule of its own, and each filter is a segment',
   /class="capsule-search"/.test(html) && (html.match(/class="capsule-pick"/g) || []).length === 2);
-const css = fs.readFileSync(path.join(ROOT, 'home', 'home.css'), 'utf8');
+const css = cssSrc;
 check('each filter has a concave left edge, and the vendor-prefixed twin',
   /\.capsule-pick \{[\s\S]*?-webkit-mask-image: radial-gradient\(circle at left center/.test(css)
   && /\.capsule-pick \{[\s\S]*?\n  mask-image: radial-gradient\(circle at left center/.test(css));
