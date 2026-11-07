@@ -72,13 +72,43 @@ check('no duplicate links', new Set(tiles.map((t) => t.href)).size === tiles.len
 check('no tile is hidden in the markup', !/class="app-button"[^>]*hidden/.test(html));
 check('the heading and the tiles are in the HTML', /<h1 class="finder-title">/.test(html) && tiles.length > 0);
 check('the card starts hidden, so it cannot block a tile before it slides in',
-  /<aside id="cta" class="cta" hidden/.test(html));
+  /<div id="cta" class="cta" hidden>/.test(html));
+check('the card says what Adam wrote',
+  html.includes('This website is intended to be a browser.') && html.includes('Setup now for your kids.'));
 check('assets are asked for by a content hash, so a deploy is not cached for a year',
   /home\.css\?v=[a-f0-9]{10}/.test(html) && /home\.js\?v=[a-f0-9]{10}/.test(html));
 check('the header logo is the small copy, not the 3.2 MB original',
   /public\/logo-120\.png\?v=/.test(html) && !html.includes('/public/logo.png'));
 check('the public address is the one that may be published',
   html.includes('2015 Main Street') && !html.includes('Broadway'));
+
+console.log('\nThe chrome');
+check('the header holds the brand, About and the card, and nothing else',
+  /class="header-about"/.test(html) && !/>Blog<\/a>[\s\S]{0,200}<\/header>/.test(html));
+check('Blog and Radio are in the footer, not the header',
+  html.indexOf('>Blog<') > html.indexOf('</header>') && html.indexOf('>Radio<') > html.indexOf('</header>'));
+for (const label of ['Download Browser', 'About', 'Tools for Kids', 'Radio', 'Blog', 'Resources', 'Contact Us']) {
+  check(`the footer carries "${label}"`, html.includes(`>${label}</a>`));
+}
+for (const name of ['LinkedIn', 'YouTube', 'Instagram', 'TikTok', 'X']) {
+  check(`the footer carries ${name}`, new RegExp(`aria-label="NotSus on ${name}"`).test(html));
+}
+check('nothing in the footer points at an anchor on a page that may move',
+  !/href="\/#/.test(html));
+
+console.log('\nThe tiles');
+const logos = (html.match(/class="app-logo" src="/g) || []).length;
+check(`most tiles carry the site's own logo (${logos} of ${tiles.length})`, logos >= tiles.length * 0.85,
+  `only ${logos}`);
+check('every logo is served from this site, not from the site it belongs to',
+  (html.match(/class="app-logo" src="([^"]*)"/g) || []).every((m) => m.includes('/home/icons/')));
+check('every logo carries a content hash', (html.match(/\/home\/icons\/[^"?]+\?v=[a-f0-9]{10}/g) || []).length === logos);
+check('a tile with no logo falls back to its emoji',
+  (html.match(/app-logo-emoji/g) || []).length === tiles.length - logos);
+const longDesc = (html.match(/<span class="app-description">([^<]*)<\/span>/g) || [])
+  .map((m) => m.replace(/<[^>]+>/g, ''))
+  .filter((d) => d.split(/\s+/).length > 3);
+check('every tile description is three words or fewer', longDesc.length === 0, longDesc.join(' | '));
 
 console.log('\nThe search');
 
@@ -112,6 +142,9 @@ check('the download line and the mapping both reached the page',
   html.includes('"notCarried"') && html.includes('miss-data'));
 
 console.log('\nThe catalogue and the synonyms agree');
+check('the capsule holds the search and both dropdowns in one shape',
+  /class="capsule"/.test(html) && /id="q"/.test(html) && /id="cat"/.test(html) && /id="age"/.test(html));
+check('there is no search button to press', !/type="submit"/.test(html));
 check('every site has synonyms', names.every((n) => synonyms.apps[n]),
   names.filter((n) => !synonyms.apps[n]).join(', '));
 check('no synonyms for a site that is gone',

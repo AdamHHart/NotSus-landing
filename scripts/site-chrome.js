@@ -2,14 +2,17 @@
  * Shared site chrome: navigation labels and footer social links.
  */
 (function initSiteChrome() {
+    // The anchors point at /about rather than at '/', because the home page is
+    // about to stop being the page that holds those sections. /about serves the
+    // same document, so these work whichever page is at '/'.
     const NAV_LINKS = [
-        { href: '/#waitlist-section', label: 'Download Browser' },
-        { href: '/#demo-gif', label: 'About' },
+        { href: '/downloads', label: 'Download Browser' },
+        { href: '/about#demo-gif', label: 'About' },
         { href: '/tools/', label: 'Tools for Kids' },
         { href: '/podcast/', label: 'Radio' },
         { href: '/blog/', label: 'Blog' },
-        { href: '/#resources-section', label: 'Resources' },
-        { href: '/#contact-section', label: 'Contact Us' }
+        { href: '/about#resources-section', label: 'Resources' },
+        { href: '/about#contact-section', label: 'Contact Us' }
     ];
 
     const SOCIAL_LINKS = [

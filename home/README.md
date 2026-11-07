@@ -25,15 +25,22 @@ back from the Render dashboard without a deploy:
 | `index.html` | **Generated. Do not edit.** Run the build instead. |
 | `home.css` | Written by hand. The colour, type and shape values are the app's own, copied from `src/styles/tokens.css`. |
 | `home.js` | Written by hand. The filter and the card. |
+| `icons/` | **Fetched, once.** Each site's own icon, downloaded by `scripts/fetch-icons.js` and committed. |
 | `../data/catalog.json` | **Copied** from the app repository. |
 | `../data/search-synonyms.json` | **Copied** from the app repository. |
+
+The taglines under each tile come from `docs/catalog/taglines.json` in the app
+repository, one to three words each, and the export refuses to run if one is
+missing or longer.
 
 ## Changing it
 
 ```bash
 npm run sync:catalog    # refresh the two data files from the app repository
+npm run fetch:icons     # download icons for any site that has none yet
 npm run build:home      # regenerate index.html
-npm run check:home      # 51 checks, no browser needed
+npm run check:home      # 83 checks, no browser needed
+npm run preview:home    # one self-contained file, for looking at it
 ```
 
 `sync:catalog` assumes the app repository is at `~/Development/NotSusClean`.
@@ -67,6 +74,15 @@ the app repository, because that is what fills the database the browser reads.
 `scripts/export-catalog.js` over there turns it into data this build can read.
 A hand-kept second copy would drift within a month.
 
+**The icons are ours to serve.** Pointing the tiles at each site's own favicon,
+or at an icon service, would mean a child opening this page sends a request to
+a hundred companies before touching anything, and one of those to Google. So
+each icon is downloaded once by `npm run fetch:icons` and committed. 95 of the
+106 sites gave one up; eleven refuse an identified bot, and those tiles show
+their emoji instead. The fetcher checks the first bytes of every file, because
+two sites answered a missing favicon with their own HTML error page, labelled
+as a PNG, at 200.
+
 **The page works before JavaScript runs.** Every tile is a real `<a href>` in
 the HTML. The search, the chips and the age filter are an enhancement. That is
 what makes the page readable by a search engine and usable on a bad connection,
@@ -87,3 +103,16 @@ also why the build, not the author, writes the `?v=` on each asset.
   private window throws.
 - **No filtering.** The page links out to the open web. The safety is in which
   sites were chosen, not in enforcement, and the footer says so.
+
+## The header, and where the old navigation went
+
+The header holds three things: the brand, **About**, and the card. Everything
+the old navigation carried is in the footer now, along with the social links
+and the legal pages.
+
+`About` and the footer's `Resources`, `Contact Us` and `How It Works` point at
+**`/about`**, which serves the old home page. Those sections live on that
+document, and pointing them at `/#resources-section` would break the moment the
+new page takes over `/`. `scripts/site-chrome.js` holds that list, and this
+build reads it from there rather than keeping a second copy, so the footer
+cannot drift from the rest of the site.

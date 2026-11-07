@@ -14,7 +14,7 @@
   var q = document.getElementById('q');
   var clearBtn = document.getElementById('clear');
   var age = document.getElementById('age');
-  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+  var cat = document.getElementById('cat');
   var count = document.getElementById('result-count');
   var miss = document.getElementById('miss');
 
@@ -37,17 +37,8 @@
     };
   });
 
-  var picked = Object.create(null);
-
-  function activeChips() {
-    return Object.keys(picked).filter(function (k) { return picked[k]; });
-  }
-
-  // Several chips widen the result rather than narrowing it. A child picking
-  // Art and Music means "either of those", not "both at once".
-  function matchesChips(item) {
-    var on = activeChips();
-    return on.length === 0 || on.indexOf(item.cat) !== -1;
+  function matchesCategory(item) {
+    return !cat.value || item.cat === cat.value;
   }
 
   // A site shows for a band when its youngest suitable age is at or below that
@@ -140,7 +131,7 @@
     var shown = 0;
 
     items.forEach(function (item) {
-      var ok = matchesChips(item) && matchesAge(item, maxAge) && matchesWords(item, words);
+      var ok = matchesCategory(item) && matchesAge(item, maxAge) && matchesWords(item, words);
       item.el.hidden = !ok;
       if (ok) shown++;
     });
@@ -153,7 +144,12 @@
 
     clearBtn.hidden = text.length === 0;
 
-    var filtering = words.length > 0 || activeChips().length > 0 || maxAge !== 99;
+    // A dropdown that is narrowing the page should not look like one that is
+    // not, so it carries a class the stylesheet colours.
+    cat.parentNode.className = 'capsule-pick' + (cat.value ? ' is-set' : '');
+    age.parentNode.className = 'capsule-pick' + (age.selectedIndex > 0 ? ' is-set' : '');
+
+    var filtering = words.length > 0 || Boolean(cat.value) || age.selectedIndex > 0;
     if (!filtering) {
       count.textContent = '';
     } else if (shown === 0) {
@@ -173,22 +169,15 @@
     }
   }
 
+  // Search as you type. There is no button, and nothing to press.
   q.addEventListener('input', apply);
   age.addEventListener('change', apply);
+  cat.addEventListener('change', apply);
 
   clearBtn.addEventListener('click', function () {
     q.value = '';
     q.focus();
     apply();
-  });
-
-  chips.forEach(function (chip) {
-    chip.addEventListener('click', function () {
-      var cat = chip.getAttribute('data-chip');
-      picked[cat] = !picked[cat];
-      chip.setAttribute('aria-pressed', picked[cat] ? 'true' : 'false');
-      apply();
-    });
   });
 
   // Escape clears the search before it reaches the card, because a child who
@@ -247,6 +236,7 @@
     ctaOpen.addEventListener('click', function () {
       ctaMore.hidden = false;
       ctaOpen.hidden = true;
+      ctaOpen.setAttribute('aria-expanded', 'true');
     });
   }
   if (ctaClose) ctaClose.addEventListener('click', dismissCard);

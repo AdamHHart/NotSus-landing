@@ -12,7 +12,9 @@
     "build:home": "node scripts/build-home.js",
     "sync:catalog": "bash scripts/sync-catalog.sh",
     "check:home": "node scripts/check-home.js",
-    "prestart": "node scripts/build-home.js || echo \"build-home failed; serving the committed home/index.html\""
+    "prestart": "node scripts/build-home.js || echo \"build-home failed; serving the committed home/index.html\"",
+    "fetch:icons": "node scripts/fetch-icons.js",
+    "preview:home": "node scripts/preview-home.js"
   },
   "engines": {
     "node": "20.x"

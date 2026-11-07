@@ -119,6 +119,14 @@ app.get('/home', (req, res) => {
     res.sendFile(path.join(__dirname, 'home', 'index.html'));
 });
 
+// The old home page, which the new one does not replace so much as move.
+// It holds About, How It Works, Resources and Contact Us, and the footer of
+// the new page links to those anchors, so it needs an address of its own that
+// does not depend on which page is at '/'.
+app.get('/about', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 app.get('/tools', (req, res) => {
     res.redirect(301, '/tools/');
 });
