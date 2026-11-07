@@ -85,6 +85,14 @@ opens and closes around the curve. Everything inside is centred, never padded
 to height. Below 820px the search takes a line of its own and the two filters
 pair up underneath, still interlocking.
 
+**The card hangs off the header, it does not sit in it.** `position: absolute`
+under `.header-right`. In the flow it added 300px to the header and shoved the
+brand sideways half a second after the page had settled. It also remembers
+being dismissed for 30 days, per browser, in `notsus.cta.dismissedAt`, so if
+it does not appear, that is usually why. `npm run preview:home` swaps that key
+for one unique to each build, because a draft you dismissed once should not
+hide the card in every later draft.
+
 **The two rows at the top are the browser's own.** `home-picks.json` is not a
 new editorial list; it is what the app puts on its home screen, read off
 `src/index.html`. Fifteen sites appear twice on the page, once up there and

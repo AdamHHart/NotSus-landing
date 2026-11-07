@@ -225,8 +225,7 @@ const html = `<!DOCTYPE html>
 <main>
 
   <div class="finder">
-    <h1 class="finder-title">What do you want to do?</h1>
-    <p class="finder-sub">${total} free websites for kids. Hand picked, no sign up, nothing to pay.</p>
+    <h1 class="finder-title">${total} free websites for kids, hand picked</h1>
 
     <div class="capsule">
       <div class="capsule-search">
@@ -260,12 +259,10 @@ ${ageOptions}
 
   <div id="tools" class="tools">
     <div id="picks" class="picks-block">
-      <p class="picks-lead">What the browser opens with</p>
 ${homePicks.rows.map(picksRow).join('\n')}
     </div>
 
     <div class="everything">
-      <p class="picks-lead">Everything else, by what it is for</p>
 ${catalog.categoryOrder.map(section).filter(Boolean).join('\n')}
     </div>
   </div>

@@ -114,14 +114,19 @@ a { color: var(--primary-emphasis); }
 /* Where the Download button used to be. It is the only sales pitch on the
    page, so it sits in the one place a parent looks and a child does not. */
 .cta {
+  /* Hung under the right of the header, not placed in it. In the flow it
+     added 300px to the header and shoved the brand across when it appeared,
+     half a second after the page settled. */
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
   width: 300px;
-  background: rgba(45, 42, 42, 0.96);
+  background: rgba(45, 42, 42, 0.97);
   backdrop-filter: blur(10px);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
   padding: 0.9rem 1rem;
   box-shadow: 0 14px 38px rgba(0, 0, 0, 0.5);
-  position: relative;
   transform: translateY(-16px);
   opacity: 0;
   transition: transform 300ms ease, opacity 300ms ease;
@@ -185,20 +190,22 @@ a { color: var(--primary-emphasis); }
 .finder {
   max-width: 980px;
   margin: 0 auto;
-  padding: 2rem 1.25rem 0.5rem;
+  padding: 1.1rem 1.25rem 0.25rem;
   text-align: center;
 }
 
+/* The page says what it is in its title and its tiles. A heading saying "What
+   do you want to do?" over a search box saying "Try: make a game" is the same
+   sentence twice, so it is here for a screen reader and a search engine and
+   nowhere else. */
 .finder-title {
-  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
-  margin: 0 0 0.4rem;
-  color: var(--cream);
-  font-weight: 800;
-}
-.finder-sub {
-  margin: 0 0 1.5rem;
-  color: var(--text-secondary);
-  font-size: 1rem;
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* One bar, three capsules that interlock.
@@ -352,8 +359,8 @@ a { color: var(--primary-emphasis); }
 }
 
 .result-count {
-  min-height: 1.4em;
-  margin: 0 0 0.5rem;
+  min-height: 1.2em;
+  margin: 0 0 0.25rem;
   font-size: 0.88rem;
   color: var(--text-muted);
 }
@@ -405,26 +412,17 @@ a { color: var(--primary-emphasis); }
 
 /* ----------------------------------------------------------------- tiles */
 
-/* The two rows the browser itself opens with, above the twelve categories. */
-.picks-lead {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin: 0 0 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border);
-}
-.picks-block { margin-bottom: 2.75rem; }
+/* The two rows the browser itself opens with, above the twelve categories.
+   They carried a line of explanation each. They do not need one: a row of
+   tiles under a heading explains itself. */
+.picks-block { margin-bottom: 1.5rem; }
 .picks-block[hidden] { display: none; }
 .picks .section-title { border-bottom: 0; padding-bottom: 0; }
-.everything > .picks-lead { margin-top: 0; }
 
 .tools {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 0.5rem 1.25rem 3rem;
+  padding: 0.25rem 1.25rem 3rem;
 }
 
 .app-section { margin: 0 0 2.25rem; }

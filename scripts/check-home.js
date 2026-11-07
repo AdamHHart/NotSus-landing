@@ -83,9 +83,19 @@ check('the picks block can be hidden as one thing when a filter is on',
 // A page that needs JavaScript to show its links is invisible to a search
 // engine and to a child on a slow connection.
 check('no tile is hidden in the markup', !/class="app-button"[^>]*hidden/.test(html));
-check('the heading and the tiles are in the HTML', /<h1 class="finder-title">/.test(html) && tiles.length > 0);
+check('there is still one h1, for a screen reader and a search engine',
+  (html.match(/<h1\b/g) || []).length === 1);
+check('the page says nothing above the search box',
+  !/finder-sub/.test(html) && !/picks-lead/.test(html));
+check('the tiles are in the HTML', tiles.length > 0);
 check('the card starts hidden, so it cannot block a tile before it slides in',
   /<div id="cta" class="cta" hidden>/.test(html));
+check('the card hangs off the header rather than sitting in it',
+  /\.cta \{[\s\S]*?position: absolute;[\s\S]*?top: calc\(100% \+/.test(
+    fs.readFileSync(path.join(ROOT, 'home', 'home.css'), 'utf8')));
+check('the card is the last thing in the header, after About',
+  html.indexOf('header-about') < html.indexOf('id="cta"')
+  && html.indexOf('id="cta"') < html.indexOf('</header>'));
 check('the card says what Adam wrote',
   html.includes('This website is intended to be a browser.') && html.includes('Setup now for your kids.'));
 check('assets are asked for by a content hash, so a deploy is not cached for a year',

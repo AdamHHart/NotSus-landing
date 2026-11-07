@@ -29,6 +29,15 @@ html = html.replace(/src="\/public\/logo-120\.png\?v=[a-f0-9]+"/g, `src="${dataU
 html = html.replace(/src="\/(home\/icons\/[^"?]+)\?v=[a-f0-9]+"/g, (_, rel) => `src="${dataUri(rel)}"`);
 html = html.replace(/<title>[^<]*<\/title>/, '<title>NotSus Home Screen</title>');
 
+// Preview only. The card remembers being dismissed for 30 days, per browser,
+// which is right on the live site and wrong here: dismiss it once while
+// looking at a draft and every later draft opens without it. Each preview
+// gets its own key, so each one shows the card again.
+html = html.replace(
+  "var KEY = 'notsus.cta.dismissedAt';",
+  `var KEY = 'notsus.cta.preview.${Date.now().toString(36)}';`,
+);
+
 fs.writeFileSync(out, html);
 console.log(`${out}  ${(Buffer.byteLength(html) / 1024 / 1024).toFixed(1)} MB, nothing left to fetch`);
 const left = html.match(/(?:src|href)="\/[^"]*"/g) || [];
