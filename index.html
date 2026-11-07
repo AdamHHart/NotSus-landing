@@ -5,6 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NotSus.net - The Better Browser for Kids</title>
     <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* The two tiers, matching the card on the home page. Local to this
+           page because styles.css is shared with the blog and the legal
+           pages, and none of them has a hero. */
+        .hero-sidebar { display: flex; flex-direction: column; gap: 0.6rem; }
+        .hero-tier {
+            display: flex; flex-direction: column; gap: 0.2rem;
+            text-decoration: none;
+            border-radius: 14px;
+            padding: 1rem 1.1rem;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+        }
+        .hero-tier:hover { transform: translateY(-2px); }
+        .hero-tier-head { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+        .hero-tier-name { font-size: 1.05rem; font-weight: 800; color: #ffffff; }
+        .hero-tier-line { font-size: 0.9rem; line-height: 1.4; color: #e0e0e0; }
+        .hero-tier-badge {
+            font-size: 0.62rem; font-weight: 800; letter-spacing: 0.07em;
+            text-transform: uppercase; line-height: 1;
+            padding: 0.26rem 0.5rem; border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1); color: #e0e0e0;
+        }
+        /* The free one is the obvious first click. Dark text on green, which
+           is the only way the brand allows green as a field. */
+        .hero-tier-primary {
+            background: #00A86B; border-color: #00A86B;
+            box-shadow: 0 8px 22px rgba(0, 168, 107, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+        .hero-tier-primary .hero-tier-name { color: #06120d; }
+        .hero-tier-primary .hero-tier-line { color: rgba(6, 18, 13, 0.85); font-weight: 600; }
+        .hero-tier-primary .hero-tier-badge { background: rgba(6, 18, 13, 0.85); color: #1fc988; }
+        .hero-tier-primary:hover {
+            background: #1fc988; border-color: #1fc988;
+            box-shadow: 0 14px 32px rgba(0, 168, 107, 0.46), inset 0 1px 0 rgba(255, 255, 255, 0.34);
+        }
+        .hero-tier:not(.hero-tier-primary):hover {
+            background: rgba(255, 255, 255, 0.06); border-color: #00A86B;
+        }
+    </style>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
@@ -42,7 +83,7 @@
 
         <!-- Navigation Menu -->
         <nav class="mobile-nav" id="mobileNav">
-            <a href="#waitlist-section" class="nav-link">Free Trial</a>
+            <a href="/downloads" class="nav-link">Download Browser</a>
             <a href="#demo-gif" class="nav-link">About</a>
             <a href="/tools/" class="nav-link">Tools for Kids</a>
             <a href="/podcast/" class="nav-link">Radio</a>
@@ -62,25 +103,23 @@
                         <p class="hero-subtitle">NotSus gives children the best educational and creative tools, without the distractions.</p>
                     </div>
 
-                    <!-- Sidebar Form -->
+                    <!-- The two tiers, the same pair the card on the home page
+                         offers, so a parent meets one offer and not two. -->
                     <div class="hero-sidebar">
-                        <form id="heroForm" class="waitlist-form">
-                            <div class="form-inputs">
-                            </div>
-                            <a href="#waitlist-section" class="submit-button">Free Trial</a>
-                        </form>
-
-                        <div class="sidebar-benefits">
-                            <p><strong>You'll get:</strong></p>
-                            <ul>
-                                <li>Early discount access for life</li>
-                                <li>Healthy and capable children</li>
-                                <li>Input into our design</li>
-                            </ul>
-                            <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 1rem;">
-                                No credit card required.
-                            </p>
-                        </div>
+                        <a class="hero-tier hero-tier-primary" href="/downloads">
+                            <span class="hero-tier-head">
+                                <span class="hero-tier-name">Basic Kid&rsquo;s Browser</span>
+                                <span class="hero-tier-badge">Free</span>
+                            </span>
+                            <span class="hero-tier-line">No email &middot; No credit card &middot; No data</span>
+                        </a>
+                        <a class="hero-tier" href="/downloads">
+                            <span class="hero-tier-head">
+                                <span class="hero-tier-name">Custom Kid&rsquo;s Browser</span>
+                            </span>
+                            <span class="hero-tier-line">Parent input.</span>
+                            <span class="hero-tier-line">An investment in your kid&rsquo;s future.</span>
+                        </a>
                     </div>
                 </div>
 

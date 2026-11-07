@@ -162,6 +162,16 @@ check('every device in the card is the one server.js serves',
   platforms.every((p) => html.includes(p.platform === 'ipad'
     ? 'mailto:contact@notsus.net'
     : `href="/download/${p.platform}"`)));
+// A class rule setting `display` beats the browser's own
+// `[hidden] { display: none }`, so anything the script hides has to say so in
+// the stylesheet. The Setup button did not, stayed on screen once the card
+// opened, and made the card look cramped because it held two things at once.
+for (const c of ['cta', 'cta-more', 'cta-devices', 'cta-go']) {
+  const setsDisplay = new RegExp(`\\.${c} \\{[^}]*display:`, 'm').test(cssSrc);
+  const hasHiddenRule = new RegExp(`\\.${c}\\[hidden\\]`, 'm').test(cssSrc);
+  check(`.${c} can actually be hidden`, !setsDisplay || hasHiddenRule,
+    'it sets display in a class rule, which overrides [hidden]');
+}
 check('the card can be stepped back from the devices',
   /id="cta-back"/.test(html) && /id="cta-devices" hidden/.test(html));
 check('the human check sits on the device step, not before the choice',

@@ -219,8 +219,13 @@ a { color: var(--primary-emphasis); }
 }
 .cta-go:hover .cta-chip { transform: translateX(3px); }
 .cta-go:active { transform: translateY(0) scale(0.995); }
+/* The button is replaced by the two options, not joined by them. Without this
+   it stayed on screen once the card opened: `display: flex` above beats the
+   browser's own `[hidden] { display: none }`, so setting hidden did nothing
+   and the card looked cramped because it was holding two things at once. */
+.cta-go[hidden] { display: none; }
 
-.cta-more { display: flex; flex-direction: column; gap: 0.55rem; }
+.cta-more { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 0.3rem; }
 .cta-more[hidden] { display: none; }
 
 /* Two choices, and they are not a matched pair.
@@ -291,7 +296,7 @@ a { color: var(--primary-emphasis); }
    device by looking rather than by reading every line. */
 .cta-devices[hidden] { display: none; }
 .cta-step {
-  margin: 0 0 0.6rem;
+  margin: 0.3rem 0 0.7rem;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--text-secondary);
