@@ -3,7 +3,7 @@
  * The filter, and the card. Everything here is an enhancement: the page is
  * complete and every tile is a working link before this file runs.
  *
- * No framework, no build step, no storage beyond the card's dismissal.
+ * No framework, no build step, no storage of any kind.
  */
 
 (function () {
@@ -200,16 +200,14 @@
     apply();
   });
 
-  // Escape clears the search before it reaches the card, because a child who
-  // has typed something wants that gone first.
+  // Escape clears the search. It used to close the card as well; the card
+  // does not close any more.
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
     if (document.activeElement === q && q.value) {
       q.value = '';
       apply();
-      return;
     }
-    dismissCard();
   });
 
   apply();
@@ -219,30 +217,17 @@
   var cta = document.getElementById('cta');
   var ctaOpen = document.getElementById('cta-open');
   var ctaMore = document.getElementById('cta-more');
-  var ctaClose = document.getElementById('cta-close');
 
-  var KEY = 'notsus.cta.dismissedAt';
-  var THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
-
-  function dismissedRecently() {
-    try {
-      var at = parseInt(window.localStorage.getItem(KEY), 10);
-      return Number.isFinite(at) && Date.now() - at < THIRTY_DAYS;
-    } catch (e) {
-      // Private windows and blocked site data both throw here. Showing the
-      // card is the right fallback; it is dismissable either way.
-      return false;
-    }
-  }
-
-  function dismissCard() {
-    if (!cta || cta.hidden) return;
-    cta.classList.remove('is-in');
-    cta.hidden = true;
-    try { window.localStorage.setItem(KEY, String(Date.now())); } catch (e) { /* nothing to do */ }
-  }
-
-  if (cta && !dismissedRecently()) {
+  /*
+   * The card stays. It used to remember being dismissed for thirty days in
+   * localStorage, which meant a parent who closed it once on a shared family
+   * machine never saw the only thing on the page that explains what NotSus
+   * is. Adam, 2026-11-07: it does not disappear.
+   *
+   * It still arrives half a second after load rather than with the page, so
+   * it reads as having been handed over rather than having always been there.
+   */
+  if (cta) {
     window.setTimeout(function () {
       cta.hidden = false;
       // Two frames, so the transition has a start state to move from.
@@ -251,9 +236,6 @@
       });
     }, 500);
   }
-
-  var ctaDevices = document.getElementById('cta-devices');
-  var ctaBack = document.getElementById('cta-back');
 
   if (ctaOpen) {
     ctaOpen.addEventListener('click', function () {
@@ -340,5 +322,4 @@
     }
     render();
   }
-  if (ctaClose) ctaClose.addEventListener('click', dismissCard);
 })();

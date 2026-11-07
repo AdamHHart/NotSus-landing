@@ -144,27 +144,11 @@ a { color: var(--primary-emphasis); }
 .cta.is-in { transform: translateY(0); opacity: 1; }
 .cta[hidden] { display: none; }
 
-.cta-close {
-  position: absolute;
-  top: 0.55rem; right: 0.55rem;
-  display: flex; align-items: center; justify-content: center;
-  width: 1.75rem; height: 1.75rem;
-  border: 0;
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  border-radius: 50%;
-  padding: 0;
-}
-.cta-close svg { width: 14px; height: 14px; }
-.cta-close:hover { color: var(--text); background: rgba(255, 255, 255, 0.08); }
-
 .cta-head {
   display: flex;
   align-items: center;
   gap: 0.6rem;
   margin-bottom: 0.85rem;
-  padding-right: 1.5rem;
 }
 .cta-mark { display: block; border-radius: 50%; flex: 0 0 auto; }
 
@@ -880,17 +864,23 @@ body.is-filtering .first-screen .tools { flex: 0 0 auto; padding-bottom: 0; }
 
   /* Top right over a tile grid is tight on a phone, so the card leaves the
      header and becomes a bar along the bottom with the same words. */
+  /* A bar along the bottom that nobody can close has to leave the page
+     usable underneath it: the footer clears it, and the bar itself scrolls
+     if the device list makes it taller than the screen. */
   .cta {
     position: fixed;
     bottom: 0; left: 0; right: 0;
     top: auto;
     width: 100%;
+    max-height: 72svh;
+    overflow-y: auto;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     transform: translateY(100%);
     z-index: 70;
   }
+  body { padding-bottom: 8.5rem; }
 
-  .site-footer { padding: 1.75rem 1rem 4.5rem; }
+  .site-footer { padding: 1.75rem 1rem 2rem; }
 }
 
 /* Below this the third column stops being readable, so it drops to two. */

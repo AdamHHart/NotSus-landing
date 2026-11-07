@@ -94,6 +94,19 @@ check('the page says nothing above the search box',
 check('the tiles are in the HTML', tiles.length > 0);
 check('the card starts hidden, so it cannot block a tile before it slides in',
   /<div id="cta" class="cta" hidden>/.test(html));
+// Adam, 2026-11-07: it does not disappear. It used to remember being
+// dismissed for thirty days, so a parent who closed it once on a shared
+// family machine never saw the only thing on the page explaining what
+// NotSus is.
+check('the card cannot be dismissed',
+  !/cta-close/.test(html) && !/cta-close/.test(cssSrc) && !/cta-close/.test(jsSrc));
+// Against the code, not the comment that explains why the code is gone.
+const jsCode = jsSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+check('and nothing remembers that it was',
+  !/localStorage/.test(jsCode) && !/dismiss/i.test(jsCode));
+check('a bar nobody can close leaves the page usable under it',
+  /@media \(max-width: 760px\)[\s\S]*?body \{ padding-bottom:/.test(cssSrc)
+  && /\.cta \{[\s\S]*?max-height: 72svh;[\s\S]*?overflow-y: auto;/.test(cssSrc));
 check('the card sits level with the top of the logo bar, not below the header',
   /\.cta \{[\s\S]*?position: absolute;[\s\S]*?top: 0\.75rem;/.test(cssSrc)
   && /\.site-header \{[^}]*padding: 0\.75rem/.test(cssSrc));

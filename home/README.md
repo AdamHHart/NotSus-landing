@@ -106,11 +106,12 @@ have been a toll on reading the page.
 
 **The card hangs off the header, it does not sit in it.** `position: absolute`
 under `.header-right`. In the flow it added 300px to the header and shoved the
-brand sideways half a second after the page had settled. It also remembers
-being dismissed for 30 days, per browser, in `notsus.cta.dismissedAt`, so if
-it does not appear, that is usually why. `npm run preview:home` swaps that key
-for one unique to each build, because a draft you dismissed once should not
-hide the card in every later draft.
+brand sideways half a second after the page had settled. It cannot be dismissed, by Adam's decision on 2026-11-07. It used to remember
+being closed for 30 days per browser, which meant a parent who closed it once
+on a shared family machine never again saw the only thing on the page that
+explains what NotSus is. On a phone it is a bar along the bottom, so the body
+carries padding to clear it and the bar scrolls if the device list makes it
+taller than the screen.
 
 **The two rows at the top are the browser's own.** `home-picks.json` is not a
 new editorial list; it is what the app puts on its home screen, read off
@@ -196,9 +197,9 @@ also why the build, not the author, writes the `?v=` on each asset.
 - **No analytics.** The rest of the site runs GA4. This page is aimed at
   children, it promises that nothing is remembered, and a tracker would make
   that untrue. If GA is wanted here, it is a decision to take deliberately.
-- **No storage** except one key, `notsus.cta.dismissedAt`, which keeps the card
-  dismissed for 30 days. Every read and write of it is wrapped, because a
-  private window throws.
+- **No storage at all.** The page writes nothing to the browser: no cookie, no
+  localStorage, no sessionStorage. The last of it went with the card's
+  dismissal on 2026-11-07.
 - **No filtering.** The page links out to the open web. The safety is in which
   sites were chosen, not in enforcement, and the footer says so.
 
