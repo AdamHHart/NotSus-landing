@@ -84,6 +84,7 @@ function searchBlob(app) {
   const cat = synonyms.categories[app.category] || { terms: [] };
   return [
     app.name,
+    app.label || '',
     app.short || '',
     app.description,
     ...(app.tags || []),
@@ -102,7 +103,7 @@ function tile(app) {
              data-cat="${esc(app.category)}" data-agemin="${app.ageMin == null ? 0 : app.ageMin}"
              data-terms="${esc(searchBlob(app))}">
             ${mark}
-            <span class="app-name">${esc(app.name)}</span>
+            <span class="app-name">${esc(app.label || app.name)}</span>
             <span class="app-description">${esc(app.short || app.description)}</span>
           </a>`;
 }

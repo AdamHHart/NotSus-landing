@@ -99,10 +99,22 @@ new editorial list; it is what the app puts on its home screen, read off
 once in their category, which is why the picks block disappears the moment any
 filter is on, and why `check:home` counts tiles only below it.
 
+**Every tile is exactly 92px tall, and holds two lines of text.** Not
+min-height: a tile that grows to fit its words makes the row around it look
+broken. The name gets one line and the tagline gets one, both clipped with an
+ellipsis if they ever overrun, and the catalogue export refuses to publish a
+name over 19 characters or a tagline over 18 so they never do.
+`display-names.json` carries the eighteen shortenings that needs, each one a
+form the brand itself uses: The Met, MoMA, Nat Geo Kids.
+
+**The two picks rows are three across**, the way the app lays out its own home
+screen, which is why that block is held to 700px rather than running the full
+width as six thin columns.
+
 **Everything is sized to put the two picks rows above the fold on a phone.**
 That is the constraint the numbers come from, not taste. On a 375x667 screen:
 55px of header, 30px of air, a 38px bar, and fifteen tiles three across at
-78px each comes to 623px, with 44px to spare. It only works because the bar
+80px each comes to 636px, with 31px to spare. It only works because the bar
 stays on one line at phone width (it used to wrap its filters onto a second
 row, costing 54px where it is dearest), because the tiles lost their padding,
 and because the empty result line collapses instead of reserving 21px. Change
@@ -144,14 +156,12 @@ The header holds two things: the green logo bar and the card. Every link that
 used to be up there, About included, is in the footer now, along with the
 social links and the legal pages.
 
-**The logo bar is green on purpose, and the text on it is dark.** That is the
-original NotSus look and the one place the brand allows green as a surface:
-`tokens.css` says green behind light text is where every contrast failure in
-the 2026 review started, while dark text on the same green reads 5.65:1. Cream
-on green is 2.75:1 and the bible names it as the mistake, so the wordmark here
-is near-black, not cream. The card is green for the same reason: it is the
-only thing on the page asking a parent for anything, and a charcoal card on a
-charcoal page asked very quietly.
+**The bar and the card are both dark, and green is an accent only.** A green
+logo bar was tried on 2026-11-07 and taken off again: two bright objects on a
+charcoal page compete, and the one that should win is the card. The card
+earns its attention from an amber left edge and a green button instead, which
+is what the brand bible asks for anyway. The card starts level with the top
+of the logo bar, in the band the header leaves empty, rather than below it.
 
 The footer's `Resources`, `Contact Us` and `How It Works` point at
 **`/about`**, which serves the old home page. Those sections live on that

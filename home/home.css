@@ -77,37 +77,34 @@ a { color: var(--primary-emphasis); }
   z-index: 50;
 }
 
-/* The logo bar, as a green capsule.
- *
- * This is the original NotSus look: the chrome carries #00A86B and the labels
- * on it are dark. It is the one place the brand allows green as a surface,
- * and the reason is in tokens.css: green behind light text is where every
- * contrast failure in the 2026 review started, while dark text on the same
- * green reads 5.65:1. So no cream here, which is 2.75:1 on green and the
- * exact mistake the bible names. */
+/* The logo bar, as a capsule. Green was tried on 2026-11-07 and taken off
+ * again: on a charcoal page a green bar and a green card are two bright
+ * objects competing, and the one that should win is the card. The bar is the
+ * dark chrome with the cream wordmark, which is the app's default theme. */
 .brand {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
   text-decoration: none;
-  background: var(--primary);
-  color: #06120d;
+  background: var(--surface);
+  color: var(--cream);
+  border: 1px solid var(--border);
   border-radius: 999px;
   padding: 0.3rem 1rem 0.3rem 0.35rem;
-  transition: background var(--ease-fast);
+  transition: background var(--ease-fast), border-color var(--ease-fast);
 }
-.brand:hover { background: var(--primary-emphasis); }
+.brand:hover { background: var(--surface-raised); border-color: var(--border-strong); }
 .brand img { display: block; border-radius: 50%; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
-.brand-name { font-weight: 800; font-size: 1.02rem; color: #06120d; }
-.brand-tagline { font-size: 0.7rem; color: rgba(6, 18, 13, 0.72); }
+.brand-name { font-weight: 800; font-size: 1.02rem; color: var(--cream); }
+.brand-tagline { font-size: 0.7rem; color: var(--text-muted); }
 
 .header-right {
   display: flex;
   align-items: center;
-  /* The card hangs off this, so it must not grow when the card appears. */
-  position: relative;
-  min-height: 42px;
+  /* The card is positioned against the header itself now, level with the top
+     of the logo bar, so this holds nothing and reserves nothing. */
+  position: static;
 }
 
 /* ------------------------------------------------------------------- card */
@@ -118,17 +115,20 @@ a { color: var(--primary-emphasis); }
   /* Hung under the right of the header, not placed in it. In the flow it
      added 300px to the header and shoved the brand across when it appeared,
      half a second after the page settled.
-     Green, like the logo bar, because it is the only thing on the page asking
-     a parent for anything and a charcoal card on a charcoal page asked very
-     quietly. Dark text on it, same rule as the bar. */
+     It starts level with the top of the logo bar, in the band the header
+     leaves empty, rather than below the header. The amber edge is the one
+     highlight the page allows itself, and it is spent here because this is
+     the only thing on the page asking a parent for anything. */
   position: absolute;
-  top: calc(100% + 0.6rem);
-  right: 0;
+  top: 0.75rem;
+  right: 1.25rem;
   width: 310px;
-  background: var(--primary);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-left: 3px solid var(--accent);
   border-radius: var(--radius-lg);
   padding: 0.85rem 1rem 0.95rem;
-  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.6);
   /* It arrives from behind the header, so it reads as having been pulled down
      rather than faded in. Half a second, and the easing settles rather than
      stops. */
@@ -144,22 +144,22 @@ a { color: var(--primary-emphasis); }
   top: 0.2rem; right: 0.3rem;
   width: 1.9rem; height: 1.9rem;
   border: 0; background: transparent;
-  color: rgba(6, 18, 13, 0.6);
+  color: var(--text-muted);
   font-size: 1.35rem; line-height: 1;
   cursor: pointer;
   border-radius: 50%;
 }
-.cta-close:hover { color: #06120d; background: rgba(255, 255, 255, 0.25); }
+.cta-close:hover { color: var(--text); background: var(--surface-raised); }
 
-.cta-lead { margin: 0 0 0.1rem; font-weight: 800; font-size: 0.95rem; color: #06120d; padding-right: 1.4rem; line-height: 1.3; }
-.cta-sub { margin: 0 0 0.7rem; color: rgba(6, 18, 13, 0.8); font-size: 0.87rem; }
+.cta-lead { margin: 0 0 0.1rem; font-weight: 800; font-size: 0.95rem; color: var(--cream); padding-right: 1.4rem; line-height: 1.3; }
+.cta-sub { margin: 0 0 0.7rem; color: var(--text-secondary); font-size: 0.87rem; }
 
 .cta-go {
   font-family: inherit;
   font-size: 0.92rem;
   font-weight: 800;
-  color: var(--cream);
-  background: var(--ground);
+  color: #06120d;
+  background: var(--primary);
   border: 0;
   border-radius: 999px;
   padding: 0.55rem 1.3rem;
@@ -167,7 +167,7 @@ a { color: var(--primary-emphasis); }
   cursor: pointer;
   width: 100%;
 }
-.cta-go:hover { background: #000; }
+.cta-go:hover { background: var(--primary-emphasis); }
 
 .cta-more { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem; }
 .cta-more[hidden] { display: none; }
@@ -177,14 +177,14 @@ a { color: var(--primary-emphasis); }
   gap: 0.15rem;
   text-decoration: none;
   color: var(--text);
-  background: var(--ground);
-  border: 1px solid rgba(0, 0, 0, 0.25);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   padding: 0.6rem 0.8rem;
 }
-.cta-tier strong { font-size: 0.9rem; color: var(--cream); }
+.cta-tier strong { font-size: 0.9rem; color: var(--primary-emphasis); }
 .cta-tier span { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; }
-.cta-tier:hover { border-color: #06120d; background: #000; }
+.cta-tier:hover { border-color: var(--primary); }
 .cta-tier-alt strong { color: var(--accent); }
 
 /* ---------------------------------------------------------------- finder */
@@ -453,9 +453,15 @@ a { color: var(--primary-emphasis); }
 
 .app-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(138px, 1fr));
-  gap: 0.55rem;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.85rem;
 }
+
+/* The two rows the browser opens with are three across, the way the app lays
+   out its own home screen, so the block is held to a width that gives three
+   sensible columns instead of six thin ones. */
+.picks-block { max-width: 700px; margin-left: auto; margin-right: auto; }
+.picks .app-grid { grid-template-columns: repeat(3, 1fr); }
 
 /* Tiles hold other people's logos, so they sit on white with dark text. That
    is the app's rule for anything carrying a mark we did not make. */
@@ -469,9 +475,13 @@ a { color: var(--primary-emphasis); }
   color: #1a1a1a;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 0.6rem 0.5rem;
+  /* Barely any padding above and below. The height is fixed instead, so every
+     card in the grid is the same card: logo, one line of name, one line of
+     tagline. A tile that grows to fit its text makes the row around it look
+     broken. */
+  padding: 0.5rem 0.45rem;
   text-decoration: none;
-  min-height: 94px;
+  height: 92px;
   justify-content: center;
   transition: transform var(--ease-fast), border-color var(--ease-fast), box-shadow var(--ease-fast);
 }
@@ -500,16 +510,26 @@ a { color: var(--primary-emphasis); }
   border-radius: 8px;
 }
 
+/* One line each, and clipped rather than wrapped if a name ever slips past
+   the budget the catalogue export enforces. Two lines of text, never three. */
 .app-name {
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 700;
   line-height: 1.2;
   color: #1a1a1a;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .app-description {
-  font-size: 0.72rem;
+  font-size: 0.71rem;
   line-height: 1.25;
   color: #5a5a5a;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ---------------------------------------------------------------- footer */
@@ -597,13 +617,14 @@ a { color: var(--primary-emphasis); }
   .section-title { font-size: 0.86rem; margin-bottom: 0.45rem; padding-bottom: 0.25rem; }
   .app-section { margin-bottom: 1rem; }
 
-  /* Three across at 375px: 3 x 102 + 2 x 6 gaps + 24 of page padding = 342. */
-  .app-grid { grid-template-columns: repeat(auto-fill, minmax(102px, 1fr)); gap: 0.4rem; }
-  .app-button { min-height: 78px; padding: 0.45rem 0.3rem; gap: 0.15rem; border-radius: var(--radius); }
+  /* Three across everywhere on a phone, picks and categories alike. */
+  .app-grid { grid-template-columns: repeat(3, 1fr); gap: 0.55rem; }
+  .app-button { height: 80px; padding: 0.4rem 0.25rem; gap: 0.15rem; border-radius: var(--radius); }
   .app-logo { width: 24px; height: 24px; }
   .app-logo-emoji { font-size: 1.15rem; line-height: 24px; }
-  .app-name { font-size: 0.71rem; }
-  .app-description { font-size: 0.61rem; }
+  .app-name { font-size: 0.72rem; }
+  .app-description { font-size: 0.62rem; }
+  .picks-block { max-width: none; }
 
   /* Top right over a tile grid is tight on a phone, so the card leaves the
      header and becomes a bar along the bottom with the same words. */
@@ -622,7 +643,7 @@ a { color: var(--primary-emphasis); }
 
 /* Below this the third column stops being readable, so it drops to two. */
 @media (max-width: 330px) {
-  .app-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+  .app-grid { grid-template-columns: repeat(2, 1fr); }
   .capsule-pick select { max-width: 78px; }
 }
 

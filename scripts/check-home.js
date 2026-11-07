@@ -67,9 +67,9 @@ check('every tile is https', tiles.every((t) => t.href.startsWith('https://')),
 check('every tile has a category and an age', tiles.every((t) => t.cat && t.ageMin !== null));
 check('every tile has search terms', tiles.every((t) => t.terms && t.terms.length > 10));
 
-const names = catalog.apps.map((a) => a.name);
-check('no duplicate sites', new Set(names).size === names.length,
-  names.filter((n, i) => names.indexOf(n) !== i).join(', '));
+const catalogNames = catalog.apps.map((a) => a.name);
+check('no duplicate sites', new Set(catalogNames).size === catalogNames.length,
+  catalogNames.filter((n, i) => catalogNames.indexOf(n) !== i).join(', '));
 check('no duplicate links', new Set(tiles.map((t) => t.href)).size === tiles.length,
   tiles.map((t) => t.href).filter((h, i, a) => a.indexOf(h) !== i).join(', '));
 
@@ -93,15 +93,24 @@ check('the page says nothing above the search box',
 check('the tiles are in the HTML', tiles.length > 0);
 check('the card starts hidden, so it cannot block a tile before it slides in',
   /<div id="cta" class="cta" hidden>/.test(html));
-check('the card hangs off the header rather than sitting in it',
-  /\.cta \{[\s\S]*?position: absolute;[\s\S]*?top: calc\(100% \+/.test(cssSrc));
+check('the card sits level with the top of the logo bar, not below the header',
+  /\.cta \{[\s\S]*?position: absolute;[\s\S]*?top: 0\.75rem;/.test(cssSrc)
+  && /\.site-header \{[^}]*padding: 0\.75rem/.test(cssSrc));
 check('the bar does not wrap to a second line on a phone',
   !/@media \(max-width: 760px\)[\s\S]*?\.capsule \{[^}]*flex-wrap/.test(cssSrc));
 check('the card is in the header, hung off its right',
   html.indexOf('id="cta"') < html.indexOf('</header>'));
-check('the logo bar is a green capsule with dark text on it, never cream',
-  /\.brand \{[\s\S]*?background: var\(--primary\);[\s\S]*?border-radius: 999px;/.test(cssSrc)
-  && !/\.brand-name \{[^}]*var\(--cream\)/.test(cssSrc));
+check('the logo bar is a capsule on the dark chrome, not a green field',
+  /\.brand \{[\s\S]*?background: var\(--surface\);[\s\S]*?border-radius: 999px;/.test(cssSrc));
+check('green is an accent on this page, never a large surface',
+  !/\.(brand|cta) \{[^}]*background: var\(--primary\);/.test(cssSrc));
+check('every tile is exactly the same height',
+  /\.app-button \{[\s\S]*?\n  height: 92px;/.test(cssSrc));
+check('a name and a tagline get one line each, and are clipped if longer',
+  /\.app-name \{[\s\S]*?white-space: nowrap;[\s\S]*?text-overflow: ellipsis;/.test(cssSrc)
+  && /\.app-description \{[\s\S]*?white-space: nowrap;[\s\S]*?text-overflow: ellipsis;/.test(cssSrc));
+check('the two picks rows are three across',
+  /\.picks \.app-grid \{ grid-template-columns: repeat\(3, 1fr\); \}/.test(cssSrc));
 check('the card drops over half a second, half a second after load',
   /\.cta \{[\s\S]*?transition: transform 500ms/.test(cssSrc) && /\}, 500\);/.test(jsSrc));
 check('the search box says Search', /placeholder="Search\.\.\."/.test(html));
@@ -146,10 +155,20 @@ check('every logo carries a content hash',
   (html.match(/\/home\/icons\/[^"?]+\?v=[a-f0-9]{10}/g) || []).length === (html.match(/class="app-logo" src="/g) || []).length);
 check('a tile with no logo falls back to its emoji',
   (everything.match(/app-logo-emoji/g) || []).length === tiles.length - logos);
-const longDesc = (html.match(/<span class="app-description">([^<]*)<\/span>/g) || [])
-  .map((m) => m.replace(/<[^>]+>/g, ''))
-  .filter((d) => d.split(/\s+/).length > 3);
-check('every tile description is three words or fewer', longDesc.length === 0, longDesc.join(' | '));
+const descs = (html.match(/<span class="app-description">([^<]*)<\/span>/g) || [])
+  .map((m) => m.replace(/<[^>]+>/g, ''));
+check('every tile description is three words or fewer',
+  descs.every((d) => d.split(/\s+/).length <= 3),
+  descs.filter((d) => d.split(/\s+/).length > 3).join(' | '));
+// The export enforces this too. It is checked again here because it is what
+// decides whether a row of tiles looks like a row or like a mistake.
+const names = (html.match(/<span class="app-name">([^<]*)<\/span>/g) || [])
+  .map((m) => m.replace(/<[^>]+>/g, ''));
+check('every name on a tile fits on one line',
+  names.every((n) => n.length <= 19),
+  names.filter((n) => n.length > 19).join(' | '));
+check('a shortened name is still findable by its real one',
+  tiles.some((t) => t.terms.includes('national geographic kids') && t.terms.includes('nat geo kids')));
 
 console.log('\nThe search');
 
@@ -175,7 +194,7 @@ console.log('\nThe sites we do not carry');
 const notCarried = synonyms._asked_for_but_not_carried;
 for (const [brand, suggestions] of Object.entries(notCarried)) {
   if (brand.startsWith('_')) continue;
-  const unknown = suggestions.filter((s) => !names.includes(s));
+  const unknown = suggestions.filter((s) => !catalogNames.includes(s));
   check(`"${brand}" suggests only sites the page has`, unknown.length === 0, unknown.join(', '));
 }
 check('the copy for a miss is present', Boolean(notCarried._miss_line && notCarried._empty_line && notCarried._download_line));
@@ -205,11 +224,11 @@ check('DuckDuckGo forces safe search',
 check('DuckDuckGo waits for a parent to turn it on',
   catalog.apps.some((a) => a.name === 'DuckDuckGo' && a.requiresApproval === true));
 check('there is no search button to press', !/type="submit"/.test(html));
-check('every site has synonyms', names.every((n) => synonyms.apps[n]),
-  names.filter((n) => !synonyms.apps[n]).join(', '));
+check('every site has synonyms', catalogNames.every((n) => synonyms.apps[n]),
+  catalogNames.filter((n) => !synonyms.apps[n]).join(', '));
 check('no synonyms for a site that is gone',
-  Object.keys(synonyms.apps).every((n) => names.includes(n)),
-  Object.keys(synonyms.apps).filter((n) => !names.includes(n)).join(', '));
+  Object.keys(synonyms.apps).every((n) => catalogNames.includes(n)),
+  Object.keys(synonyms.apps).filter((n) => !catalogNames.includes(n)).join(', '));
 check('every category has a child-facing label and an emoji',
   catalog.categoryOrder.every((c) => synonyms.categories[c] && synonyms.categories[c].label && synonyms.categories[c].emoji),
   catalog.categoryOrder.filter((c) => !synonyms.categories[c]).join(', '));
