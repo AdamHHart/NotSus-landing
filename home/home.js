@@ -245,7 +245,66 @@
       ctaMore.hidden = false;
       ctaOpen.hidden = true;
       ctaOpen.setAttribute('aria-expanded', 'true');
+      startHumanCheck();
     });
+  }
+
+  /* ----------------------------------------------------------- the check */
+
+  /*
+   * Cloudflare Turnstile, drawn only once the card is opened. Nobody should
+   * pay for a widget they never see, and a challenge that loads on every page
+   * view is a challenge that runs for every child too.
+   *
+   * The two links are inert until the server has checked the token and set
+   * its cookie. The gate is not in the page at all unless a site key was set
+   * when the page was built.
+   */
+  var gate = document.getElementById('cta-gate');
+  var tiers = Array.prototype.slice.call(document.querySelectorAll('.cta-tier'));
+  var checkStarted = false;
+
+  function lockTiers() {
+    tiers.forEach(function (t) {
+      t.classList.add('is-locked');
+      t.setAttribute('aria-disabled', 'true');
+      t.dataset.href = t.getAttribute('href');
+      t.removeAttribute('href');
+    });
+  }
+
+  function unlockTiers() {
+    tiers.forEach(function (t) {
+      t.classList.remove('is-locked');
+      t.removeAttribute('aria-disabled');
+      if (t.dataset.href) t.setAttribute('href', t.dataset.href);
+    });
+    if (gate) gate.remove();
+  }
+
+  function startHumanCheck() {
+    if (!gate || checkStarted) return;
+    checkStarted = true;
+    lockTiers();
+
+    function render() {
+      if (!window.turnstile) { window.setTimeout(render, 120); return; }
+      window.turnstile.render('#cta-turnstile', {
+        sitekey: gate.getAttribute('data-sitekey'),
+        theme: 'dark',
+        callback: function (token) {
+          fetch('/api/verify-human', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token })
+          })
+            .then(function (r) { return r.json(); })
+            .then(function (d) { if (d.success) unlockTiers(); })
+            .catch(function () { /* leave it locked; the page still works */ });
+        }
+      });
+    }
+    render();
   }
   if (ctaClose) ctaClose.addEventListener('click', dismissCard);
 })();

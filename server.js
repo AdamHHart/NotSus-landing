@@ -635,6 +635,113 @@ const PLATFORMS = [
     },
 ];
 
+/* ------------------------------------------------------------------ human */
+
+/*
+ * A Cloudflare Turnstile check in front of the downloads.
+ *
+ * Be clear about what this is and is not. The installers live on
+ * download.notsus.net and answer an anonymous request directly, so anything
+ * that wants the file can still take it without coming near this. What this
+ * does is keep the route a person uses for people: no drive-by scripted
+ * fetches through notsus.net, no crawler writing a row into app_downloads
+ * every time it walks the site, and a number at the end of the month that
+ * means something.
+ *
+ * Turnstile rather than reCAPTCHA. It sets no cookies, builds no profile, and
+ * usually asks a person for nothing at all. On a site aimed at children,
+ * handing every visitor to Google to be fingerprinted is the wrong trade, and
+ * it is the same reason the app bundles its fonts instead of calling Google
+ * Fonts.
+ *
+ * The whole thing is off unless both keys are set, so the site runs exactly as
+ * it does today until Adam creates them in the Cloudflare dashboard.
+ */
+const TURNSTILE_SITE_KEY = process.env.TURNSTILE_SITE_KEY || '';
+const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || '';
+const HUMAN_COOKIE = 'notsus_human';
+const HUMAN_TTL_MINUTES = 30;
+
+function humanCheckEnabled() {
+    return Boolean(TURNSTILE_SITE_KEY && TURNSTILE_SECRET_KEY && process.env.JWT_SECRET);
+}
+
+function readCookie(req, name) {
+    const raw = req.headers.cookie;
+    if (!raw) return null;
+    for (const part of raw.split(';')) {
+        const i = part.indexOf('=');
+        if (i === -1) continue;
+        if (part.slice(0, i).trim() === name) return decodeURIComponent(part.slice(i + 1));
+    }
+    return null;
+}
+
+/** Has this browser passed the check in the last half hour? */
+function alreadyHuman(req) {
+    const value = readCookie(req, HUMAN_COOKIE);
+    if (!value) return false;
+    try {
+        require('jsonwebtoken').verify(value, process.env.JWT_SECRET);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+const verifyLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 30,
+    message: 'Too many attempts. Try again shortly.',
+});
+
+app.post('/api/verify-human', verifyLimiter, async (req, res) => {
+    if (!humanCheckEnabled()) {
+        return res.json({ success: true, enabled: false });
+    }
+    const token = (req.body && req.body.token) || '';
+    if (!token) {
+        return res.status(400).json({ success: false, error: 'No token.' });
+    }
+    try {
+        const body = new URLSearchParams({
+            secret: TURNSTILE_SECRET_KEY,
+            response: token,
+            remoteip: (req.headers['x-forwarded-for'] || '').split(',')[0].trim(),
+        });
+        const result = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+            method: 'POST',
+            body,
+            signal: AbortSignal.timeout(8000),
+        }).then((r) => r.json());
+
+        if (!result.success) {
+            console.warn('Turnstile rejected a token:', result['error-codes']);
+            return res.status(403).json({ success: false, error: 'Could not verify. Try again.' });
+        }
+
+        // A signed cookie rather than a flag, so it cannot simply be set by
+        // hand, and short-lived because it is a doorway and not a session.
+        const pass = require('jsonwebtoken').sign(
+            { h: 1 },
+            process.env.JWT_SECRET,
+            { expiresIn: `${HUMAN_TTL_MINUTES}m` },
+        );
+        res.setHeader('Set-Cookie', [
+            `${HUMAN_COOKIE}=${encodeURIComponent(pass)}`,
+            'Path=/',
+            'HttpOnly',
+            'Secure',
+            'SameSite=Lax',
+            `Max-Age=${HUMAN_TTL_MINUTES * 60}`,
+        ].join('; '));
+        return res.json({ success: true, enabled: true });
+    } catch (err) {
+        console.error('Turnstile verification failed:', err.message);
+        return res.status(502).json({ success: false, error: 'Could not reach the checker. Try again.' });
+    }
+});
+
 /**
  * Does this look like a crawler rather than a parent?
  *
@@ -659,7 +766,8 @@ const DOWNLOAD_URLS = {
 
 const IPAD_MAILTO = 'mailto:contact@notsus.net?subject=iPad%20early%20access';
 
-function downloadsPage(token) {
+function downloadsPage(token, { verified = false } = {}) {
+    const gate = humanCheckEnabled() && !token && !verified;
     const tokenEnc = token ? encodeURIComponent(token) : '';
     const links = PLATFORMS.map((entry) => {
         const href = entry.platform === 'ipad'
@@ -683,7 +791,12 @@ function downloadsPage(token) {
     </script>
     <link rel="stylesheet" href="/styles.css">
     <link rel="icon" type="image/png" href="/favicon.png">
+    ${gate ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}
     <style>
+        .dl-gate { max-width: 460px; margin: 2rem auto 0; text-align: center; }
+        .dl-gate p { margin: 0 0 0.9rem; opacity: 0.85; }
+        .dl-gate .cf-turnstile { display: inline-block; }
+        .dl-grid.is-locked { opacity: 0.35; pointer-events: none; }
         .dl-grid { display: grid; gap: 0.85rem; max-width: 460px; margin: 2rem auto 0; }
         /* Each row carries its platform's colour, so a parent finds their own
            device by looking rather than by reading every line. */
@@ -726,12 +839,33 @@ function downloadsPage(token) {
     <main class="container download-now-main">
         <h1 class="download-now-title">Download NotSus</h1>
         <p class="download-now-subtitle">Choose the device your child will use.</p>
-        <div class="dl-grid">
+        ${gate ? `<div class="dl-gate" id="dl-gate">
+            <p>One quick check, so we know you are a person.</p>
+            <div class="cf-turnstile" data-sitekey="${TURNSTILE_SITE_KEY}" data-callback="notsusHumanOk" data-theme="dark"></div>
+        </div>` : ''}
+        <div class="dl-grid${gate ? ' is-locked' : ''}" id="dl-grid">
             ${links.map(({ href, label, note, platform, colour, icon }) => `<a href="${href}" style="--dl-colour: ${colour}" onclick="gtag('event', 'installer_download', { event_label: '${label}', app_platform: '${platform}' });"><svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icon}</svg><span class="dl-label">${label}</span>${note ? `<span class="dl-note">${note}</span>` : ''}</a>`).join('\n            ')}
         </div>
         <p class="dl-help">On an Android tablet, your tablet will warn you because the app did not come from the Play Store. <a href="/android">The steps are here</a>.</p>
         <p class="download-now-back"><a href="/" style="color: var(--secondary-accent);">Back to home</a></p>
     </main>
+    ${gate ? `<script>
+    // Turnstile calls this with the token once the visitor passes. The server
+    // checks the token with Cloudflare and sets a short-lived cookie; only
+    // then do the buttons become live.
+    function notsusHumanOk(token) {
+        fetch('/api/verify-human', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token })
+        }).then(function (r) { return r.json(); }).then(function (d) {
+            if (!d.success) return;
+            document.getElementById('dl-grid').classList.remove('is-locked');
+            var gate = document.getElementById('dl-gate');
+            if (gate) gate.remove();
+        }).catch(function () {});
+    }
+    </script>` : ''}
 </body>
 </html>`;
 }
@@ -746,7 +880,7 @@ function downloadsPage(token) {
 app.get('/download-now', async (req, res) => {
     const token = req.query.token;
     if (!token) {
-        return res.type('html').send(downloadsPage(null));
+        return res.type('html').send(downloadsPage(null, { verified: alreadyHuman(req) }));
     }
     try {
         const tokenRow = await getDb().query(`
@@ -756,12 +890,12 @@ app.get('/download-now', async (req, res) => {
         if (tokenRow.rows.length === 0) {
             // Expired, most likely. The files are public now, so give them the
             // page rather than an error about a token they never asked for.
-            return res.type('html').send(downloadsPage(null));
+            return res.type('html').send(downloadsPage(null, { verified: alreadyHuman(req) }));
         }
         res.type('html').send(downloadsPage(token));
     } catch (err) {
         console.error('Downloads page error:', err);
-        return res.type('html').send(downloadsPage(null));
+        return res.type('html').send(downloadsPage(null, { verified: alreadyHuman(req) }));
     }
 });
 
@@ -769,11 +903,19 @@ app.get('/download-now', async (req, res) => {
 // matters: nobody is asked for an email any more. The new home screen's card
 // links here and promises "no email", so this has to be true.
 app.get('/downloads', (req, res) => {
-    res.type('html').send(downloadsPage(null));
+    res.type('html').send(downloadsPage(null, { verified: alreadyHuman(req) }));
 });
 
-// Download endpoint: requires valid download_token (one token grants access to all platforms)
-app.get('/download/:platform', async (req, res) => {
+// A GET, so the form limiter does not cover it, and it writes a row per
+// request. Without this a script could fill app_downloads as fast as it
+// liked, which costs more than the bandwidth ever would.
+const downloadLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 40,
+    message: 'Too many download requests. Try again shortly.',
+});
+
+app.get('/download/:platform', downloadLimiter, async (req, res) => {
     const { platform } = req.params;
     const downloadToken = req.query.token;
 
@@ -793,6 +935,13 @@ app.get('/download/:platform', async (req, res) => {
             error: 'Download not available',
             message: `The ${platform} download is not yet available. Please check back soon.`
         });
+    }
+
+    // The human check, when it is switched on. An old emailed link carries a
+    // download token and skips it, because those were sent to people who had
+    // already proved they were one.
+    if (!downloadToken && humanCheckEnabled() && !alreadyHuman(req)) {
+        return res.redirect(`${BASE_URL}/downloads?verify=1`);
     }
 
     // No token means we do not know who this is, which since the gate was

@@ -168,6 +168,11 @@ const missData = {
 };
 
 const { nav, social } = siteChrome();
+
+// Cloudflare Turnstile, baked in at build time. prestart runs this on every
+// boot, so the key is whatever Render has when the server starts. With no key
+// the gate is simply not in the page, and the card behaves as it did.
+const turnstileKey = process.env.TURNSTILE_SITE_KEY || '';
 const total = catalog.apps.length;
 
 // Everything the old navigation held moves to the footer, except About, so the
@@ -191,6 +196,7 @@ const html = `<!DOCTYPE html>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.notsus.net/">
 <link rel="stylesheet" href="${stamp('home/home.css')}">
+${turnstileKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>' : ''}
 </head>
 <body>
 
@@ -224,6 +230,10 @@ const html = `<!DOCTYPE html>
       </button>
 
       <div class="cta-more" id="cta-more" hidden>
+        ${turnstileKey ? `<div class="cta-gate" id="cta-gate" data-sitekey="${esc(turnstileKey)}">
+          <p class="cta-gate-line">One quick check, so we know you are a person.</p>
+          <div id="cta-turnstile"></div>
+        </div>` : ''}
         <a class="cta-tier cta-tier-primary" href="/downloads">
           <span class="cta-tier-text">
             <span class="cta-tier-head">
