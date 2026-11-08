@@ -302,6 +302,72 @@ html.ns-docked .site-footer { display: none; }
   color: var(--d-muted);
 }
 
+/* A heading that drops down. Descriptions, episode notes and the legal text
+   all sit behind one of these in a small font, so a widget opens as a list
+   of headings rather than as a wall of prose. */
+.ns-fold {
+  background: var(--d-ground);
+  border: 1px solid var(--d-border);
+  border-left: 3px solid var(--d-row, #6aa9ff);
+  border-radius: 10px;
+}
+.ns-fold-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  cursor: pointer;
+  list-style: none;
+  min-height: 40px;
+}
+.ns-fold-head::-webkit-details-marker { display: none; }
+/* The chevron, drawn once rather than relying on the browser's own marker,
+   which is a different shape and colour in each of them. */
+.ns-fold-head::after {
+  content: '';
+  margin-left: auto;
+  align-self: center;
+  flex: 0 0 auto;
+  width: 6px; height: 6px;
+  border-right: 2px solid var(--d-muted);
+  border-bottom: 2px solid var(--d-muted);
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform var(--d-fast);
+}
+.ns-fold[open] > .ns-fold-head::after { transform: translateY(1px) rotate(-135deg); }
+.ns-fold-head:hover { background: var(--d-raised); border-radius: 8px; }
+.ns-fold-title { font-size: 0.82rem; font-weight: 700; color: var(--d-text); }
+.ns-fold-note { font-size: 0.66rem; color: var(--d-muted); white-space: nowrap; }
+.ns-fold-body { display: flex; flex-direction: column; gap: 0.3rem; padding: 0 0.7rem 0.6rem; }
+.ns-fold-inner { border-left-width: 2px; border-left-color: rgba(255, 255, 255, 0.18); }
+.ns-fold-inner .ns-fold-title { font-size: 0.76rem; font-weight: 600; color: var(--d-text-2); }
+
+/* The small font the folds hold. */
+.ns-small {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--d-text-2);
+}
+.ns-wait { margin: 0.2rem 0; font-size: 0.72rem; color: var(--d-muted); }
+
+/* The rest of the articles, here rather than on another page. */
+.ns-more {
+  align-self: flex-start;
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--d-text-2);
+  background: transparent;
+  border: 1px solid var(--d-border);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  margin-top: 0.1rem;
+  cursor: pointer;
+  transition: background var(--d-fast), color var(--d-fast), border-color var(--d-fast);
+}
+.ns-more:hover { background: var(--d-primary); border-color: var(--d-primary); color: #06120d; }
+
 /* ---------------------------------------------------------------- a phone */
 
 /* Down here the download card is already a bar across the bottom of the
@@ -316,10 +382,29 @@ html.ns-docked .site-footer { display: none; }
     bottom: calc(var(--d-cta-h) + var(--d-gap));
     width: auto;
   }
-  .ns-panel { max-height: 78svh; }
-  .ns-footer { padding: 1.75rem 1rem 2rem; }
-  .ns-footer-links { gap: 0.3rem 0.35rem; }
-  .ns-footer-links a { font-size: 0.8rem; padding: 0.34rem 0.8rem; }
+  /* Two fixed things share the bottom of a small screen, so every pixel one
+     of them spends is one the page does not get. Everything here is the
+     desktop value with the slack taken out, not a different design. */
+  .ns-panel { max-height: 72svh; border-radius: 14px; }
+  .ns-panel-head { padding: 0.55rem 0.5rem 0.4rem 0.75rem; }
+  .ns-panel-title { font-size: 0.88rem; }
+  .ns-panel-close { width: 26px; height: 26px; font-size: 1rem; }
+  .ns-panel-body { padding: 0 0.75rem 0.7rem; gap: 0.3rem; }
+  .ns-block-line { margin-bottom: 0.3rem; font-size: 0.75rem; line-height: 1.4; }
+  .ns-row { min-height: 36px; padding: 0.35rem 0.6rem; }
+  .ns-row-name { font-size: 0.8rem; }
+  .ns-cta-mail { min-height: 40px; font-size: 0.85rem; }
+  .ns-fold-head { min-height: 34px; padding: 0.35rem 0.6rem; }
+  .ns-fold-body { padding: 0 0.6rem 0.45rem; }
+
+  .ns-footer { padding: 1.4rem 0.9rem 1.5rem; }
+  .ns-footer-top { margin-bottom: 0.8rem; }
+  .ns-footer-top img { width: 32px; height: 32px; margin-bottom: 0.35rem; }
+  .ns-footer-brand { font-size: 0.95rem; }
+  .ns-footer-tagline { font-size: 0.78rem; }
+  .ns-footer-links { gap: 0.3rem 0.35rem; margin-bottom: 0.8rem; }
+  .ns-footer-links a { font-size: 0.78rem; padding: 0.3rem 0.7rem; }
+  .ns-footer-copy { font-size: 0.68rem; }
 }
 
 /* On a wide screen the widget is a card in the corner and the page behind it

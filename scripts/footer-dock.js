@@ -51,6 +51,32 @@
     // page that is opened from somewhere other than notsus.net.
     var BLOG_BASE = '/blog/';
 
+    /**
+     * Every device, the same list lib/platforms.js keeps and the download
+     * card offers. A copy, because this file is a plain browser script that
+     * every page loads and that file is node's. check:dock fails if the two
+     * stop matching, field for field.
+     */
+    var PLATFORMS = [
+        { platform: 'mac', label: 'Mac', note: 'Apple Silicon', colour: '#a78bfa',
+          icon: '<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M1 20h22"/>' },
+        { platform: 'windows', label: 'Windows', note: '', colour: '#38bdf8',
+          icon: '<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/>' },
+        { platform: 'ipad', label: 'iPad', note: 'write to us', colour: '#2dd4bf',
+          icon: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18.5h2"/>' },
+        { platform: 'android', label: 'Android', note: 'not on Play yet', colour: '#4ade80',
+          icon: '<rect x="5" y="7" width="14" height="12" rx="3"/><path d="M8 7 6.5 4M16 7l1.5-3M9.5 12h.01M14.5 12h.01"/>' },
+        { platform: 'linux', label: 'Linux', note: '', colour: '#fbbf24',
+          icon: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/>' },
+        { platform: 'macIntel', label: 'Mac', note: 'Intel', colour: '#94a3b8',
+          icon: '<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M1 20h22"/>' }
+    ];
+    var IPAD_MAILTO = 'mailto:contact@notsus.net?subject=iPad%20early%20access';
+
+    // How many articles the Blog widget shows before it offers the rest. The
+    // widget was taller than the screen with nine in it.
+    var BLOG_FIRST = 4;
+
     var ADDRESS = '© 2026 NotSus Education Inc. All rights reserved. 2015 Main Street, Vancouver, BC, Canada.';
 
     /**
@@ -63,12 +89,12 @@
         {
             key: 'about', label: 'About', href: '/about', title: 'About',
             line: 'NotSus is a custom internet for children: an infinite library, a school and a workshop, with no feed and nothing to sell them.',
-            rows: [{ href: '/about', icon: ICON.person, name: 'Read the full story', colour: '#FFB300' }]
+            rows: [{ href: '/about', icon: ICON.person, name: 'Read the full story', colour: '#FFB300', blank: true }]
         },
         {
             key: 'download', label: 'Download', href: '/downloads', title: 'Download',
             line: 'Free. No email, no credit card, no data.',
-            rows: [{ href: '/downloads', icon: ICON.down, name: 'Pick your device', note: 'Free', colour: '#00A86B' }]
+            devices: true
         },
         {
             key: 'contact', label: 'Contact', href: 'mailto:contact@notsus.net', title: 'Contact',
@@ -85,24 +111,14 @@
         },
         {
             key: 'radio', label: 'Radio', href: '/podcast/', title: 'Radio',
-            line: 'The podcast, on how children are growing up online and what to do about it.',
-            rows: [{ href: '/podcast/', icon: ICON.mic, name: 'Listen', colour: '#6aa9ff' }]
+            episodes: true
         },
         {
             key: 'blog', label: 'Blog', href: '/blog/', title: 'Blog',
-            articles: true,
-            rows: [{ href: '/blog/', icon: ICON.pen, name: 'All articles', colour: '#00A86B' }]
+            articles: true
         },
         { key: 'follow', label: 'Follow', href: SOCIAL[0].url, title: 'Follow', pills: SOCIAL },
-        {
-            key: 'legal', label: 'Legal', href: '/privacy', title: 'Legal',
-            rows: [
-                { href: '/privacy', icon: ICON.lock, name: 'Privacy Policy', colour: '#989797' },
-                { href: '/terms', icon: ICON.doc, name: 'Terms of Service', colour: '#989797' },
-                { href: '/delete-account/', icon: ICON.doc, name: 'Delete your account', colour: '#989797' }
-            ],
-            copy: ADDRESS
-        }
+        { key: 'legal', label: 'Legal', href: '/privacy', title: 'Legal', legal: true, copy: ADDRESS }
     ];
 
     function el(tag, cls, html) {
@@ -112,19 +128,81 @@
         return n;
     }
 
-    function outbound(a, href) {
+    function outbound(a, href, blank) {
         a.href = href;
-        if (/^https?:/i.test(href)) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+        if (blank || /^https?:/i.test(href)) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
     }
 
     function row(r) {
         var a = el('a', 'ns-row');
-        outbound(a, r.href);
+        outbound(a, r.href, r.blank);
         if (r.colour) a.style.setProperty('--d-row', r.colour);
         a.innerHTML = r.icon;
         a.appendChild(el('span', 'ns-row-name', r.name));
         if (r.note) a.appendChild(el('span', 'ns-row-note', r.note));
         return a;
+    }
+
+    /**
+     * A heading that drops down. Descriptions, episode notes and the legal
+     * text all live behind one of these in a small font, so a widget opens
+     * as a list of headings rather than as a wall.
+     */
+    function fold(title, note) {
+        var d = el('details', 'ns-fold');
+        var sum = el('summary', 'ns-fold-head');
+        sum.appendChild(el('span', 'ns-fold-title', title));
+        if (note) sum.appendChild(el('span', 'ns-fold-note', note));
+        d.appendChild(sum);
+        var body = el('div', 'ns-fold-body');
+        d.appendChild(body);
+        d.body = body;
+        return d;
+    }
+
+    function deviceRow(p) {
+        var a = el('a', 'ns-row');
+        outbound(a, p.platform === 'ipad' ? IPAD_MAILTO : '/download/' + p.platform);
+        a.style.setProperty('--d-row', p.colour);
+        a.innerHTML = '<svg class="ns-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+            + ' stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+            + p.icon + '</svg>';
+        a.appendChild(el('span', 'ns-row-name', p.label));
+        if (p.note) a.appendChild(el('span', 'ns-row-note', p.note));
+        return a;
+    }
+
+    /**
+     * A copy baked into the page, if there is one.
+     *
+     * Only scripts/preview-home.js writes these. That file is a standalone
+     * copy of the page opened from somewhere with no server behind it, so
+     * every request from it fails and the widgets read as broken when they
+     * were not.
+     */
+    function baked(id) {
+        var n = document.getElementById(id);
+        return n ? n.textContent : null;
+    }
+
+    /** Fetch, and say so if it does not arrive, rather than sitting empty. */
+    function load(target, url, render, bakedId) {
+        var have = bakedId && baked(bakedId);
+        if (have) {
+            try { return render(url.slice(-5) === '.html' ? have : JSON.parse(have)); } catch (err) {}
+        }
+        var wait = el('p', 'ns-wait', 'Loading\u2026');
+        target.appendChild(wait);
+        if (!window.fetch) { wait.textContent = 'Could not load that right now.'; return; }
+        fetch(url).then(function (r) {
+            if (!r.ok) throw new Error(r.status);
+            return url.slice(-5) === '.html' ? r.text() : r.json();
+        }).then(function (data) {
+            wait.remove ? wait.remove() : null;
+            render(data);
+        }).catch(function () {
+            wait.textContent = 'Could not load that right now.';
+        });
     }
 
     function bodyFor(item) {
@@ -137,6 +215,14 @@
             mail.appendChild(el('span', null, item.mail.label));
             mail.appendChild(el('span', 'ns-chip', ICON.arrow));
             body.appendChild(mail);
+        }
+
+        // The same device list the download card offers, here rather than on
+        // a page of its own, so nobody has to leave to get the file.
+        if (item.devices) {
+            var list = el('div', 'ns-list');
+            PLATFORMS.forEach(function (p) { list.appendChild(deviceRow(p)); });
+            body.appendChild(list);
         }
 
         if (item.pills) {
@@ -152,33 +238,102 @@
         }
 
         // The articles, read from the file the blog index is built from, so
-        // the widget cannot list a post that is no longer there. If it cannot
-        // be fetched the widget is still a link to the blog.
+        // the widget cannot list a post that is no longer there. Four, and
+        // then the rest on request: nine made the widget taller than the
+        // screen.
         if (item.articles) {
-            var list = el('div', 'ns-list');
-            body.appendChild(list);
-            var fill = function (posts) {
-                posts.forEach(function (p) {
-                    list.appendChild(row({
-                        href: BLOG_BASE + p.slug, icon: ICON.pen,
-                        name: p.title, colour: '#00A86B'
-                    }));
-                });
+            var posts = el('div', 'ns-list');
+            body.appendChild(posts);
+            var fill = function (all) {
+                var shown = 0;
+                var more = el('button', 'ns-more');
+                more.type = 'button';
+                var draw = function (n) {
+                    all.slice(shown, shown + n).forEach(function (p) {
+                        posts.appendChild(row({ href: BLOG_BASE + p.slug, icon: ICON.pen, name: p.title, colour: '#00A86B' }));
+                    });
+                    shown = Math.min(shown + n, all.length);
+                    if (shown >= all.length) { more.remove ? more.remove() : null; }
+                    else { more.textContent = 'Show ' + (all.length - shown) + ' more'; }
+                };
+                more.addEventListener('click', function () { draw(all.length); });
+                draw(BLOG_FIRST);
+                if (shown < all.length) body.appendChild(more);
             };
-            // The home page bakes the list into itself, so it needs no
-            // request and works in a copy of the page with no server behind
-            // it. Every other page asks for the file the blog index is built
-            // from. Either way the widget is still a link to the blog if the
-            // list does not arrive.
             var baked = document.getElementById('ns-articles');
             if (baked) {
                 try { fill(JSON.parse(baked.textContent)); } catch (err) {}
-            } else if (window.fetch) {
-                fetch('/blog/articles.json')
-                    .then(function (r) { return r.json(); })
-                    .then(fill)
-                    .catch(function () {});
+            } else {
+                load(body, '/blog/articles.json', fill);
             }
+            body.appendChild(row({ href: BLOG_BASE, icon: ICON.pen, name: 'The blog', colour: '#00A86B' }));
+        }
+
+        // The episodes, from the same place /podcast/ reads them. Each one is
+        // a heading that drops down to its notes, so six fit above the fold.
+        if (item.episodes) {
+            var eps = el('div', 'ns-list');
+            body.appendChild(eps);
+            load(eps, '/api/podcast/episodes', function (payload) {
+                var d = payload.data || payload;
+                var list = d.episodes || [];
+                if (!list.length) {
+                    eps.appendChild(el('p', 'ns-wait', 'No episodes yet.'));
+                    return;
+                }
+                list.forEach(function (ep) {
+                    var when = ep.pubDate ? new Date(ep.pubDate).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '';
+                    var f = fold(ep.title, [when, ep.duration].filter(Boolean).join(' \u00b7 '));
+                    if (ep.description) f.body.appendChild(el('p', 'ns-small', ep.description.slice(0, 400) + (ep.description.length > 400 ? '\u2026' : '')));
+                    var where = ep.episodePageUrl || d.spotifyUrl;
+                    if (where) {
+                        var a = el('a', 'ns-row');
+                        outbound(a, where);
+                        a.style.setProperty('--d-row', '#1DB954');
+                        a.innerHTML = ICON.mic;
+                        a.appendChild(el('span', 'ns-row-name', 'Listen'));
+                        f.body.appendChild(a);
+                    }
+                    eps.appendChild(f);
+                });
+            }, 'ns-episodes');
+            body.appendChild(row({ href: '/podcast/', icon: ICON.mic, name: 'All episodes', colour: '#6aa9ff' }));
+        }
+
+        // The policies themselves, in the widget. Each one opens into its own
+        // numbered sections, which is how both documents are written, and the
+        // text is fetched only when somebody asks for it.
+        if (item.legal) {
+            [
+                { title: 'Privacy Policy', url: '/docs/PrivacyPolicy.html', pick: '.privacy-content', baked: 'ns-legal-privacy' },
+                { title: 'Terms of Service', url: '/docs/TandC.html', pick: '.terms-content', baked: 'ns-legal-terms' }
+            ].forEach(function (doc) {
+                var f = fold(doc.title);
+                var done = false;
+                f.addEventListener('toggle', function () {
+                    if (done || !f.open) return;
+                    done = true;
+                    load(f.body, doc.url, function (text) {
+                        var parsed = new DOMParser().parseFromString(text, 'text/html');
+                        var scope = parsed.querySelector(doc.pick) || parsed.body;
+                        var heads = Array.prototype.slice.call(scope.querySelectorAll('h2'));
+                        if (!heads.length) { f.body.appendChild(el('p', 'ns-small', scope.textContent.trim().slice(0, 4000))); return; }
+                        heads.forEach(function (h) {
+                            var sec = fold(h.textContent.trim());
+                            sec.classList.add('ns-fold-inner');
+                            var n = h.nextElementSibling;
+                            while (n && n.tagName !== 'H2') {
+                                var t = n.textContent.trim();
+                                if (t) sec.body.appendChild(el('p', 'ns-small', t));
+                                n = n.nextElementSibling;
+                            }
+                            f.body.appendChild(sec);
+                        });
+                    }, doc.baked);
+                });
+                body.appendChild(f);
+            });
+            body.appendChild(row({ href: '/delete-account/', icon: ICON.doc, name: 'Delete your account', colour: '#989797' }));
         }
 
         (item.rows || []).forEach(function (r) { body.appendChild(row(r)); });

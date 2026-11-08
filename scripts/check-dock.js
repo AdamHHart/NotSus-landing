@@ -11,6 +11,7 @@
 const fs = require('fs');
 const path = require('path');
 const ROOT = path.join(__dirname, '..');
+const { PLATFORMS, IPAD_MAILTO } = require('../lib/platforms');
 
 let failed = 0, passed = 0;
 const ok = (name, cond, detail) => {
@@ -121,11 +122,45 @@ function makeDocument(withCard) {
   return doc;
 }
 
+// A fetch that answers at once, so a synchronous check can read what the
+// widget drew. Two episodes is enough to prove the shape.
+const EPISODES = {
+  success: true,
+  data: {
+    spotifyUrl: 'https://open.spotify.com/show/notsus',
+    episodes: [
+      { title: 'AI in Schools', description: 'A conversation about what changes.', pubDate: 'Fri, 14 Aug 2026 21:38:27 GMT', duration: '01:05:36', episodePageUrl: 'https://open.spotify.com/episode/one' },
+      { title: 'What a nine year old wants', description: 'And what they get instead.', pubDate: 'Mon, 02 Jun 2026 10:00:00 GMT', duration: '48:02' }
+    ]
+  }
+};
+// A promise that has already settled, so a synchronous check can read what
+// the widget drew without waiting for a tick.
+function settled(value, err) {
+  const self = {
+    then(onOk) {
+      if (err) return self;
+      try { return settled(onOk(value)); } catch (e) { return settled(undefined, e); }
+    },
+    catch(onErr) {
+      if (!err) return self;
+      try { return settled(onErr(err)); } catch (e) { return settled(undefined, e); }
+    },
+  };
+  return self;
+}
+function instantFetch(url) {
+  if (url === '/api/podcast/episodes') {
+    return settled({ ok: true, json: () => EPISODES, text: () => '' });
+  }
+  return settled(undefined, new Error('404 ' + url));
+}
+
 function run(src, withCard) {
   const document = makeDocument(withCard);
-  const win = { addEventListener() {}, ResizeObserver: null, fetch: null, NS_DEBUG: !!process.env.NS_DEBUG };
-  new Function('document', 'window', 'requestAnimationFrame', 'MutationObserver', src)(
-    document, win, (fn) => fn(), function () { this.observe = () => {}; }
+  const win = { addEventListener() {}, ResizeObserver: null, fetch: instantFetch, NS_DEBUG: !!process.env.NS_DEBUG };
+  new Function('document', 'window', 'requestAnimationFrame', 'MutationObserver', 'fetch', src)(
+    document, win, (fn) => fn(), function () { this.observe = () => {}; }, instantFetch
   );
   return document;
 }
@@ -247,23 +282,60 @@ for (const [label, withCard] of [['home page', true], ['every other page', false
   ['https://www.linkedin.com/company/notsus', 'https://www.youtube.com/@NotSus_Edu',
    'https://www.instagram.com/notsus_edu/', 'https://www.tiktok.com/@notsus_edu',
    'https://x.com/NotSus_edu'].forEach((u) => ok(`${label}: Follow reaches ${u}`, follow.includes(u)));
-  const legal = bodyOf('legal').hrefs();
-  ['/privacy', '/terms', '/delete-account/'].forEach((u) =>
-    ok(`${label}: Legal reaches ${u}`, legal.includes(u)));
   if (withCard) {
     const posts = JSON.parse(fs.readFileSync(path.join(ROOT, 'blog', 'articles.json'), 'utf8'));
     const blog = bodyOf('blog');
-    const listed = blog.hrefs().filter((h) => /^\/blog\/.+/.test(h));
-    ok(`${label}: Blog lists every article`, listed.length === posts.length,
-      `${listed.length} of ${posts.length}`);
-    ok(`${label}: and each one by its own address`,
-      posts.every((p) => listed.includes('/blog/' + p.slug)));
+    const listed = () => blog.hrefs().filter((h) => /^\/blog\/.+$/.test(h) && h !== '/blog/');
+    // Nine made the widget taller than the screen.
+    ok(`${label}: Blog opens short`, listed().length === 4, `${listed().length} shown`);
+    const more = blog.all.find((n) => n.classList.contains('ns-more'));
+    ok(`${label}: and offers the rest`, !!more);
+    ok(`${label}: saying how many`, more && /Show 5 more/.test(more.textContent), more && more.textContent);
+    if (more) (more.listeners.click || []).forEach((fn) => fn());
+    ok(`${label}: which loads them here, not on another page`,
+      listed().length === posts.length, `${listed().length} of ${posts.length}`);
+    ok(`${label}: each by its own address`,
+      posts.every((p) => listed().includes('/blog/' + p.slug)));
     ok(`${label}: and by its own title`,
       posts.every((p) => blog.textContent.includes(p.title)));
+    ok(`${label}: the button goes once they are all out`,
+      !blog.all.some((n) => n.classList.contains('ns-more')));
     ok(`${label}: plus a way to the blog itself`, blog.hrefs().includes('/blog/'));
   }
   ok(`${label}: Legal is where the address lives`,
     bodyOf('legal').textContent.includes('2015 Main Street'));
+
+  // Adam, 2026-11-08: reading the full story should not take the page away.
+  const about = bodyOf('about');
+  const story = about.all.find((n) => n.attrs.href === '/about');
+  ok(`${label}: About opens the full story in a new tab`,
+    story && story.attrs.target === '_blank' && (story.attrs.rel || '').includes('noopener'));
+
+  // The download, in the widget, not a page away.
+  const dl = bodyOf('download');
+  ok(`${label}: Download lists every device here`,
+    PLATFORMS.every((p) => dl.textContent.includes(p.label)));
+  PLATFORMS.forEach((p) => {
+    const want = p.platform === 'ipad' ? IPAD_MAILTO : '/download/' + p.platform;
+    ok(`${label}: ${p.label}${p.note ? ' (' + p.note + ')' : ''} downloads from the widget`,
+      dl.hrefs().includes(want), want);
+  });
+  ok(`${label}: and does not send anyone to the downloads page instead`,
+    !dl.hrefs().includes('/downloads'));
+
+  // Radio asks for the episodes rather than linking away for them.
+  const radio = bodyOf('radio');
+  const epFolds = radio.all.filter((n) => n.classList.contains('ns-fold'));
+  ok(`${label}: Radio lists the episodes here`, epFolds.length === EPISODES.data.episodes.length,
+    `${epFolds.length} listed`);
+  EPISODES.data.episodes.forEach((e) => {
+    ok(`${label}: "${e.title}" is in the widget`, radio.textContent.includes(e.title));
+    ok(`${label}: with its notes behind the heading`, radio.textContent.includes(e.description));
+  });
+  ok(`${label}: and the date and length beside it`, radio.textContent.includes('01:05:36'));
+  ok(`${label}: with a way to the show as well`, radio.hrefs().includes('/podcast/'));
+  ok(`${label}: nothing in Radio navigates off the page except the show`,
+    radio.hrefs().filter((h) => h.startsWith('/')).every((h) => h === '/podcast/'));
 
   // It is about the product, not about a person.
   const everything = links.map((a) => { click(doc, a); return root.querySelectorAll('.ns-panel')[0].textContent; }).join(' ');
@@ -275,6 +347,34 @@ for (const [label, withCard] of [['home page', true], ['every other page', false
 }
 
 // ------------------------------------------------------- loading, and CSS
+
+// The widget is a plain browser script and lib/platforms.js is node's, so
+// the list is copied. This is what stops the copy drifting.
+{
+  const m = /var PLATFORMS = (\[[\s\S]*?\n    \]);/.exec(dockJs);
+  ok('the widget carries the device list', !!m);
+  if (m) {
+    // eslint-disable-next-line no-new-func
+    const copy = new Function('return ' + m[1])();
+    ok('and it is the list lib/platforms.js keeps',
+      JSON.stringify(copy) === JSON.stringify(PLATFORMS),
+      'they have drifted; copy lib/platforms.js into scripts/footer-dock.js');
+  }
+  const mail = /var IPAD_MAILTO = '([^']*)'/.exec(dockJs);
+  ok('and the same address for the iPad', mail && mail[1] === IPAD_MAILTO);
+}
+
+// The legal documents it reads are the ones that exist.
+for (const f of ['docs/PrivacyPolicy.html', 'docs/TandC.html']) {
+  ok(`Legal reads ${f}, which is there`, fs.existsSync(path.join(ROOT, f)));
+  ok(`and the widget asks for it by that name`, dockJs.includes('/' + f));
+}
+for (const cls of ['privacy-content', 'terms-content']) {
+  const file = cls === 'privacy-content' ? 'docs/PrivacyPolicy.html' : 'docs/TandC.html';
+  ok(`.${cls} is in ${file}`,
+    fs.readFileSync(path.join(ROOT, file), 'utf8').includes(`class="${cls}"`));
+  ok(`and the widget looks for it`, dockJs.includes(`.${cls}`));
+}
 
 ok('site-chrome loads it', /footer-dock\.js/.test(chrome));
 ok('and only once', /document\.querySelector\('script\[data-ns-dock\]'\)/.test(chrome));
@@ -331,6 +431,17 @@ ok('and so is the scrim', /\.ns-scrim\s*\{[\s\S]*?pointer-events:\s*auto/.test(d
 ok('it brings its own colours', /\.ns-dock-root,\s*\n\.ns-footer\s*\{[\s\S]*?--d-ground:/.test(dockCss));
 ok('and never reads the page\'s', !/var\(--(ground|surface|primary|cream|text|border)\b/.test(dockCss),
   'home.css and styles.css carry different values under those names');
+// Adam, 2026-11-08: two fixed things share the bottom of a small screen.
+{
+  const phone = /@media \(max-width: 760px\) \{([\s\S]*?)\n\}/.exec(dockCss);
+  ok('there is a phone block', !!phone);
+  const p = phone ? phone[1] : '';
+  ok('the widget is tighter on a phone', /\.ns-panel-body \{ padding: 0 0\.75rem/.test(p));
+  ok('its rows are shorter', /\.ns-row \{ min-height: 36px/.test(p));
+  ok('its heading is smaller', /\.ns-panel-title \{ font-size: 0\.88rem/.test(p));
+  ok('and the footer gives the page its space back', /\.ns-footer \{ padding: 1\.4rem/.test(p));
+}
+
 ok('it holds still when asked to', /prefers-reduced-motion[\s\S]*?\.ns-panel, \.ns-scrim \{ transition: none/.test(dockCss));
 ok('it remembers nothing about anyone',
   !/localStorage|sessionStorage|document\.cookie|indexedDB/.test(dockJs.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')));

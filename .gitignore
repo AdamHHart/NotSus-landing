@@ -84,3 +84,4 @@ Thumbs.db
 .git.bak/
 .git.old/
 *.git.backup/
+data/podcast-episodes.json

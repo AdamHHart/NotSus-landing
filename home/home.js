@@ -217,6 +217,15 @@
   var cta = document.getElementById('cta');
   var ctaOpen = document.getElementById('cta-open');
   var ctaMore = document.getElementById('cta-more');
+  // These two were used below and never declared, which broke the only way
+  // to a download on this page. `if (ctaBack)` threw a ReferenceError at
+  // load, so nothing after it ran, and clicking a tier hid the tier list and
+  // then threw before it could show the devices: the card was left as a
+  // heading and nothing else. Adam reported it on 2026-11-08 as the device
+  // list having gone missing, and it had. scripts/check-cta.js now clicks
+  // the whole path on every deploy.
+  var ctaDevices = document.getElementById('cta-devices');
+  var ctaBack = document.getElementById('cta-back');
 
   /*
    * The card stays. It used to remember being dismissed for thirty days in
@@ -242,6 +251,7 @@
       ctaMore.hidden = false;
       ctaOpen.hidden = true;
       ctaOpen.setAttribute('aria-expanded', 'true');
+      cta.classList.add('is-open');
     });
   }
 
@@ -252,6 +262,7 @@
     b.addEventListener('click', function () {
       ctaMore.hidden = true;
       ctaDevices.hidden = false;
+      cta.classList.add('is-open');
       startHumanCheck();
     });
   });
@@ -260,6 +271,7 @@
     ctaBack.addEventListener('click', function () {
       ctaDevices.hidden = true;
       ctaMore.hidden = false;
+      cta.classList.add('is-open');
     });
   }
 

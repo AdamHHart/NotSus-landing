@@ -300,3 +300,51 @@ because the copy is opened from somewhere that is not notsus.net and every
 `npm run check:dock` runs the script against a DOM small enough to live in
 `scripts/check-dock.js`, since there is no browser in this sandbox and no
 port to open one against. 231 checks, on every deploy.
+
+## 2026-11-08: the card was broken, and the widgets grew up
+
+### The card
+
+`ctaDevices` and `ctaBack` were used in `home/home.js` and never declared.
+`if (ctaBack)` threw a ReferenceError at load, so nothing after it ran, and
+clicking a tier hid the tier list and then threw before it could show the
+devices. The card was left as a heading and nothing else, and it is the only
+route to a download on that page. Nobody noticed, because nothing clicked it.
+
+`npm run check:cta` clicks the whole path now: reveal, open, pick a tier,
+read every device row, Back, the other tier. 37 checks. It runs the script in
+strict mode against `scripts/dom-shim.js`, so an undeclared name throws in the
+check rather than in a parent's browser. Deleting the declaration again makes
+it fail with `ctaBack is not defined`.
+
+### The widgets
+
+- **Download** lists every device inside the widget, the same six the card
+  offers. `check:dock` compares that list to `lib/platforms.js` field for
+  field and fails if the copy drifts.
+- **Radio** lists the episodes from `/api/podcast/episodes`, each a heading
+  that drops down to its notes.
+- **Legal** holds the documents. Opening Privacy or Terms fetches the page
+  and renders each of its numbered `<h2>` sections as a heading of its own,
+  in a small font. Nothing is fetched until somebody asks for it.
+- **Blog** opens with four articles and a button for the rest, which loads
+  them in place. Nine made the widget taller than the screen.
+- **About** opens the full story in a new tab, so the page is not lost.
+
+### A phone
+
+Shut, the download card is one line: the words on the left, the button on the
+right, nothing stacked. `home.js` adds `.is-open` at the first click and from
+there it lays out as it does on a desktop. The page reserves 4.25rem for it
+rather than 8.5rem, because only the one line has to be cleared: once the
+card is open it is over the page.
+
+Everything in the widget is the desktop value with the slack taken out.
+
+### The preview
+
+`scripts/preview-home.js` bakes the legal documents and the episodes into its
+standalone copy, and `footer-dock.js` prefers a baked copy over a request.
+That copy is opened from somewhere with no server behind it, so every fetch
+from it fails and the widgets read as broken when they were not. Three
+reports of broken widgets so far have been the preview, not the site.

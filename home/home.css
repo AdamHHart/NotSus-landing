@@ -877,8 +877,44 @@ body.is-filtering .first-screen .tools { flex: 0 0 auto; padding-bottom: 0; }
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     transform: translateY(100%);
     z-index: 70;
+    padding: 0.45rem 0.6rem;
   }
-  body { padding-bottom: 8.5rem; }
+
+  /* Shut, it is one line: the words on the left, the button on the right,
+     and nothing stacked. It is fixed to the bottom of a small screen and it
+     never goes away, so every pixel it spends is a pixel of the page a child
+     does not get. home.js puts .is-open on it at the first click, and from
+     there it lays out as it does on a desktop. */
+  .cta:not(.is-open) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow: hidden;
+  }
+  .cta:not(.is-open) .cta-head { margin: 0; flex: 1 1 auto; min-width: 0; gap: 0.45rem; }
+  .cta:not(.is-open) .cta-mark { width: 24px; height: 24px; }
+  .cta:not(.is-open) .cta-lead {
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cta:not(.is-open) .cta-go {
+    width: auto;
+    flex: 0 0 auto;
+    min-height: 38px;
+    font-size: 0.82rem;
+    padding: 0.28rem 0.28rem 0.28rem 0.85rem;
+  }
+  .cta:not(.is-open) .cta-go .cta-chip { width: 26px; height: 26px; }
+  .cta:not(.is-open) .cta-go .cta-arrow { width: 14px; height: 14px; }
+
+  .cta.is-open { padding: 0.7rem 0.8rem 0.85rem; }
+
+  /* Only the one line has to be cleared. Once the card is open it is over
+     the page, and a page that reserved room for the open state would have a
+     hand's width of nothing at the bottom of it all the time. */
+  body { padding-bottom: 4.25rem; }
 
   .site-footer { padding: 1.75rem 1rem 2rem; }
 }

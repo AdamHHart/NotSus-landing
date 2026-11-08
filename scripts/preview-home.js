@@ -47,6 +47,38 @@ html = html.replace(/href="(\/[^"]*)"/g, (_, p) => `href="${SITE}${p}"`);
 html = html.replace(/(href: ')(\/[^']*)(')/g, (_, a, p, b) => `${a}${SITE}${p}${b}`);
 html = html.replace(/var BLOG_BASE = '\/blog\/';/, `var BLOG_BASE = '${SITE}/blog/';`);
 
+// The Radio and Legal widgets ask the server for their contents. This copy
+// has no server behind it and is opened from another origin, so both of
+// those requests fail and the widgets read as broken when they are not.
+// Bake the answers in; footer-dock.js prefers them over a request.
+const bake = [];
+const legal = [
+  ['ns-legal-privacy', 'docs/PrivacyPolicy.html'],
+  ['ns-legal-terms', 'docs/TandC.html'],
+];
+for (const [id, rel] of legal) {
+  // Only the part the widget reads. The rest of those pages is their own
+  // header, footer, modals and stylesheet, which would land inert in this
+  // file and make every link in them look like one this page failed to
+  // inline. The stylesheet has to go first: it names .privacy-content too,
+  // and searching for that string found the CSS rule rather than the div.
+  const whole = read(rel).toString('utf8')
+    .replace(/<script[\s\S]*?<\/script>/g, '')
+    .replace(/<style[\s\S]*?<\/style>/g, '');
+  const cls = id === 'ns-legal-privacy' ? 'privacy-content' : 'terms-content';
+  const at = whole.indexOf(`<div class="${cls}">`);
+  const end = whole.indexOf('<footer', at);
+  const text = at === -1 ? whole : whole.slice(at, end === -1 ? undefined : end);
+  bake.push(`<script id="${id}" type="text/plain">${text.replace(/<\/script>/g, '<\\/script>')}</script>`);
+}
+const episodes = path.join(ROOT, 'data', 'podcast-episodes.json');
+if (fs.existsSync(episodes)) {
+  bake.push(`<script id="ns-episodes" type="application/json">${fs.readFileSync(episodes, 'utf8')}</script>`);
+} else {
+  console.log('  no data/podcast-episodes.json, so the Radio widget will say it could not load');
+}
+html = html.replace('</body>', bake.join('\n') + '\n</body>');
+
 
 fs.writeFileSync(out, html);
 console.log(`${out}  ${(Buffer.byteLength(html) / 1024 / 1024).toFixed(1)} MB, nothing left to fetch`);
