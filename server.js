@@ -855,6 +855,7 @@ function downloadsPage(token, { verified = false } = {}) {
         }).catch(function () {});
     }
     </script>` : ''}
+<script src="/scripts/site-chrome.js"></script>
 </body>
 </html>`;
 }

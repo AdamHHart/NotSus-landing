@@ -133,6 +133,12 @@
         if (blank || /^https?:/i.test(href)) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
     }
 
+    /**
+     * A row. Anything in here that goes to one of our own pages opens in a
+     * new tab: the point of the widget is that the page a visitor is using
+     * is still there when they are done reading. Downloads are the
+     * exception, because a download does not take the page away.
+     */
     function row(r) {
         var a = el('a', 'ns-row');
         outbound(a, r.href, r.blank);
@@ -250,7 +256,7 @@
                 more.type = 'button';
                 var draw = function (n) {
                     all.slice(shown, shown + n).forEach(function (p) {
-                        posts.appendChild(row({ href: BLOG_BASE + p.slug, icon: ICON.pen, name: p.title, colour: '#00A86B' }));
+                        posts.appendChild(row({ href: BLOG_BASE + p.slug, icon: ICON.pen, name: p.title, colour: '#00A86B', blank: true }));
                     });
                     shown = Math.min(shown + n, all.length);
                     if (shown >= all.length) { more.remove ? more.remove() : null; }
@@ -266,7 +272,7 @@
             } else {
                 load(body, '/blog/articles.json', fill);
             }
-            body.appendChild(row({ href: BLOG_BASE, icon: ICON.pen, name: 'The blog', colour: '#00A86B' }));
+            body.appendChild(row({ href: BLOG_BASE, icon: ICON.pen, name: 'The blog', colour: '#00A86B', blank: true }));
         }
 
         // The episodes, from the same place /podcast/ reads them. Each one is
@@ -297,7 +303,7 @@
                     eps.appendChild(f);
                 });
             }, 'ns-episodes');
-            body.appendChild(row({ href: '/podcast/', icon: ICON.mic, name: 'All episodes', colour: '#6aa9ff' }));
+            body.appendChild(row({ href: '/podcast/', icon: ICON.mic, name: 'All episodes', colour: '#6aa9ff', blank: true }));
         }
 
         // The policies themselves, in the widget. Each one opens into its own
@@ -333,7 +339,7 @@
                 });
                 body.appendChild(f);
             });
-            body.appendChild(row({ href: '/delete-account/', icon: ICON.doc, name: 'Delete your account', colour: '#989797' }));
+            body.appendChild(row({ href: '/delete-account/', icon: ICON.doc, name: 'Delete your account', colour: '#989797', blank: true }));
         }
 
         (item.rows || []).forEach(function (r) { body.appendChild(row(r)); });

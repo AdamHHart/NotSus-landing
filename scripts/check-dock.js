@@ -337,6 +337,21 @@ for (const [label, withCard] of [['home page', true], ['every other page', false
   ok(`${label}: nothing in Radio navigates off the page except the show`,
     radio.hrefs().filter((h) => h.startsWith('/')).every((h) => h === '/podcast/'));
 
+  // Adam, 2026-11-08: "The goal is to be helpful, while always staying on
+  // the same page." Everything a widget links to opens in a new tab, so the
+  // page a visitor is using is still there when they come back. Downloads
+  // are the exception: a download does not take the page away.
+  for (const a of links) {
+    const key = a.getAttribute('data-panel');
+    const panel = bodyOf(key);
+    const leaves = panel.all.filter((n) => n.attrs.href
+      && !/^mailto:/.test(n.attrs.href)
+      && !/^\/download\//.test(n.attrs.href)
+      && n.attrs.target !== '_blank');
+    ok(`${label}: nothing in ${key} takes the page away`, leaves.length === 0,
+      leaves.map((n) => n.attrs.href).join(', '));
+  }
+
   // It is about the product, not about a person.
   const everything = links.map((a) => { click(doc, a); return root.querySelectorAll('.ns-panel')[0].textContent; }).join(' ');
   ok(`${label}: the About item says About`,
@@ -374,6 +389,29 @@ for (const cls of ['privacy-content', 'terms-content']) {
   ok(`.${cls} is in ${file}`,
     fs.readFileSync(path.join(ROOT, file), 'utf8').includes(`class="${cls}"`));
   ok(`and the widget looks for it`, dockJs.includes(`.${cls}`));
+}
+
+// One footer means every page, including the two that are not files in a
+// folder: /downloads is rendered by server.js and /delete-account was simply
+// missed. Both are reachable from the widget, so both had to have it.
+{
+  const glob = (dir) => fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true })
+    .filter((e) => e.isFile() && e.name.endsWith('.html'))
+    .map((e) => path.join(dir, e.name));
+  const pages = ['.', 'blog', 'podcast', 'docs', 'delete-account', 'android']
+    .filter((d) => fs.existsSync(path.join(ROOT, d)))
+    .reduce((a, d) => a.concat(glob(d)), [])
+    // Not the admin screens, not the generated home page, which loads the
+    // widget directly, and not the files kept as references.
+    .filter((f) => !/admin|home\/|index4|template|fresh_clone|node_modules/.test(f));
+  for (const f of pages) {
+    const src = fs.readFileSync(path.join(ROOT, f), 'utf8');
+    ok(`${f} carries the shared footer`, src.includes('/scripts/site-chrome.js'));
+  }
+  const server = fs.readFileSync(path.join(ROOT, 'server.js'), 'utf8');
+  const dl = /function downloadsPage\([\s\S]*?\n\}/.exec(server);
+  ok('/downloads carries it too', dl && dl[0].includes('/scripts/site-chrome.js'),
+    'it is rendered by server.js, so it is easy to forget');
 }
 
 ok('site-chrome loads it', /footer-dock\.js/.test(chrome));
@@ -427,6 +465,25 @@ ok('and that bar\'s height is measured, not guessed',
 ok('nothing is clickable where nothing is open', /\.ns-dock-root\s*\{[\s\S]*?pointer-events:\s*none/.test(dockCss));
 ok('the widget itself is', /\.ns-panel\s*\{[\s\S]*?pointer-events:\s*auto/.test(dockCss));
 ok('and so is the scrim', /\.ns-scrim\s*\{[\s\S]*?pointer-events:\s*auto/.test(dockCss));
+
+// styles.css carries bare element rules (h2 is centred, p has a bottom
+// margin) and this file lands on the pages that load it. Without the reset
+// the same widget looked different on /about than on the home page, which is
+// the complaint the whole file exists to answer.
+ok('the page\'s own element styles are reset first',
+  /\.ns-dock-root :where\(h1, h2, h3, p/.test(dockCss));
+ok('and the reset weighs nothing, so the rules below it win',
+  /:where\([^)]*\)[\s\S]{0,400}?text-align: inherit/.test(dockCss));
+ok('it comes before anything it could undo',
+  dockCss.indexOf(':where(h1, h2, h3') < dockCss.indexOf('.ns-footer-links a {')
+  && dockCss.indexOf(':where(h1, h2, h3') < dockCss.indexOf('.ns-panel {'));
+ok('the reset leaves image sizes alone',
+  !/:where\([^)]*\)[\s\S]{0,500}?\n  width: auto;/.test(dockCss),
+  'CSS beats an <img> width attribute, and the logo rendered at its file size');
+ok('and the footer logo is sized in the stylesheet',
+  /\.ns-footer-top img \{[^}]*width: 40px; height: 40px/.test(dockCss));
+ok('the widget reads left to right wherever it lands',
+  /\.ns-panel \{\n  text-align: left;/.test(dockCss));
 
 ok('it brings its own colours', /\.ns-dock-root,\s*\n\.ns-footer\s*\{[\s\S]*?--d-ground:/.test(dockCss));
 ok('and never reads the page\'s', !/var\(--(ground|surface|primary|cream|text|border)\b/.test(dockCss),

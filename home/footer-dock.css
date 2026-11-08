@@ -52,6 +52,37 @@
 .ns-dock-root *, .ns-footer * { box-sizing: border-box; }
 .ns-dock-root a, .ns-footer a { text-decoration: none; }
 
+/* A reset, because this lands on pages that did not expect it.
+ *
+ * styles.css carries `h2 { text-align: center }` and `p { margin-bottom:
+ * 1rem }` as bare element rules, so a widget on /about or the blog was
+ * centring its headings while the same widget on the home page left them
+ * alone. That is the complaint this whole file exists to answer, arriving
+ * by a different door.
+ *
+ * :where() contributes no specificity, so this whole selector weighs the
+ * same as one class and every rule below it wins on order rather than on a
+ * specificity fight. Keep it first in the file. */
+.ns-dock-root :where(h1, h2, h3, p, ul, ol, li, img, a, button, details, summary, nav, div, span),
+.ns-footer :where(h1, h2, h3, p, ul, ol, li, img, a, button, nav, div, span) {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+  line-height: inherit;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  float: none;
+  /* Not width or height. An <img> carries its size as an attribute, CSS
+     beats a presentational attribute, and `width: auto` here rendered the
+     footer logo at the file's own 120px instead of the 40 it asks for. */
+}
+
 /* The footer the page shipped with. It stays in the HTML so a crawler reads
    those links and anyone whose JavaScript did not run gets an ordinary
    working footer. :not(.ns-footer) so this does not hide the one we just
@@ -70,7 +101,7 @@ html.ns-docked .site-footer { display: none; }
   line-height: 1.5;
 }
 .ns-footer-top { margin-bottom: 1.1rem; }
-.ns-footer-top img { display: block; margin: 0 auto 0.5rem; border-radius: 10px; }
+.ns-footer-top img { display: block; width: 40px; height: 40px; margin: 0 auto 0.5rem; border-radius: 10px; }
 .ns-footer-brand { margin: 0; font-weight: 800; font-size: 1.05rem; color: var(--d-cream); }
 .ns-footer-tagline { margin: 0.1rem 0 0; font-size: 0.85rem; color: var(--d-muted); }
 
@@ -145,6 +176,7 @@ html.ns-docked .site-footer { display: none; }
 .ns-scrim[hidden] { display: none; }
 
 .ns-panel {
+  text-align: left;
   position: relative;
   pointer-events: auto;
   display: flex;
