@@ -572,6 +572,27 @@ for (const cls of ['privacy-content', 'terms-content']) {
     'it is rendered by server.js, so it is easy to forget');
 }
 
+// The written footer is what a crawler reads and the widget is what a person
+// uses, and they are built from two different lists. Everything the widget
+// offers has to be in the written one too, or a page reachable by hand stops
+// being reachable by a search engine without anybody noticing.
+{
+  const written = home.slice(home.indexOf('<footer class="site-footer">'));
+  const destinations = [...written.matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
+  const m = /var ITEMS = \[[\s\S]*?\n    \];/.exec(dockJs)[0];
+  const itemHrefs = [...m.matchAll(/href: '([^']+)'/g)].map((x) => x[1])
+    // The contact item is a mailto in the widget and the anchor on /about in
+    // the written footer. Both reach a person. The two Watchdog files are
+    // not here either: the footer links /resources, which is where they are
+    // described, and a footer is not the place to hand a crawler an .msi.
+    .filter((h) => /^\//.test(h));
+  itemHrefs.forEach((h) =>
+    ok(`a crawler can reach ${h} from the written footer`, destinations.includes(h)));
+  ok('and the accounts are in there too',
+    ['linkedin', 'youtube', 'instagram', 'tiktok', 'x.com']
+      .every((n) => destinations.some((d) => d.includes(n))));
+}
+
 ok('site-chrome loads it', /footer-dock\.js/.test(chrome));
 ok('and only once', /document\.querySelector\('script\[data-ns-dock\]'\)/.test(chrome));
 ok('the written footer link says About', /label: 'About'/.test(chrome));

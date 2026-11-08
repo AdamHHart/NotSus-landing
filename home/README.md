@@ -301,50 +301,92 @@ because the copy is opened from somewhere that is not notsus.net and every
 `scripts/check-dock.js`, since there is no browser in this sandbox and no
 port to open one against. 231 checks, on every deploy.
 
-## 2026-11-08: the card was broken, and the widgets grew up
 
-### The card
+## 2026-11-08
+
+### The card was broken
 
 `ctaDevices` and `ctaBack` were used in `home/home.js` and never declared.
 `if (ctaBack)` threw a ReferenceError at load, so nothing after it ran, and
 clicking a tier hid the tier list and then threw before it could show the
 devices. The card was left as a heading and nothing else, and it is the only
-route to a download on that page. Nobody noticed, because nothing clicked it.
+route to a download on that page.
 
-`npm run check:cta` clicks the whole path now: reveal, open, pick a tier,
-read every device row, Back, the other tier. 37 checks. It runs the script in
-strict mode against `scripts/dom-shim.js`, so an undeclared name throws in the
-check rather than in a parent's browser. Deleting the declaration again makes
-it fail with `ctaBack is not defined`.
+`npm run check:cta` clicks the whole path: reveal, open, pick a tier, read
+every device row, Back, the other tier. It runs the script in strict mode
+against `scripts/dom-shim.js`, so an undeclared name throws in the check
+rather than in a parent's browser.
 
 ### The widgets
 
-- **Download** lists every device inside the widget, the same six the card
-  offers. `check:dock` compares that list to `lib/platforms.js` field for
-  field and fails if the copy drifts.
-- **Radio** lists the episodes from `/api/podcast/episodes`, each a heading
-  that drops down to its notes.
-- **Legal** holds the documents. Opening Privacy or Terms fetches the page
-  and renders each of its numbered `<h2>` sections as a heading of its own,
-  in a small font. Nothing is fetched until somebody asks for it.
-- **Blog** opens with four articles and a button for the rest, which loads
-  them in place. Nine made the widget taller than the screen.
-- **About** opens the full story in a new tab, so the page is not lost.
+| Item | What it holds |
+|---|---|
+| About | Adam's copy, as a short landing page: three lines, then Why a browser, Forcing action, Our values, Setup |
+| Download | all six devices, inline |
+| Contact | the line and the address as a button |
+| Resources | the Windows Browser Blocker and its PDF |
+| Radio | the episodes, four then Load more |
+| Blog | four articles then Load more |
+| Follow | the five accounts, one row each |
+| Legal | Privacy, Terms and Delete your account, each opening into its own numbered sections |
+
+Setup opens on the two ways in and replaces them with the devices, the same
+two steps the card takes.
+
+Nothing in a widget takes the page away. Everything that points at one of our
+own pages opens in a new tab; downloads are the exception, because a download
+does not navigate. `check:dock` walks every row of every widget and fails on
+any that would.
+
+### Three bugs, and what each one taught the checks
+
+**Delete your account said it could not load.** `load()` decided text or JSON
+by whether the URL ended in `.html`, which is true of the two policy pages and
+not of `/delete-account/`, so that one was handed to `JSON.parse` and threw.
+It takes an `asText` flag now. It shipped because nothing had ever opened one
+of those headings in a check. The shim learned `<details>` and enough of
+`DOMParser`, and all three are opened against the real documents.
+
+**The nine blog links all answered `Cannot GET`.** A post is a file, so its
+address ends in `.html`. The check asserted each link matched its slug, which
+it did, and that is all it asserted: it validated an assumption about the
+address rather than the address. Every site-relative address in every widget
+is now checked against a known route, a `/download/<platform>`, or a file on
+disk.
+
+**Docs, Sheets and Slides carried the same multicoloured G.** `fetch-icons.js`
+asked each of them for its favicon and google.com serves one favicon, so two
+of the files were byte for byte identical. `check:home` fails if any two of
+the three match, and on any other pair of tiles sharing an image except the
+two that should: Code.org has two catalogue entries and NASA has two.
+
+### Two sources, one footer
+
+The written `<footer>` stays in each page's HTML for crawlers and for no
+JavaScript; the stylesheet hides it. They are built from different lists, so
+`check:dock` fails if any page the widget offers is missing from the written
+one.
+
+The widget also brings its own colours and resets the page's element styles
+with a zero-specificity `:where()` block. `styles.css` carries bare
+`h2 { text-align: center }` and `p { margin-bottom: 1rem }`, and without the
+reset the same widget looked different on `/about` than on the home page.
 
 ### A phone
 
-Shut, the download card is one line: the words on the left, the button on the
-right, nothing stacked. `home.js` adds `.is-open` at the first click and from
-there it lays out as it does on a desktop. The page reserves 4.25rem for it
-rather than 8.5rem, because only the one line has to be cleared: once the
-card is open it is over the page.
-
-Everything in the widget is the desktop value with the slack taken out.
+Shut, the download card is one line: words left, button right. `home.js` adds
+`.is-open` at the first click and from there it lays out as it does on a
+desktop. The page reserves 4.25rem rather than 8.5rem, because only the one
+line has to be cleared.
 
 ### The preview
 
-`scripts/preview-home.js` bakes the legal documents and the episodes into its
-standalone copy, and `footer-dock.js` prefers a baked copy over a request.
-That copy is opened from somewhere with no server behind it, so every fetch
-from it fails and the widgets read as broken when they were not. Three
-reports of broken widgets so far have been the preview, not the site.
+`scripts/preview-home.js` writes a standalone copy with every asset inlined,
+rewrites site-relative links to `https://www.notsus.net/...`, and bakes in the
+three legal documents and the episodes. That copy has no server behind it and
+is opened from another origin, so without this its fetches all fail and its
+links all 404. Several reports of broken widgets have been the preview rather
+than the site.
+
+`npm run check:dock` is 459 checks and `npm run check:cta` is 37. Both run on
+every deploy, with `check:home`, `check:about` and `check:routes`.
