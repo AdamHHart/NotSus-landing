@@ -223,62 +223,80 @@ new page takes over `/`. `scripts/site-chrome.js` holds that list, and this
 build reads it from there rather than keeping a second copy, so the footer
 cannot drift from the rest of the site.
 
-## The footer, as a widget
+
+## The footer, and the widget each item opens
 
 `scripts/footer-dock.js` + `home/footer-dock.css`.
 
-Before this the home page ended in a tall stack of links and `/about` ended in
-a different, shorter one. Three links overlapped, three did not, the socials
-were orange on one and grey on the other, and the order was different, so a
-visitor who moved between the two pages had to learn the footer twice.
+Before this the home page ended in a tall stack of links and `/about` ended
+in a different, shorter one. Three links overlapped, three did not, the
+socials were orange on one and grey on the other, and the order differed, so
+a visitor moving between the two pages had to learn the footer twice. There
+is one footer now. `scripts/site-chrome.js` loads this, and every page on the
+site already loads that file.
 
-There is one footer now and it is the same object everywhere.
-`scripts/site-chrome.js` loads it, and every page on the site already loads
-that file.
+The footer sits at the bottom of the page, where a footer goes:
 
-Shut, it is one line in the bottom right corner: the mark, the name, and a
-chip pointing up. It is 348px wide and sits 1.25rem from the right, which is
-the download card's width and the download card's column, so the two line up.
-Open, it is a panel that slides up over half a second with the card's own
-easing, with an X in its corner. It closes with the X, with Escape, and on a
-phone by tapping outside it.
+> About · Download · Contact · Resources · Radio · Blog · Follow · Legal
 
-What is in it, in this order, so the part somebody opened the footer for is
-there before any scroll:
+Clicking an item opens **that item, and only that item**, as a widget in the
+bottom right corner, in the download card's own column and at its width
+(348px, 1.25rem from the right). One at a time: opening a second replaces the
+first. Each closes with its X, with Escape, and on a phone by tapping
+outside.
 
-1. **Get in touch** — the line and a green `contact@notsus.net` button.
-   'Contact Us' used to be a link to a section most of the way down `/about`:
-   a page load and a scroll, for an email address. The link still says where
-   it goes and still goes there with no JavaScript, but the widget catches
-   the click and opens the panel at the address instead.
-2. **Read** — About, Blog, Radio.
-3. **Resources** — the Windows Browser Blocker and its PDF. This is where
-   that download lives now; nothing else on the site linked to it.
-4. **Follow** — the five accounts.
-5. **The small print** — Privacy, Terms, Delete your account, and the
-   registered address.
+Every item is a real link to a real page, so with no JavaScript the footer is
+an ordinary footer and every item still goes somewhere. `check:dock` holds
+each destination against `check-routes.js`.
 
-On a page with no download card of its own, which is every page except the
-home page, a **Get NotSus** block is added second. The home page leaves it
-out, because the card is already offering it.
+### Three things that went wrong, so they do not again
 
-Two things worth knowing before changing it:
+**The scrim must live inside `.ns-dock-root`.** The root is positioned and
+carries a `z-index`, which makes it a stacking context, so a `z-index` on
+anything inside it only orders it against its siblings in there. A scrim
+appended to `<body>` therefore painted over every widget on a phone however
+high the panel's own `z-index` was: the widget came up grey and would not
+answer a tap. Inside the root, the panel paints above the scrim simply by
+coming after it. `check:dock` fails if the scrim moves out, and fails if
+`.ns-scrim` is given a `z-index` at all.
 
-- **It brings its own colours.** `home.css` and `styles.css` both define
-  `--surface` and `--primary` and they are not the same values, so a footer
-  that read them would look like two footers again. Every value it uses is
-  declared on `.ns-dock-root`. `check:dock` fails if any `var(--ground)` and
-  friends appear in the file.
-- **The written `<footer>` stays in the HTML** and the stylesheet hides it.
-  A crawler still reads those links and a visitor with no JavaScript gets the
-  plain footer and a working page. `check:dock` checks the widget carries
-  every link the written footer does.
+**The widget brings its own colours.** `home.css` and `styles.css` both
+define `--surface` and `--primary` and they are not the same values, so a
+footer that read them would look like two footers again. Everything is
+declared on `.ns-dock-root, .ns-footer`. `check:dock` fails on any
+`var(--ground)` and friends in the file.
 
-On a phone the card is already a bar along the bottom, so the trigger rides
-above whatever height that bar currently is. The height is measured, not
-guessed: the card grows every time a step inside it opens. The panel becomes
-a sheet with a scrim behind it, at z-index 90, over the card's 70.
+**The written `<footer>` stays in each page's HTML** and the stylesheet hides
+it with `body > footer:not(.ns-footer)`. A crawler reads those links and
+anyone whose JavaScript did not run gets a working footer.
+
+### The blog list
+
+The home page bakes `blog/articles.json` into itself as
+`<script id="ns-articles">`, so the Blog widget needs no request and works in
+a copy of the page with no server behind it. Every other page fetches that
+file. Either way the widget is still a link to the blog if the list does not
+arrive.
+
+That silent fallback is exactly how a missing `BLOG_BASE` declaration went
+unnoticed until `check:dock` exercised the widget: the `catch` swallowed the
+`ReferenceError` and the list simply came up empty. The checks now open every
+widget and read what is in it.
+
+### A phone
+
+The download card is already a bar across the bottom, so a widget becomes a
+sheet riding above whatever height that bar currently is. The height is
+measured, not guessed: the card grows each time a step inside it opens.
+
+### Preview
+
+`node scripts/preview-home.js` writes a self-contained copy with every asset
+inlined. It rewrites site-relative links to `https://www.notsus.net/...`,
+because the copy is opened from somewhere that is not notsus.net and every
+`href="/about"` was otherwise resolving against that host and landing on its
+404 page.
 
 `npm run check:dock` runs the script against a DOM small enough to live in
-`scripts/check-dock.js`, because there is no browser in this sandbox and no
-port to open one against. 104 checks, and they run on every deploy.
+`scripts/check-dock.js`, since there is no browser in this sandbox and no
+port to open one against. 231 checks, on every deploy.

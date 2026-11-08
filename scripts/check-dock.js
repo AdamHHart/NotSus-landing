@@ -1,13 +1,10 @@
 #!/usr/bin/env node
 // scripts/check-dock.js
 //
-// The footer widget, run against a DOM small enough to live in this file.
-//
-// There is no browser in this sandbox and no port to open one against, so the
-// script is executed here and the tree it builds is read back. This catches
-// what matters: that the panel is built, that it closes, that every link goes
-// somewhere real, and that the one footer is the same footer whichever page
-// loads it.
+// The footer and its widgets, run against a DOM small enough to live in this
+// file. There is no browser in this sandbox and no port to open one against,
+// so the script is executed here and the tree it builds is read back, and the
+// clicks are dispatched by hand.
 //
 // Run: npm run check:dock
 
@@ -28,6 +25,7 @@ class ClassList {
   constructor() { this.s = new Set(); }
   add(c) { this.s.add(c); } remove(c) { this.s.delete(c); }
   contains(c) { return this.s.has(c); }
+  toString() { return [...this.s].join(' '); }
 }
 class Node {
   constructor(tag) {
@@ -36,39 +34,49 @@ class Node {
     this.style = { setProperty: (k, v) => { this.attrs['style:' + k] = v; } };
     this.listeners = {}; this._html = ''; this._text = ''; this.hidden = false;
   }
-  set id(v) { this.attrs.id = String(v); }
-  get id() { return this.attrs.id; }
-  // href, target and rel are set as properties by the script and read as
-  // attributes by the checks, the way a real element treats them.
-  set href(v) { this.attrs.href = String(v); }
-  get href() { return this.attrs.href; }
-  set target(v) { this.attrs.target = String(v); }
-  get target() { return this.attrs.target; }
-  set rel(v) { this.attrs.rel = String(v); }
-  get rel() { return this.attrs.rel; }
-  set className(v) { this._cls = v; String(v).split(/\s+/).filter(Boolean).forEach((c) => this.classList.add(c)); }
+  set id(v) { this.attrs.id = String(v); }           get id() { return this.attrs.id; }
+  set href(v) { this.attrs.href = String(v); }       get href() { return this.attrs.href; }
+  set target(v) { this.attrs.target = String(v); }   get target() { return this.attrs.target; }
+  set rel(v) { this.attrs.rel = String(v); }         get rel() { return this.attrs.rel; }
+  set className(v) { this._cls = String(v); this.classList = new ClassList(); String(v).split(/\s+/).filter(Boolean).forEach((c) => this.classList.add(c)); }
   get className() { return this._cls || ''; }
-  set innerHTML(v) { this._html = String(v); }
-  get innerHTML() { return this._html; }
+  set innerHTML(v) { this._html = String(v); }       get innerHTML() { return this._html; }
   set textContent(v) { this._text = String(v); }
   get textContent() {
     const own = this._text || this._html.replace(/<[^>]*>/g, '');
     return own + this.children.map((c) => c.textContent).join(' ');
   }
   setAttribute(k, v) { this.attrs[k] = String(v); }
-  getAttribute(k) { return this.attrs[k]; }
+  getAttribute(k) { return this.attrs[k] === undefined ? null : this.attrs[k]; }
   appendChild(n) { this.children.push(n); n.parentNode = this; return n; }
+  removeChild(n) { this.children = this.children.filter((c) => c !== n); return n; }
+  remove() { if (this.parentNode) this.parentNode.removeChild(this); }
   addEventListener(t, fn) { (this.listeners[t] = this.listeners[t] || []).push(fn); }
   focus() {}
   getBoundingClientRect() { return { height: 120 }; }
   get all() { return this.children.reduce((a, c) => a.concat([c], c.all), []); }
-  find(pred) { return this.all.find(pred); }
-  findAll(pred) { return this.all.filter(pred); }
-  // Every href in the subtree, from real nodes and from innerHTML alike.
+  matches(sel) {
+    if (sel.startsWith('.')) return this.classList.contains(sel.slice(1));
+    if (sel.startsWith('[') && sel.endsWith(']')) return sel.slice(1, -1) in this.attrs;
+    return this.tagName === sel.toUpperCase();
+  }
+  closest(sel) {
+    let n = this;
+    while (n) { if (n.matches && n.matches(sel)) return n; n = n.parentNode; }
+    return null;
+  }
+  querySelectorAll(sel) {
+    // Only the shapes this script actually asks for.
+    if (sel === '.ns-panel') return this.all.filter((n) => n.classList.contains('ns-panel'));
+    if (sel === '.ns-footer-links a') {
+      const nav = this.all.find((n) => n.classList.contains('ns-footer-links'));
+      return nav ? nav.children.filter((n) => n.tagName === 'A') : [];
+    }
+    return [];
+  }
   hrefs() {
     const out = this.all.filter((n) => n.attrs.href).map((n) => n.attrs.href);
-    const raw = this.all.map((n) => n._html).join(' ');
-    (raw.match(/href="([^"]+)"/g) || []).forEach((m) => out.push(m.slice(6, -1)));
+    (this.all.map((n) => n._html).join(' ').match(/href="([^"]+)"/g) || []).forEach((m) => out.push(m.slice(6, -1)));
     return out;
   }
 }
@@ -79,7 +87,21 @@ function makeDocument(withCard) {
   doc.body = doc.appendChild(new Node('body'));
   doc.documentElement = new Node('html');
   doc.readyState = 'complete';
+  // The footer the page shipped with, which the widget should stand down.
+  const old = new Node('footer');
+  old.className = 'site-footer';
+  doc.body.appendChild(old);
+  doc.oldFooter = old;
   const byId = {};
+  // The home page bakes the blog list into itself. Every other page asks for
+  // the file instead, which this DOM has no way to answer, so the widget
+  // there is checked only for the link out.
+  if (withCard) {
+    const baked = new Node('script');
+    baked.attrs.id = 'ns-articles';
+    baked.textContent = fs.readFileSync(path.join(ROOT, 'blog', 'articles.json'), 'utf8');
+    byId['ns-articles'] = baked;
+  }
   if (withCard) {
     const cta = new Node('div');
     cta.attrs.id = 'cta';
@@ -87,30 +109,32 @@ function makeDocument(withCard) {
     doc.body.appendChild(cta);
   }
   doc.createElement = (t) => new Node(t);
-  doc.getElementById = (id) => byId[id] || doc.body.find((n) => n.attrs.id === id) || null;
+  doc.getElementById = (id) => byId[id] || doc.body.all.find((n) => n.attrs.id === id) || null;
   doc.querySelector = (sel) => {
-    if (sel.startsWith('link[')) return doc.head.find((n) => n.tagName === 'LINK' && 'data-ns-dock' in n.attrs) || null;
-    if (sel.startsWith('script[')) return doc.head.find((n) => n.tagName === 'SCRIPT' && 'data-ns-dock' in n.attrs) || null;
+    if (sel.startsWith('link[')) return doc.head.children.find((n) => n.tagName === 'LINK' && 'data-ns-dock' in n.attrs) || null;
+    if (sel.startsWith('script[')) return doc.head.children.find((n) => n.tagName === 'SCRIPT' && 'data-ns-dock' in n.attrs) || null;
     return null;
   };
-  doc.addEventListener = Node.prototype.addEventListener.bind(doc);
+  doc.querySelectorAll = (sel) => doc.body.querySelectorAll(sel);
   doc.listeners = {};
+  doc.addEventListener = Node.prototype.addEventListener.bind(doc);
   return doc;
 }
 
 function run(src, withCard) {
   const document = makeDocument(withCard);
-  const sandbox = {
-    document,
-    window: { addEventListener() {}, ResizeObserver: null },
-    requestAnimationFrame: (fn) => fn(),
-    MutationObserver: function () { this.observe = () => {}; },
-    ResizeObserver: undefined,
-  };
+  const win = { addEventListener() {}, ResizeObserver: null, fetch: null, NS_DEBUG: !!process.env.NS_DEBUG };
   new Function('document', 'window', 'requestAnimationFrame', 'MutationObserver', src)(
-    sandbox.document, sandbox.window, sandbox.requestAnimationFrame, sandbox.MutationObserver
+    document, win, (fn) => fn(), function () { this.observe = () => {}; }
   );
   return document;
+}
+
+// Dispatch a click the way a browser would: the handler asks the target for
+// its nearest matching ancestor.
+function click(doc, node) {
+  const e = { target: node, preventDefault() {}, metaKey: false, ctrlKey: false, shiftKey: false, button: 0 };
+  (doc.listeners.click || []).forEach((fn) => fn(e));
 }
 
 // ---------------------------------------------------------------- checks
@@ -120,143 +144,194 @@ const dockCss = fs.readFileSync(path.join(ROOT, 'home', 'footer-dock.css'), 'utf
 const chrome = fs.readFileSync(path.join(ROOT, 'scripts', 'site-chrome.js'), 'utf8');
 const home = fs.readFileSync(path.join(ROOT, 'home', 'index.html'), 'utf8');
 
-console.log('The footer widget');
+console.log('The footer, and the widget each item opens');
 
-// It builds, on a page with the download card and on one without.
-const withCard = run(dockJs, true);
-const noCard = run(dockJs, false);
+const ITEMS = ['About', 'Download', 'Contact', 'Resources', 'Radio', 'Blog', 'Follow', 'Legal'];
+// Every page a footer item can send somebody to with no JavaScript, checked
+// against scripts/check-routes.js and against the live site.
+const DESTINATIONS = ['/about', '/downloads', 'mailto:contact@notsus.net', '/resources',
+  '/podcast/', '/blog/', '/privacy', '/terms', '/delete-account/'];
 
-for (const [label, doc] of [['home page', withCard], ['every other page', noCard]]) {
-  const root = doc.body.find((n) => n.attrs.id === 'ns-dock');
-  ok(`${label}: the dock is built`, !!root);
-  if (!root) continue;
+for (const [label, withCard] of [['home page', true], ['every other page', false]]) {
+  const doc = run(dockJs, withCard);
+  const root = doc.body.all.find((n) => n.attrs.id === 'ns-dock');
+  const footer = doc.body.children.find((n) => n.classList.contains('ns-footer'));
 
-  const trigger = root.find((n) => n.attrs.id === 'ns-dock-open');
-  const panel = root.find((n) => n.attrs.id === 'ns-dock-panel');
-  const close = root.find((n) => n.attrs.id === 'ns-dock-close');
+  ok(`${label}: there is a footer at the bottom of the page`, !!footer);
+  ok(`${label}: the widget has somewhere to open`, !!root);
+  if (!footer || !root) continue;
 
-  ok(`${label}: there is a trigger`, !!trigger);
-  ok(`${label}: there is a panel`, !!panel);
-  ok(`${label}: the panel has an X`, !!close && close.innerHTML.includes('&times;'));
-  ok(`${label}: the X says what it does`, close && close.getAttribute('aria-label') === 'Close');
-  ok(`${label}: the panel starts shut`, panel && panel.hidden === true);
-  ok(`${label}: the trigger says so`, trigger && trigger.getAttribute('aria-expanded') === 'false');
-  ok(`${label}: the trigger names the panel`, trigger && trigger.getAttribute('aria-controls') === 'ns-dock-panel');
-  ok(`${label}: the old footer is stood down`, doc.documentElement.classList.contains('ns-docked'));
+  ok(`${label}: the page's own footer is stood down`, doc.documentElement.classList.contains('ns-docked'));
+  ok(`${label}: the footer names the product`, footer.textContent.includes('NotSus.net'));
+  ok(`${label}: and carries the registered address`,
+    footer.textContent.includes('2015 Main Street, Vancouver, BC, Canada'));
+  ok(`${label}: and not the home address`,
+    !footer.textContent.includes('1624') && !/E Broadway/i.test(footer.textContent));
 
-  // It opens and shuts.
-  const open = (trigger.listeners.click || [])[0];
-  const shut = (close.listeners.click || [])[0];
-  ok(`${label}: the trigger opens it`, typeof open === 'function');
-  ok(`${label}: the X closes it`, typeof shut === 'function');
-  if (open && shut) {
-    open();
-    ok(`${label}: open means open`, panel.hidden === false && trigger.hidden === true);
-    ok(`${label}: and it slides in`, panel.classList.contains('is-in'));
-    shut();
-    ok(`${label}: shut means shut`, panel.hidden === true && trigger.hidden === false);
-    ok(`${label}: and the trigger comes back`, trigger.getAttribute('aria-expanded') === 'false');
+  const links = doc.querySelectorAll('.ns-footer-links a');
+  ok(`${label}: the footer reads ${ITEMS.join(', ')}`,
+    links.map((a) => a.textContent).join('|') === ITEMS.join('|'),
+    `it reads ${links.map((a) => a.textContent).join(', ')}`);
+  ok(`${label}: every item is short`, links.every((a) => a.textContent.length <= 9));
+  ok(`${label}: every item opens a widget`, links.every((a) => a.getAttribute('data-panel')));
+  ok(`${label}: every item still goes somewhere with no JavaScript`,
+    links.every((a) => a.attrs.href && a.attrs.href !== '#'));
+  ok(`${label}: and goes somewhere that exists`,
+    links.every((a) => DESTINATIONS.includes(a.attrs.href) || /^https?:/.test(a.attrs.href)),
+    links.filter((a) => !DESTINATIONS.includes(a.attrs.href) && !/^https?:/.test(a.attrs.href)).map((a) => a.attrs.href).join(', '));
+
+  // The scrim is inside the widget's root. A stacking context is created by
+  // the root's own z-index, so a scrim outside it painted over every widget
+  // on a phone and the panel came up grey and would not answer a tap.
+  const scrim = root.children.find((n) => n.classList.contains('ns-scrim'));
+  ok(`${label}: the scrim is inside the widget's root`, !!scrim,
+    'outside it, the root\'s stacking context puts every panel under it');
+  ok(`${label}: and starts out of the way`, scrim && scrim.hidden === true);
+  ok(`${label}: nothing is open to begin with`, root.querySelectorAll('.ns-panel').length === 0);
+
+  // Open each item in turn.
+  for (const a of links) {
+    const key = a.getAttribute('data-panel');
+    click(doc, a);
+    const panels = root.querySelectorAll('.ns-panel');
+    ok(`${label}: ${key} opens one widget`, panels.length === 1,
+      `${panels.length} open`);
+    if (panels.length !== 1) continue;
+    const panel = panels[0];
+    ok(`${label}: ${key} is titled ${a.textContent}`,
+      panel.getAttribute('aria-label') === a.textContent);
+    const close = panel.all.find((n) => n.classList.contains('ns-panel-close'));
+    ok(`${label}: ${key} has an X`, !!close && close.innerHTML.includes('&times;'));
+    ok(`${label}: ${key} slides in`, panel.classList.contains('is-in'));
+    ok(`${label}: ${key} dims the page behind it on a phone`, scrim.hidden === false);
+    ok(`${label}: the ${key} item shows as open`, a.getAttribute('aria-expanded') === 'true');
+    // Every link inside it goes somewhere, and outside links go away safely.
+    const out = panel.all.filter((n) => n.attrs.href && /^https?:/.test(n.attrs.href));
+    ok(`${label}: ${key}'s outside links open away from the page`,
+      out.every((n) => n.attrs.target === '_blank' && (n.attrs.rel || '').includes('noopener')));
+    ok(`${label}: nothing in ${key} points into the middle of another page`,
+      !panel.hrefs().some((h) => h.includes('#')));
   }
-  ok(`${label}: Escape closes it too`, (doc.listeners.keydown || []).length > 0);
 
-  // Every link a visitor can reach from it.
-  const hrefs = panel.hrefs();
-  const must = ['mailto:contact@notsus.net', '/about', '/blog/', '/podcast/',
-    '/privacy', '/terms', '/delete-account',
-    'https://download.notsus.net/Watchdog_installer.msi',
-    'https://download.notsus.net/How_to_block_other_browsers.pdf',
-    'https://www.linkedin.com/company/notsus', 'https://www.youtube.com/@NotSus_Edu',
-    'https://www.instagram.com/notsus_edu/', 'https://www.tiktok.com/@notsus_edu',
-    'https://x.com/NotSus_edu'];
-  must.forEach((h) => ok(`${label}: it reaches ${h}`, hrefs.includes(h)));
+  // One at a time.
+  click(doc, links[0]);
+  click(doc, links[1]);
+  ok(`${label}: opening a second widget replaces the first`,
+    root.querySelectorAll('.ns-panel').length === 1);
+  ok(`${label}: and the first item stops showing as open`,
+    links[0].getAttribute('aria-expanded') === 'false');
 
-  // Nothing points at a fragment on another page any more.
-  ok(`${label}: no link into the middle of /about`,
-    !hrefs.some((h) => h.includes('#contact-section')),
-    'the address is a button in the panel now');
+  // The X, and Escape.
+  const open = root.querySelectorAll('.ns-panel')[0];
+  const x = open.all.find((n) => n.classList.contains('ns-panel-close'));
+  (x.listeners.click || [])[0]();
+  ok(`${label}: the X closes it`, root.querySelectorAll('.ns-panel').length === 0);
+  ok(`${label}: and the page comes back`, scrim.hidden === true);
+  click(doc, links[2]);
+  (doc.listeners.keydown || []).forEach((fn) => fn({ key: 'Escape' }));
+  ok(`${label}: Escape closes it too`, root.querySelectorAll('.ns-panel').length === 0);
 
-  // Every outside link opens in its own tab and cannot reach back.
-  const out = panel.findAll((n) => n.attrs.href && /^https?:/.test(n.attrs.href));
-  ok(`${label}: outside links open away from the page`, out.every((n) => n.attrs.target === '_blank'));
-  ok(`${label}: and cannot reach back into it`, out.every((n) => (n.attrs.rel || '').includes('noopener')));
+  // What is inside each one.
+  const bodyOf = (key) => {
+    click(doc, links.find((l) => l.getAttribute('data-panel') === key));
+    return root.querySelectorAll('.ns-panel')[0];
+  };
+  ok(`${label}: Contact is the address, as a button`,
+    bodyOf('contact').hrefs().includes('mailto:contact@notsus.net'));
+  const res = bodyOf('resources').hrefs();
+  ok(`${label}: Resources carries the Browser Blocker`,
+    res.includes('https://download.notsus.net/Watchdog_installer.msi'));
+  ok(`${label}: and the guide`,
+    res.includes('https://download.notsus.net/How_to_block_other_browsers.pdf'));
+  const follow = bodyOf('follow').hrefs();
+  ['https://www.linkedin.com/company/notsus', 'https://www.youtube.com/@NotSus_Edu',
+   'https://www.instagram.com/notsus_edu/', 'https://www.tiktok.com/@notsus_edu',
+   'https://x.com/NotSus_edu'].forEach((u) => ok(`${label}: Follow reaches ${u}`, follow.includes(u)));
+  const legal = bodyOf('legal').hrefs();
+  ['/privacy', '/terms', '/delete-account/'].forEach((u) =>
+    ok(`${label}: Legal reaches ${u}`, legal.includes(u)));
+  if (withCard) {
+    const posts = JSON.parse(fs.readFileSync(path.join(ROOT, 'blog', 'articles.json'), 'utf8'));
+    const blog = bodyOf('blog');
+    const listed = blog.hrefs().filter((h) => /^\/blog\/.+/.test(h));
+    ok(`${label}: Blog lists every article`, listed.length === posts.length,
+      `${listed.length} of ${posts.length}`);
+    ok(`${label}: and each one by its own address`,
+      posts.every((p) => listed.includes('/blog/' + p.slug)));
+    ok(`${label}: and by its own title`,
+      posts.every((p) => blog.textContent.includes(p.title)));
+    ok(`${label}: plus a way to the blog itself`, blog.hrefs().includes('/blog/'));
+  }
+  ok(`${label}: Legal is where the address lives`,
+    bodyOf('legal').textContent.includes('2015 Main Street'));
 
-  // The address is in the panel, as the law wants it, and the home one is not.
-  ok(`${label}: the registered address is the public one`,
-    panel.textContent.includes('2015 Main Street, Vancouver, BC, Canada'));
-  ok(`${label}: and the home address is nowhere near it`,
-    !panel.textContent.includes('1624') && !/E Broadway/i.test(panel.textContent));
+  // It is about the product, not about a person.
+  const everything = links.map((a) => { click(doc, a); return root.querySelectorAll('.ns-panel')[0].textContent; }).join(' ');
+  ok(`${label}: the About item says About`,
+    links.some((a) => a.textContent === 'About') && !links.some((a) => /Adam/.test(a.textContent)));
+  ok(`${label}: and nothing in the footer is named after a person`,
+    !/Adam/.test(everything) && !/Adam/.test(footer.textContent),
+    'it is about NotSus');
 }
 
-// The download is offered exactly once per page.
-{
-  const cardPanel = withCard.body.find((n) => n.attrs.id === 'ns-dock-panel');
-  const barePanel = noCard.body.find((n) => n.attrs.id === 'ns-dock-panel');
-  ok('home page: the panel does not repeat the download card',
-    !cardPanel.hrefs().includes('/downloads'));
-  ok('every other page: the panel carries the download',
-    barePanel.hrefs().includes('/downloads'),
-    'those pages have no card, so the footer is the only way to it');
-}
+// ------------------------------------------------------- loading, and CSS
 
-// It is loaded from the one file every page already loads.
-ok('site-chrome loads the widget', /footer-dock\.js/.test(chrome));
+ok('site-chrome loads it', /footer-dock\.js/.test(chrome));
 ok('and only once', /document\.querySelector\('script\[data-ns-dock\]'\)/.test(chrome));
-ok('the About link says About', /label: 'About'/.test(chrome));
+ok('the written footer link says About', /label: 'About'/.test(chrome));
 ok('and not Adam', !/label: 'Adam'/.test(chrome));
 
-// The home page carries it directly, since it is generated and loads no chrome.
-ok('the home page loads the widget stylesheet', /footer-dock\.css\?v=[a-f0-9]{6,}" data-ns-dock/.test(home));
-ok('the home page loads the widget script', /footer-dock\.js\?v=[a-f0-9]{6,}" defer data-ns-dock/.test(home));
-ok('both are asked for by a name that carries their hash',
-  /footer-dock\.css\?v=/.test(home) && /footer-dock\.js\?v=/.test(home),
+ok('the home page loads the stylesheet', /footer-dock\.css\?v=[a-f0-9]{6,}" data-ns-dock/.test(home));
+ok('the home page loads the script', /footer-dock\.js\?v=[a-f0-9]{6,}" defer data-ns-dock/.test(home));
+ok('both carry a hash of their contents', /footer-dock\.(css|js)\?v=/.test(home),
   'server.js caches a plain name for a year');
-
-// The plain footer stays in the HTML for a crawler and for no JavaScript.
 ok('the written footer is still in the page', /<footer class="site-footer">/.test(home));
-ok('and the stylesheet is what hides it', /html\.ns-docked[\s\S]*?\.site-footer\s*\{\s*display:\s*none/.test(dockCss));
+// Baked in, so the Blog widget needs no request and works in a copy of the
+// page with no server behind it.
+ok('the home page carries the blog list', /<script id="ns-articles" type="application\/json">\[/.test(home));
+{
+  const posts = JSON.parse(fs.readFileSync(path.join(ROOT, 'blog', 'articles.json'), 'utf8'));
+  const m = /<script id="ns-articles" type="application\/json">(.*?)<\/script>/.exec(home);
+  const baked = m ? JSON.parse(m[1]) : [];
+  ok('and it is the list the blog index is built from',
+    baked.length === posts.length && baked.every((b, i) => b.slug === posts[i].slug && b.title === posts[i].title));
+  ok('and every post it names is a file that exists',
+    baked.every((b) => fs.existsSync(path.join(ROOT, 'blog', b.slug + '.html'))),
+    baked.filter((b) => !fs.existsSync(path.join(ROOT, 'blog', b.slug + '.html'))).map((b) => b.slug).join(', '));
+}
 
-// It is the same object on every page, so it cannot read the page's tokens.
-ok('the widget brings its own colours', /\.ns-dock-root\s*\{[\s\S]*?--d-ground:/.test(dockCss));
-ok('and never reads the page\'s', !/var\(--(ground|surface|primary|cream|text|border)\b/.test(dockCss),
-  'home.css and styles.css carry different values under those names');
+// The stacking bug, in the stylesheet this time.
+ok('the scrim has no z-index of its own', !/\.ns-scrim\s*\{[^}]*z-index/.test(dockCss),
+  'DOM order inside the root decides it, and a z-index here would reopen the bug');
+ok('the widget hides the page\'s footer', /html\.ns-docked body > footer:not\(\.ns-footer\)/.test(dockCss));
+ok('but not its own', /:not\(\.ns-footer\)/.test(dockCss));
+ok('no scrim on a wide screen', /@media \(min-width: 761px\)[\s\S]*?\.ns-scrim \{ display: none/.test(dockCss));
 
 // It lines up with the card above it.
-ok('it is the card\'s width', /--d-w:\s*348px/.test(dockCss), 'the card is 348px');
-ok('in the card\'s column', /--d-gap:\s*1\.25rem/.test(dockCss), 'the card sits 1.25rem from the right');
+ok('a widget is the card\'s width', /--d-w:\s*348px/.test(dockCss));
+ok('in the card\'s column', /--d-gap:\s*1\.25rem/.test(dockCss));
 ok('with the card\'s corner', /\.ns-panel\s*\{[\s\S]*?border-radius:\s*18px/.test(dockCss));
-ok('the card\'s edge', /\.ns-panel\s*\{[\s\S]*?border:\s*1px solid var\(--d-border\)/.test(dockCss));
 ok('the card\'s shadow', /\.ns-panel\s*\{[\s\S]*?box-shadow:\s*0 18px 50px rgba\(0, 0, 0, 0\.6\)/.test(dockCss));
 ok('and the card\'s half second', /\.ns-panel\s*\{[\s\S]*?500ms cubic-bezier\(0\.16, 1, 0\.3, 1\)/.test(dockCss));
-
-// It slides up, where the card slides down.
 ok('it arrives from below', /\.ns-panel\s*\{[\s\S]*?transform:\s*translateY\(16px\)/.test(dockCss));
 
-// It scrolls rather than growing off the screen.
-ok('a long panel scrolls', /\.ns-panel-body\s*\{[\s\S]*?overflow-y:\s*auto/.test(dockCss));
-ok('and stops short of the screen', /max-height:\s*min\(68svh, 560px\)/.test(dockCss),
+ok('a long widget scrolls', /\.ns-panel-body\s*\{[\s\S]*?overflow-y:\s*auto/.test(dockCss));
+ok('and is allowed to shrink so it can', /\.ns-panel-body\s*\{[\s\S]*?min-height:\s*0/.test(dockCss));
+ok('stopping short of the screen', /max-height:\s*min\(68svh, 560px\)/.test(dockCss),
   'svh, because vh on a phone is taller than the screen');
-ok('the head stays put while it scrolls', /\.ns-panel-head\s*\{[\s\S]*?flex:\s*0 0 auto/.test(dockCss));
-ok('and the body is allowed to shrink so it can scroll',
-  /\.ns-panel-body\s*\{[\s\S]*?min-height:\s*0/.test(dockCss),
-  'without this a flex item grows past the panel instead of scrolling inside it');
 
-// A phone.
-ok('on a phone it is a sheet, not a corner', /@media \(max-width: 760px\)[\s\S]*?\.ns-panel\s*\{[\s\S]*?position:\s*fixed/.test(dockCss));
-ok('with a scrim behind it', /@media \(max-width: 760px\)[\s\S]*?\.ns-scrim\s*\{[\s\S]*?background:\s*rgba\(0, 0, 0, 0\.6\)/.test(dockCss));
-ok('and it clears the download bar', /bottom:\s*calc\(var\(--d-cta-h\) \+ var\(--d-gap\)\)/.test(dockCss));
-ok('the bar\'s height is measured, not guessed', /--d-cta-h/.test(dockJs) && /getBoundingClientRect/.test(dockJs));
-ok('the sheet sits above the bar', /@media \(max-width: 760px\)[\s\S]*?\.ns-panel\s*\{[\s\S]*?z-index:\s*90/.test(dockCss),
-  'the bar is z-index 70');
-ok('no scrim on a wide screen', /@media \(min-width: 761px\)[\s\S]*?\.ns-scrim\s*\{\s*display:\s*none/.test(dockCss));
+ok('on a phone it clears the download bar', /bottom:\s*calc\(var\(--d-cta-h\) \+ var\(--d-gap\)\)/.test(dockCss));
+ok('and that bar\'s height is measured, not guessed',
+  /--d-cta-h/.test(dockJs) && /getBoundingClientRect/.test(dockJs));
 
-// It does not sit on top of the page it is not using.
-ok('the empty space between trigger and panel is not clickable', /\.ns-dock-root\s*\{[\s\S]*?pointer-events:\s*none/.test(dockCss));
-ok('but the widget itself is', /\.ns-dock-trigger\s*\{\s*\n\s*pointer-events:\s*auto/.test(dockCss));
+ok('nothing is clickable where nothing is open', /\.ns-dock-root\s*\{[\s\S]*?pointer-events:\s*none/.test(dockCss));
+ok('the widget itself is', /\.ns-panel\s*\{[\s\S]*?pointer-events:\s*auto/.test(dockCss));
+ok('and so is the scrim', /\.ns-scrim\s*\{[\s\S]*?pointer-events:\s*auto/.test(dockCss));
 
-// Motion, for anyone who has asked for less of it.
+ok('it brings its own colours', /\.ns-dock-root,\s*\n\.ns-footer\s*\{[\s\S]*?--d-ground:/.test(dockCss));
+ok('and never reads the page\'s', !/var\(--(ground|surface|primary|cream|text|border)\b/.test(dockCss),
+  'home.css and styles.css carry different values under those names');
 ok('it holds still when asked to', /prefers-reduced-motion[\s\S]*?\.ns-panel, \.ns-scrim \{ transition: none/.test(dockCss));
-
-// It writes nothing to the browser, like the card above it.
 ok('it remembers nothing about anyone',
   !/localStorage|sessionStorage|document\.cookie|indexedDB/.test(dockJs.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')));
 

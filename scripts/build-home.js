@@ -18,6 +18,10 @@ const ROOT = path.join(__dirname, '..');
 const catalog = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'catalog.json'), 'utf8'));
 const synonyms = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'search-synonyms.json'), 'utf8'));
 const homePicks = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'home-picks.json'), 'utf8'));
+// The blog, baked into the page so the footer's Blog widget needs no request
+// and lists what blog/index.html lists, from the same file.
+const articles = JSON.parse(fs.readFileSync(path.join(ROOT, 'blog', 'articles.json'), 'utf8'))
+  .map(({ slug, title }) => ({ slug, title }));
 // The same list server.js serves /downloads from, so the card and that page
 // cannot offer different platforms or different files.
 const { PLATFORMS, IPAD_MAILTO } = require('../lib/platforms');
@@ -352,7 +356,7 @@ ${footerNav}
   <nav class="footer-links footer-legal" aria-label="Legal">
     <a href="/privacy">Privacy Policy</a>
     <a href="/terms">Terms of Service</a>
-    <a href="/delete-account">Delete your account</a>
+    <a href="/delete-account/">Delete your account</a>
   </nav>
 
   <nav class="footer-social" aria-label="Social media">
@@ -362,6 +366,7 @@ ${footerSocial}
   <p class="footer-copy">&copy; 2026 NotSus Education Inc. All rights reserved. 2015 Main Street, Vancouver, BC, Canada.</p>
 </footer>
 
+<script id="ns-articles" type="application/json">${JSON.stringify(articles)}</script>
 <script id="miss-data" type="application/json">${JSON.stringify(missData)}</script>
 <script src="${stamp('home/home.js')}" defer></script>
 <script src="${stamp('scripts/footer-dock.js')}" defer data-ns-dock></script>

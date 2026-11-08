@@ -34,6 +34,19 @@ html = html.replace(/src="\/public\/logo-120\.png(\?v=[a-f0-9]+)?"/g, `src="${da
 html = html.replace(/src="\/(home\/icons\/[^"?]+)\?v=[a-f0-9]+"/g, (_, rel) => `src="${dataUri(rel)}"`);
 html = html.replace(/<title>[^<]*<\/title>/, '<title>NotSus Home Screen</title>');
 
+// Site links, pointed at the site.
+//
+// This file is opened from somewhere that is not notsus.net, so every
+// href="/about" in it was being resolved against whatever host it was
+// sitting on and landing on that host's 404 page. Adam reported the widget
+// as broken on 2026-11-07 because of it, and it was not.
+const SITE = 'https://www.notsus.net';
+html = html.replace(/href="(\/[^"]*)"/g, (_, p) => `href="${SITE}${p}"`);
+// The script builds its own links from paths in its source, so they need the
+// same treatment. Only the ones that are addresses.
+html = html.replace(/(href: ')(\/[^']*)(')/g, (_, a, p, b) => `${a}${SITE}${p}${b}`);
+html = html.replace(/var BLOG_BASE = '\/blog\/';/, `var BLOG_BASE = '${SITE}/blog/';`);
+
 
 fs.writeFileSync(out, html);
 console.log(`${out}  ${(Buffer.byteLength(html) / 1024 / 1024).toFixed(1)} MB, nothing left to fetch`);
