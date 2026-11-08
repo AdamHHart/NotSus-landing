@@ -278,10 +278,17 @@ for (const [label, withCard] of [['home page', true], ['every other page', false
     res.includes('https://download.notsus.net/Watchdog_installer.msi'));
   ok(`${label}: and the guide`,
     res.includes('https://download.notsus.net/How_to_block_other_browsers.pdf'));
-  const follow = bodyOf('follow').hrefs();
+  const followBody = bodyOf('follow');
+  const follow = followBody.hrefs();
   ['https://www.linkedin.com/company/notsus', 'https://www.youtube.com/@NotSus_Edu',
    'https://www.instagram.com/notsus_edu/', 'https://www.tiktok.com/@notsus_edu',
    'https://x.com/NotSus_edu'].forEach((u) => ok(`${label}: Follow reaches ${u}`, follow.includes(u)));
+  // Adam, 2026-11-08: Follow was pills while everything else was rows, which
+  // made it the one widget that looked like something else.
+  ok(`${label}: Follow is a list of buttons like the others`,
+    followBody.all.filter((n) => n.classList.contains('ns-row')).length === 5);
+  ok(`${label}: and no longer a row of pills`,
+    !followBody.all.some((n) => n.classList.contains('ns-pill')));
   if (withCard) {
     const posts = JSON.parse(fs.readFileSync(path.join(ROOT, 'blog', 'articles.json'), 'utf8'));
     const blog = bodyOf('blog');
@@ -290,7 +297,7 @@ for (const [label, withCard] of [['home page', true], ['every other page', false
     ok(`${label}: Blog opens short`, listed().length === 4, `${listed().length} shown`);
     const more = blog.all.find((n) => n.classList.contains('ns-more'));
     ok(`${label}: and offers the rest`, !!more);
-    ok(`${label}: saying how many`, more && /Show 5 more/.test(more.textContent), more && more.textContent);
+    ok(`${label}: saying how many`, more && /Load 5 more/.test(more.textContent), more && more.textContent);
     if (more) (more.listeners.click || []).forEach((fn) => fn());
     ok(`${label}: which loads them here, not on another page`,
       listed().length === posts.length, `${listed().length} of ${posts.length}`);
@@ -300,7 +307,8 @@ for (const [label, withCard] of [['home page', true], ['every other page', false
       posts.every((p) => blog.textContent.includes(p.title)));
     ok(`${label}: the button goes once they are all out`,
       !blog.all.some((n) => n.classList.contains('ns-more')));
-    ok(`${label}: plus a way to the blog itself`, blog.hrefs().includes('/blog/'));
+    ok(`${label}: and there is no row sending anyone to the blog page`,
+      !blog.hrefs().includes('/blog/'), 'Load more replaced it');
   }
   ok(`${label}: Legal is where the address lives`,
     bodyOf('legal').textContent.includes('2015 Main Street'));
@@ -308,8 +316,37 @@ for (const [label, withCard] of [['home page', true], ['every other page', false
   // Adam, 2026-11-08: reading the full story should not take the page away.
   const about = bodyOf('about');
   const story = about.all.find((n) => n.attrs.href === '/about');
-  ok(`${label}: About opens the full story in a new tab`,
+  ok(`${label}: About opens the full page in a new tab`,
     story && story.attrs.target === '_blank' && (story.attrs.rel || '').includes('noopener'));
+
+  // About is a short landing page now, in Adam's words. His copy, not mine:
+  // if one of these fails it is because somebody rewrote him.
+  const LEAD = [
+    'Internet media is manipulating your young child.',
+    'NotSus is a custom internet for your kids.',
+    'It\u2019s designed as an infinite library, a school, and a workshop.'
+  ];
+  LEAD.forEach((line, i) =>
+    ok(`${label}: About opens with line ${i + 1} of Adam's copy`, about.textContent.includes(line)));
+  ok(`${label}: and the first line leads`,
+    about.all.some((n) => n.classList.contains('ns-lead')));
+  const aboutFolds = about.all.filter((n) => n.classList.contains('ns-fold'));
+  ok(`${label}: with four headings under it`, aboutFolds.length === 4, `${aboutFolds.length}`);
+  ['Why a browser?', 'Forcing action', 'Our values', 'Setup NotSus for your kids (1 minute)']
+    .forEach((t) => ok(`${label}: "${t}" is one of them`, about.textContent.includes(t)));
+  ['Our environments shape who we become.',
+   'blank-canvas tools',
+   'Encouraging endless exploration and a passion for discovery.',
+   'Returning control to users to make healthy, value-driven choices.',
+   'No email \u00b7 No credit card \u00b7 No data',
+   'An investment in your kid\u2019s future.']
+    .forEach((t) => ok(`${label}: About keeps "${t.slice(0, 38)}"`, about.textContent.includes(t)));
+  ok(`${label}: the six values are all there`,
+    about.all.filter((n) => n.classList.contains('ns-value')).length === 6);
+  ok(`${label}: and Setup can actually set it up`,
+    PLATFORMS.every((p) => about.hrefs().includes(p.platform === 'ipad' ? IPAD_MAILTO : '/download/' + p.platform)));
+  ok(`${label}: Adam's typos are corrected and nothing else`,
+    !about.textContent.includes('Out environments') && !about.textContent.includes('when you child'));
 
   // The download, in the widget, not a page away.
   const dl = bodyOf('download');
@@ -333,9 +370,10 @@ for (const [label, withCard] of [['home page', true], ['every other page', false
     ok(`${label}: with its notes behind the heading`, radio.textContent.includes(e.description));
   });
   ok(`${label}: and the date and length beside it`, radio.textContent.includes('01:05:36'));
-  ok(`${label}: with a way to the show as well`, radio.hrefs().includes('/podcast/'));
-  ok(`${label}: nothing in Radio navigates off the page except the show`,
-    radio.hrefs().filter((h) => h.startsWith('/')).every((h) => h === '/podcast/'));
+  ok(`${label}: and there is no row sending anyone to the podcast page`,
+    !radio.hrefs().includes('/podcast/'), 'Load more replaced it');
+  ok(`${label}: nothing in Radio points at one of our own pages`,
+    !radio.hrefs().some((h) => h.startsWith('/')));
 
   // Adam, 2026-11-08: "The goal is to be helpful, while always staying on
   // the same page." Everything a widget links to opens in a new tab, so the

@@ -313,19 +313,6 @@ html.ns-docked .site-footer { display: none; }
   white-space: nowrap;
 }
 
-/* Five short words do not deserve five full rows. */
-.ns-pills { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-.ns-pill {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--d-text-2);
-  background: var(--d-ground);
-  border: 1px solid var(--d-border);
-  border-radius: 999px;
-  padding: 0.32rem 0.75rem;
-  transition: background var(--d-fast), color var(--d-fast), border-color var(--d-fast);
-}
-.ns-pill:hover { background: var(--d-primary); border-color: var(--d-primary); color: #06120d; }
 
 .ns-copy {
   margin: 0.5rem 0 0;
@@ -373,6 +360,48 @@ html.ns-docked .site-footer { display: none; }
 .ns-fold-body { display: flex; flex-direction: column; gap: 0.3rem; padding: 0 0.7rem 0.6rem; }
 .ns-fold-inner { border-left-width: 2px; border-left-color: rgba(255, 255, 255, 0.18); }
 .ns-fold-inner .ns-fold-title { font-size: 0.76rem; font-weight: 600; color: var(--d-text-2); }
+
+/* The first line of About. The only line in any widget that is allowed to
+   be bigger than the rest, because it is the sentence the page is for. */
+.ns-lead {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--d-cream);
+}
+
+/* A value: the word, then what it means, on the line under it. */
+.ns-value { display: flex; flex-direction: column; padding: 0.15rem 0; }
+.ns-value-name { font-size: 0.78rem; font-weight: 700; color: var(--d-text); }
+.ns-value-line { font-size: 0.72rem; line-height: 1.45; color: var(--d-text-2); }
+
+/* The two ways in, written out. They say what the card says, in the same
+   order, so a parent who reads About and a parent who opens the card are
+   not told two different things. */
+.ns-tier {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  border: 1px solid var(--d-border);
+  border-radius: 10px;
+  padding: 0.5rem 0.65rem;
+}
+.ns-tier-first { border-color: var(--d-primary); }
+.ns-tier-head { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; }
+.ns-tier-name { font-size: 0.8rem; font-weight: 800; color: var(--d-text); }
+.ns-tier-badge {
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.22rem 0.42rem;
+  border-radius: 999px;
+  background: var(--d-primary);
+  color: #06120d;
+}
+.ns-tier-line { font-size: 0.72rem; line-height: 1.4; color: var(--d-text-2); }
 
 /* The small font the folds hold. */
 .ns-small {

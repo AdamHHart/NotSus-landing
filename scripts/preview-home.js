@@ -55,6 +55,7 @@ const bake = [];
 const legal = [
   ['ns-legal-privacy', 'docs/PrivacyPolicy.html'],
   ['ns-legal-terms', 'docs/TandC.html'],
+  ['ns-legal-delete', 'delete-account/index.html'],
 ];
 for (const [id, rel] of legal) {
   // Only the part the widget reads. The rest of those pages is their own
@@ -65,7 +66,8 @@ for (const [id, rel] of legal) {
   const whole = read(rel).toString('utf8')
     .replace(/<script[\s\S]*?<\/script>/g, '')
     .replace(/<style[\s\S]*?<\/style>/g, '');
-  const cls = id === 'ns-legal-privacy' ? 'privacy-content' : 'terms-content';
+  const cls = id === 'ns-legal-privacy' ? 'privacy-content'
+    : id === 'ns-legal-terms' ? 'terms-content' : 'da-page';
   const at = whole.indexOf(`<div class="${cls}">`);
   const end = whole.indexOf('<footer', at);
   const text = at === -1 ? whole : whole.slice(at, end === -1 ? undefined : end);

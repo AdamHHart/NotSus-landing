@@ -36,15 +36,16 @@
         mic: '<svg class="ns-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg>',
         shield: '<svg class="ns-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6Z"/></svg>',
         doc: '<svg class="ns-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/></svg>',
+        link: '<svg class="ns-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
         lock: '<svg class="ns-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>'
     };
 
     var SOCIAL = [
-        { name: 'LinkedIn', url: 'https://www.linkedin.com/company/notsus' },
-        { name: 'YouTube', url: 'https://www.youtube.com/@NotSus_Edu' },
-        { name: 'Instagram', url: 'https://www.instagram.com/notsus_edu/' },
-        { name: 'TikTok', url: 'https://www.tiktok.com/@notsus_edu' },
-        { name: 'X', url: 'https://x.com/NotSus_edu' }
+        { name: 'LinkedIn', url: 'https://www.linkedin.com/company/notsus', colour: '#0A66C2' },
+        { name: 'YouTube', url: 'https://www.youtube.com/@NotSus_Edu', colour: '#FF0000' },
+        { name: 'Instagram', url: 'https://www.instagram.com/notsus_edu/', colour: '#E1306C' },
+        { name: 'TikTok', url: 'https://www.tiktok.com/@notsus_edu', colour: '#69C9D0' },
+        { name: 'X', url: 'https://x.com/NotSus_edu', colour: '#e7e7e7' }
     ];
 
     // Rewritten by scripts/preview-home.js, which builds a copy of this
@@ -73,9 +74,59 @@
     ];
     var IPAD_MAILTO = 'mailto:contact@notsus.net?subject=iPad%20early%20access';
 
-    // How many articles the Blog widget shows before it offers the rest. The
-    // widget was taller than the screen with nine in it.
-    var BLOG_FIRST = 4;
+    // How much of a long list a widget opens with before it offers the rest.
+    // Nine articles made the widget taller than the screen.
+    var FIRST = 4;
+
+    /**
+     * About, in Adam's words.
+     *
+     * His copy, kept as he wrote it. Two typos are corrected and nothing
+     * else: "Out environments" and "when you child". This is the page a
+     * parent reads before they decide, so it is the one place on the site
+     * where the wording is not mine to improve.
+     */
+    var ABOUT_LEAD = [
+        'Internet media is manipulating your young child.',
+        'NotSus is a custom internet for your kids.',
+        'It\u2019s designed as an infinite library, a school, and a workshop.'
+    ];
+    var ABOUT = [
+        {
+            title: 'Why a browser?',
+            paras: [
+                'Our environments shape who we become.',
+                'Kids spend time on screen environments that absorb them away from the world around them.',
+                'NotSus gives them all of the powerful tools of the internet, for free, without the distractions, addictions, and algorithms.'
+            ]
+        },
+        {
+            title: 'Forcing action',
+            paras: [
+                'The web you know is full of suggestions. This doesn\u2019t help kids learn to use their brain, make decisions, and be active.',
+                'NotSus uses blank-canvas tools, so kids learn skills, while still needing to decide what to do next. It\u2019s purposely not addictive, so when your child doesn\u2019t know what they want to do, they turn off the screen and do something else.'
+            ]
+        },
+        {
+            title: 'Our values',
+            values: [
+                ['Curiosity', 'Encouraging endless exploration and a passion for discovery.'],
+                ['Creativity', 'Inspiring imagination through access to innovative tools.'],
+                ['Productivity', 'Promoting active engagement over passive consumption.'],
+                ['Skepticism', 'Cultivating critical thinking to question and understand the world.'],
+                ['Safety', 'Ensuring a secure environment devoid of inappropriate content.'],
+                ['Empowerment', 'Returning control to users to make healthy, value-driven choices.']
+            ]
+        },
+        {
+            title: 'Setup NotSus for your kids (1 minute)',
+            tiers: [
+                { name: 'Basic Kid\u2019s Browser', badge: 'Free', lines: ['No email \u00b7 No credit card \u00b7 No data'] },
+                { name: 'Custom Kid\u2019s Browser', lines: ['Parent input.', 'An investment in your kid\u2019s future.'] }
+            ],
+            devices: true
+        }
+    ];
 
     var ADDRESS = '© 2026 NotSus Education Inc. All rights reserved. 2015 Main Street, Vancouver, BC, Canada.';
 
@@ -88,8 +139,8 @@
     var ITEMS = [
         {
             key: 'about', label: 'About', href: '/about', title: 'About',
-            line: 'NotSus is a custom internet for children: an infinite library, a school and a workshop, with no feed and nothing to sell them.',
-            rows: [{ href: '/about', icon: ICON.person, name: 'Read the full story', colour: '#FFB300', blank: true }]
+            about: true,
+            rows: [{ href: '/about', icon: ICON.person, name: 'The full page, with the video', colour: '#FFB300', blank: true }]
         },
         {
             key: 'download', label: 'Download', href: '/downloads', title: 'Download',
@@ -223,6 +274,35 @@
             body.appendChild(mail);
         }
 
+        // About, as a short page a parent can read in the widget: the three
+        // lines first, then a heading for each thing they might want to know.
+        if (item.about) {
+            ABOUT_LEAD.forEach(function (t, i) {
+                body.appendChild(el('p', i === 0 ? 'ns-lead' : 'ns-block-line', t));
+            });
+            ABOUT.forEach(function (sec) {
+                var f = fold(sec.title);
+                (sec.paras || []).forEach(function (t) { f.body.appendChild(el('p', 'ns-small', t)); });
+                (sec.values || []).forEach(function (v) {
+                    var w = el('div', 'ns-value');
+                    w.appendChild(el('span', 'ns-value-name', v[0]));
+                    w.appendChild(el('span', 'ns-value-line', v[1]));
+                    f.body.appendChild(w);
+                });
+                (sec.tiers || []).forEach(function (t, i) {
+                    var w = el('div', 'ns-tier' + (i === 0 ? ' ns-tier-first' : ''));
+                    var head = el('div', 'ns-tier-head');
+                    head.appendChild(el('span', 'ns-tier-name', t.name));
+                    if (t.badge) head.appendChild(el('span', 'ns-tier-badge', t.badge));
+                    w.appendChild(head);
+                    t.lines.forEach(function (l) { w.appendChild(el('span', 'ns-tier-line', l)); });
+                    f.body.appendChild(w);
+                });
+                if (sec.devices) PLATFORMS.forEach(function (p) { f.body.appendChild(deviceRow(p)); });
+                body.appendChild(f);
+            });
+        }
+
         // The same device list the download card offers, here rather than on
         // a page of its own, so nobody has to leave to get the file.
         if (item.devices) {
@@ -231,16 +311,17 @@
             body.appendChild(list);
         }
 
+        // One row each, the same row the devices and the resources use. They
+        // were pills, which made this the one widget that looked like
+        // something else.
         if (item.pills) {
-            var pills = el('div', 'ns-pills');
+            var accounts = el('div', 'ns-list');
             item.pills.forEach(function (p) {
-                var a = el('a', 'ns-pill');
-                outbound(a, p.url);
+                var a = row({ href: p.url, icon: ICON.link, name: p.name, colour: p.colour });
                 a.setAttribute('aria-label', 'NotSus on ' + p.name);
-                a.textContent = p.name;
-                pills.appendChild(a);
+                accounts.appendChild(a);
             });
-            body.appendChild(pills);
+            body.appendChild(accounts);
         }
 
         // The articles, read from the file the blog index is built from, so
@@ -260,10 +341,10 @@
                     });
                     shown = Math.min(shown + n, all.length);
                     if (shown >= all.length) { more.remove ? more.remove() : null; }
-                    else { more.textContent = 'Show ' + (all.length - shown) + ' more'; }
+                    else { more.textContent = 'Load ' + (all.length - shown) + ' more'; }
                 };
                 more.addEventListener('click', function () { draw(all.length); });
-                draw(BLOG_FIRST);
+                draw(FIRST);
                 if (shown < all.length) body.appendChild(more);
             };
             var baked = document.getElementById('ns-articles');
@@ -272,7 +353,7 @@
             } else {
                 load(body, '/blog/articles.json', fill);
             }
-            body.appendChild(row({ href: BLOG_BASE, icon: ICON.pen, name: 'The blog', colour: '#00A86B', blank: true }));
+
         }
 
         // The episodes, from the same place /podcast/ reads them. Each one is
@@ -282,28 +363,38 @@
             body.appendChild(eps);
             load(eps, '/api/podcast/episodes', function (payload) {
                 var d = payload.data || payload;
-                var list = d.episodes || [];
-                if (!list.length) {
+                var all = d.episodes || [];
+                if (!all.length) {
                     eps.appendChild(el('p', 'ns-wait', 'No episodes yet.'));
                     return;
                 }
-                list.forEach(function (ep) {
-                    var when = ep.pubDate ? new Date(ep.pubDate).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '';
-                    var f = fold(ep.title, [when, ep.duration].filter(Boolean).join(' \u00b7 '));
-                    if (ep.description) f.body.appendChild(el('p', 'ns-small', ep.description.slice(0, 400) + (ep.description.length > 400 ? '\u2026' : '')));
-                    var where = ep.episodePageUrl || d.spotifyUrl;
-                    if (where) {
-                        var a = el('a', 'ns-row');
-                        outbound(a, where);
-                        a.style.setProperty('--d-row', '#1DB954');
-                        a.innerHTML = ICON.mic;
-                        a.appendChild(el('span', 'ns-row-name', 'Listen'));
-                        f.body.appendChild(a);
-                    }
-                    eps.appendChild(f);
-                });
+                var shown = 0;
+                var more = el('button', 'ns-more');
+                more.type = 'button';
+                var draw = function (n) {
+                    all.slice(shown, shown + n).forEach(function (ep) {
+                        var when = ep.pubDate ? new Date(ep.pubDate).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '';
+                        var f = fold(ep.title, [when, ep.duration].filter(Boolean).join(' \u00b7 '));
+                        if (ep.description) f.body.appendChild(el('p', 'ns-small', ep.description.slice(0, 400) + (ep.description.length > 400 ? '\u2026' : '')));
+                        var where = ep.episodePageUrl || d.spotifyUrl;
+                        if (where) {
+                            var a = el('a', 'ns-row');
+                            outbound(a, where);
+                            a.style.setProperty('--d-row', '#1DB954');
+                            a.innerHTML = ICON.mic;
+                            a.appendChild(el('span', 'ns-row-name', 'Listen'));
+                            f.body.appendChild(a);
+                        }
+                        eps.appendChild(f);
+                    });
+                    shown = Math.min(shown + n, all.length);
+                    if (shown >= all.length) { more.remove ? more.remove() : null; }
+                    else { more.textContent = 'Load ' + (all.length - shown) + ' more'; }
+                };
+                more.addEventListener('click', function () { draw(all.length); });
+                draw(FIRST);
+                if (shown < all.length) body.appendChild(more);
             }, 'ns-episodes');
-            body.appendChild(row({ href: '/podcast/', icon: ICON.mic, name: 'All episodes', colour: '#6aa9ff', blank: true }));
         }
 
         // The policies themselves, in the widget. Each one opens into its own
@@ -312,7 +403,8 @@
         if (item.legal) {
             [
                 { title: 'Privacy Policy', url: '/docs/PrivacyPolicy.html', pick: '.privacy-content', baked: 'ns-legal-privacy' },
-                { title: 'Terms of Service', url: '/docs/TandC.html', pick: '.terms-content', baked: 'ns-legal-terms' }
+                { title: 'Terms of Service', url: '/docs/TandC.html', pick: '.terms-content', baked: 'ns-legal-terms' },
+                { title: 'Delete your account', url: '/delete-account/', pick: '.da-page', baked: 'ns-legal-delete' }
             ].forEach(function (doc) {
                 var f = fold(doc.title);
                 var done = false;
@@ -339,7 +431,7 @@
                 });
                 body.appendChild(f);
             });
-            body.appendChild(row({ href: '/delete-account/', icon: ICON.doc, name: 'Delete your account', colour: '#989797', blank: true }));
+
         }
 
         (item.rows || []).forEach(function (r) { body.appendChild(row(r)); });
