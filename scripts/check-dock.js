@@ -12,6 +12,23 @@ const fs = require('fs');
 const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const { PLATFORMS, IPAD_MAILTO } = require('../lib/platforms');
+const shim = require('./dom-shim');
+
+// The three documents the Legal widget reads, served from disk the way the
+// server serves them.
+const DOCS = {
+  '/docs/PrivacyPolicy.html': 'docs/PrivacyPolicy.html',
+  '/docs/TandC.html': 'docs/TandC.html',
+  '/delete-account/': 'delete-account/index.html',
+};
+function DOMParserShim() {
+  this.parseFromString = (text) => {
+    const root = shim.parse(text.replace(/<style[\s\S]*?<\/style>/g, ''));
+    root.body = root;
+    root.querySelector = (sel) => root.querySelectorAll(sel)[0] || null;
+    return root;
+  };
+}
 
 let failed = 0, passed = 0;
 const ok = (name, cond, detail) => {
@@ -36,6 +53,10 @@ class Node {
     this.listeners = {}; this._html = ''; this._text = ''; this.hidden = false;
   }
   set id(v) { this.attrs.id = String(v); }           get id() { return this.attrs.id; }
+  // <details>. The widget fetches a document the first time one is opened,
+  // which is where the bug of 2026-11-08 lived: nothing had ever opened one.
+  set open(v) { this._open = !!v; this.dispatch('toggle'); }
+  get open() { return !!this._open; }
   set href(v) { this.attrs.href = String(v); }       get href() { return this.attrs.href; }
   set target(v) { this.attrs.target = String(v); }   get target() { return this.attrs.target; }
   set rel(v) { this.attrs.rel = String(v); }         get rel() { return this.attrs.rel; }
@@ -53,6 +74,7 @@ class Node {
   removeChild(n) { this.children = this.children.filter((c) => c !== n); return n; }
   remove() { if (this.parentNode) this.parentNode.removeChild(this); }
   addEventListener(t, fn) { (this.listeners[t] = this.listeners[t] || []).push(fn); }
+  dispatch(t, e) { (this.listeners[t] || []).forEach((fn) => fn(e || { target: this })); }
   focus() {}
   getBoundingClientRect() { return { height: 120 }; }
   get all() { return this.children.reduce((a, c) => a.concat([c], c.all), []); }
@@ -153,14 +175,18 @@ function instantFetch(url) {
   if (url === '/api/podcast/episodes') {
     return settled({ ok: true, json: () => EPISODES, text: () => '' });
   }
+  if (DOCS[url]) {
+    const text = fs.readFileSync(path.join(ROOT, DOCS[url]), 'utf8');
+    return settled({ ok: true, text: () => text, json: () => JSON.parse(text) });
+  }
   return settled(undefined, new Error('404 ' + url));
 }
 
 function run(src, withCard) {
   const document = makeDocument(withCard);
   const win = { addEventListener() {}, ResizeObserver: null, fetch: instantFetch, NS_DEBUG: !!process.env.NS_DEBUG };
-  new Function('document', 'window', 'requestAnimationFrame', 'MutationObserver', 'fetch', src)(
-    document, win, (fn) => fn(), function () { this.observe = () => {}; }, instantFetch
+  new Function('document', 'window', 'requestAnimationFrame', 'MutationObserver', 'fetch', 'DOMParser', src)(
+    document, win, (fn) => fn(), function () { this.observe = () => {}; }, instantFetch, DOMParserShim
   );
   return document;
 }
@@ -310,8 +336,36 @@ for (const [label, withCard] of [['home page', true], ['every other page', false
     ok(`${label}: and there is no row sending anyone to the blog page`,
       !blog.hrefs().includes('/blog/'), 'Load more replaced it');
   }
+  const legalBody = bodyOf('legal');
+  const folds = legalBody.all.filter((n) => n.classList.contains('ns-fold'));
+  ok(`${label}: Legal holds the documents themselves`, folds.length === 3,
+    `${folds.length} headings`);
+  ['Privacy Policy', 'Terms of Service', 'Delete your account'].forEach((t) =>
+    ok(`${label}: ${t} is one of them`, legalBody.textContent.includes(t)));
+  ok(`${label}: and they drop down rather than navigating`,
+    folds.every((f) => !f.attrs.href));
+  ok(`${label}: Delete your account no longer sends anyone to a page`,
+    !legalBody.hrefs().includes('/delete-account/'));
+
+  // Open each one. Nothing ever had, which is how /delete-account/ shipped
+  // being handed to JSON.parse and reporting itself as unavailable.
+  const DOC_TITLES = ['Privacy Policy', 'Terms of Service', 'Delete your account'];
+  folds.forEach((f, i) => {
+    f.open = true;
+    const sections = f.all.filter((n) => n.classList.contains('ns-fold-inner'));
+    ok(`${label}: ${DOC_TITLES[i]} opens into its own sections`, sections.length >= 4,
+      `${sections.length} sections`);
+    ok(`${label}: ${DOC_TITLES[i]} has words in it`, f.textContent.length > 600,
+      `${f.textContent.length} characters`);
+    ok(`${label}: ${DOC_TITLES[i]} did not fail to load`,
+      !/Could not load/.test(f.textContent));
+  });
+  ok(`${label}: Delete your account explains how`,
+    folds[2].textContent.includes('Delete my account')
+    && folds[2].textContent.includes('parent PIN'));
+
   ok(`${label}: Legal is where the address lives`,
-    bodyOf('legal').textContent.includes('2015 Main Street'));
+    legalBody.textContent.includes('2015 Main Street'));
 
   // Adam, 2026-11-08: reading the full story should not take the page away.
   const about = bodyOf('about');
@@ -343,8 +397,42 @@ for (const [label, withCard] of [['home page', true], ['every other page', false
     .forEach((t) => ok(`${label}: About keeps "${t.slice(0, 38)}"`, about.textContent.includes(t)));
   ok(`${label}: the six values are all there`,
     about.all.filter((n) => n.classList.contains('ns-value')).length === 6);
-  ok(`${label}: and Setup can actually set it up`,
-    PLATFORMS.every((p) => about.hrefs().includes(p.platform === 'ipad' ? IPAD_MAILTO : '/download/' + p.platform)));
+  // Adam, 2026-11-08: the two ways in first, replaced by the devices.
+  {
+    const setup = about.all.filter((n) => n.classList.contains('ns-fold'))[3];
+    const ways = setup.all.find((n) => n.classList.contains('ns-ways'));
+    const picks = setup.all.find((n) => n.classList.contains('ns-picks'));
+    ok(`${label}: Setup opens on the two ways in`, ways && ways.hidden !== true);
+    ok(`${label}: and the devices wait`, picks && picks.hidden === true);
+    const tiers = ways ? ways.children.filter((n) => n.classList.contains('ns-tier')) : [];
+    ok(`${label}: both ways in are pressable`, tiers.length === 2 && tiers.every((t) => t.tagName === 'BUTTON'));
+    if (tiers.length === 2) {
+      (tiers[0].listeners.click || []).forEach((fn) => fn());
+      ok(`${label}: picking one shows the devices`, picks.hidden === false);
+      ok(`${label}: and takes the two ways away`, ways.hidden === true);
+      ok(`${label}: it asks which device, as the card does`,
+        picks.textContent.includes('Which device will your child use?'));
+      const back = picks.all.find((n) => n.classList.contains('ns-back'));
+      ok(`${label}: with a way back`, !!back);
+      if (back) {
+        (back.listeners.click || []).forEach((fn) => fn());
+        ok(`${label}: which returns to the two ways in`, ways.hidden === false && picks.hidden === true);
+        (tiers[1].listeners.click || []).forEach((fn) => fn());
+        ok(`${label}: the other way in works the same`, picks.hidden === false);
+      }
+    }
+    ok(`${label}: and Setup can actually set it up`,
+      PLATFORMS.every((p) => about.hrefs().includes(p.platform === 'ipad' ? IPAD_MAILTO : '/download/' + p.platform)));
+  }
+
+  // Emphasis, and none of the marks that make it.
+  ok(`${label}: About marks the phrases that should be read first`,
+    about.all.some((n) => n.innerHTML.includes('ns-em')));
+  ok(`${label}: and no asterisks reach the page`, !about.textContent.includes('**'));
+  ok(`${label}: the second opening line stands apart from the third`,
+    about.all.some((n) => n.classList.contains('ns-sub')));
+  ok(`${label}: the way out says where it goes`,
+    about.all.some((n) => n.textContent.includes('Open full about page')));
   ok(`${label}: Adam's typos are corrected and nothing else`,
     !about.textContent.includes('Out environments') && !about.textContent.includes('when you child'));
 

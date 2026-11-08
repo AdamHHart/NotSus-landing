@@ -371,22 +371,47 @@ html.ns-docked .site-footer { display: none; }
   color: var(--d-cream);
 }
 
+/* The second of the three opening lines. Quieter than the first, louder
+   than the third, so they read in the order they were written. */
+.ns-sub {
+  margin: 0 0 0.35rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--d-text);
+}
+
+/* The phrase in a paragraph the eye should land on. Cream, because that is
+   what every heading in here already is, so emphasis reads as part of the
+   same voice rather than as a link. */
+.ns-em { font-weight: 700; color: var(--d-cream); }
+
 /* A value: the word, then what it means, on the line under it. */
 .ns-value { display: flex; flex-direction: column; padding: 0.15rem 0; }
-.ns-value-name { font-size: 0.78rem; font-weight: 700; color: var(--d-text); }
+.ns-value-name { font-size: 0.78rem; font-weight: 700; color: var(--d-cream); }
 .ns-value-line { font-size: 0.72rem; line-height: 1.45; color: var(--d-text-2); }
 
 /* The two ways in, written out. They say what the card says, in the same
    order, so a parent who reads About and a parent who opens the card are
    not told two different things. */
+.ns-ways[hidden], .ns-picks[hidden] { display: none; }
 .ns-tier {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 0.15rem;
+  width: 100%;
+  font-family: inherit;
+  text-align: left;
+  background: var(--d-ground);
   border: 1px solid var(--d-border);
   border-radius: 10px;
-  padding: 0.5rem 0.65rem;
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+  transition: background var(--d-fast), border-color var(--d-fast), transform var(--d-fast);
 }
+.ns-tier:hover { background: var(--d-raised); border-color: var(--d-primary); transform: translateX(2px); }
+.ns-tier:active { transform: none; }
 .ns-tier-first { border-color: var(--d-primary); }
 .ns-tier-head { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; }
 .ns-tier-name { font-size: 0.8rem; font-weight: 800; color: var(--d-text); }
@@ -402,6 +427,26 @@ html.ns-docked .site-footer { display: none; }
   color: #06120d;
 }
 .ns-tier-line { font-size: 0.72rem; line-height: 1.4; color: var(--d-text-2); }
+
+/* The question above the devices, the same one the card asks. */
+.ns-step {
+  margin: 0.1rem 0 0.2rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--d-text-2);
+}
+.ns-back {
+  align-self: flex-start;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--d-muted);
+  background: transparent;
+  border: 0;
+  padding: 0.3rem 0.1rem;
+  cursor: pointer;
+}
+.ns-back:hover { color: var(--d-text); }
 
 /* The small font the folds hold. */
 .ns-small {

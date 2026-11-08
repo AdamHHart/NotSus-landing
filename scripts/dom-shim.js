@@ -61,6 +61,11 @@ class Node {
   scrollIntoView() {}
 
   get all() { return this.children.reduce((a, c) => a.concat([c], c.all), []); }
+  get nextElementSibling() {
+    if (!this.parentNode) return null;
+    const i = this.parentNode.children.indexOf(this);
+    return this.parentNode.children[i + 1] || null;
+  }
 
   matches(sel) {
     return sel.split(',').map((s) => s.trim()).some((one) => {

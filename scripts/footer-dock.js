@@ -95,16 +95,16 @@
         {
             title: 'Why a browser?',
             paras: [
-                'Our environments shape who we become.',
-                'Kids spend time on screen environments that absorb them away from the world around them.',
-                'NotSus gives them all of the powerful tools of the internet, for free, without the distractions, addictions, and algorithms.'
+                '**Our environments shape who we become.**',
+                'Kids spend time on screen environments that **absorb them away from the world around them**.',
+                'NotSus gives them **all of the powerful tools of the internet, for free**, without the distractions, addictions, and algorithms.'
             ]
         },
         {
             title: 'Forcing action',
             paras: [
-                'The web you know is full of suggestions. This doesn\u2019t help kids learn to use their brain, make decisions, and be active.',
-                'NotSus uses blank-canvas tools, so kids learn skills, while still needing to decide what to do next. It\u2019s purposely not addictive, so when your child doesn\u2019t know what they want to do, they turn off the screen and do something else.'
+                'The web you know is full of **suggestions**. This doesn\u2019t help kids learn to use their brain, make decisions, and be active.',
+                'NotSus uses **blank-canvas tools**, so kids learn skills, while still needing to decide what to do next. It\u2019s **purposely not addictive**, so when your child doesn\u2019t know what they want to do, they turn off the screen and do something else.'
             ]
         },
         {
@@ -140,7 +140,7 @@
         {
             key: 'about', label: 'About', href: '/about', title: 'About',
             about: true,
-            rows: [{ href: '/about', icon: ICON.person, name: 'The full page, with the video', colour: '#FFB300', blank: true }]
+            rows: [{ href: '/about', icon: ICON.person, name: 'Open full about page', colour: '#FFB300', blank: true }]
         },
         {
             key: 'download', label: 'Download', href: '/downloads', title: 'Download',
@@ -171,6 +171,17 @@
         { key: 'follow', label: 'Follow', href: SOCIAL[0].url, title: 'Follow', pills: SOCIAL },
         { key: 'legal', label: 'Legal', href: '/privacy', title: 'Legal', legal: true, copy: ADDRESS }
     ];
+
+    /**
+     * Adam's copy, with the phrase he wants the eye to land on marked
+     * **like this**. The text is escaped first, so the only markup that can
+     * come out of here is the emphasis.
+     */
+    function rich(text) {
+        var safe = String(text)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return safe.replace(/\*\*([^*]+)\*\*/g, '<strong class="ns-em">$1</strong>');
+    }
 
     function el(tag, cls, html) {
         var n = document.createElement(tag);
@@ -243,17 +254,26 @@
     }
 
     /** Fetch, and say so if it does not arrive, rather than sitting empty. */
-    function load(target, url, render, bakedId) {
+    /**
+     * Fetch, and say so if it does not arrive, rather than sitting empty.
+     *
+     * `asText` rather than looking at what the URL ends with. It used to
+     * guess from '.html', which is true of the two policy pages and not of
+     * /delete-account/, so that one was handed to JSON.parse, threw, and
+     * reported itself as unavailable. It was broken live as well as in the
+     * preview. What a URL ends with is not what it returns.
+     */
+    function load(target, url, render, bakedId, asText) {
         var have = bakedId && baked(bakedId);
         if (have) {
-            try { return render(url.slice(-5) === '.html' ? have : JSON.parse(have)); } catch (err) {}
+            try { return render(asText ? have : JSON.parse(have)); } catch (err) {}
         }
         var wait = el('p', 'ns-wait', 'Loading\u2026');
         target.appendChild(wait);
         if (!window.fetch) { wait.textContent = 'Could not load that right now.'; return; }
         fetch(url).then(function (r) {
             if (!r.ok) throw new Error(r.status);
-            return url.slice(-5) === '.html' ? r.text() : r.json();
+            return asText ? r.text() : r.json();
         }).then(function (data) {
             wait.remove ? wait.remove() : null;
             render(data);
@@ -277,28 +297,55 @@
         // About, as a short page a parent can read in the widget: the three
         // lines first, then a heading for each thing they might want to know.
         if (item.about) {
+            // Loudest first, then quieter. The first line is the one the
+            // page is for; the third is a description of what it is.
+            var LEAD_CLASS = ['ns-lead', 'ns-sub', 'ns-block-line'];
             ABOUT_LEAD.forEach(function (t, i) {
-                body.appendChild(el('p', i === 0 ? 'ns-lead' : 'ns-block-line', t));
+                body.appendChild(el('p', LEAD_CLASS[i] || 'ns-block-line', rich(t)));
             });
             ABOUT.forEach(function (sec) {
                 var f = fold(sec.title);
-                (sec.paras || []).forEach(function (t) { f.body.appendChild(el('p', 'ns-small', t)); });
+                (sec.paras || []).forEach(function (t) { f.body.appendChild(el('p', 'ns-small', rich(t))); });
                 (sec.values || []).forEach(function (v) {
                     var w = el('div', 'ns-value');
                     w.appendChild(el('span', 'ns-value-name', v[0]));
                     w.appendChild(el('span', 'ns-value-line', v[1]));
                     f.body.appendChild(w);
                 });
-                (sec.tiers || []).forEach(function (t, i) {
-                    var w = el('div', 'ns-tier' + (i === 0 ? ' ns-tier-first' : ''));
-                    var head = el('div', 'ns-tier-head');
-                    head.appendChild(el('span', 'ns-tier-name', t.name));
-                    if (t.badge) head.appendChild(el('span', 'ns-tier-badge', t.badge));
-                    w.appendChild(head);
-                    t.lines.forEach(function (l) { w.appendChild(el('span', 'ns-tier-line', l)); });
-                    f.body.appendChild(w);
-                });
-                if (sec.devices) PLATFORMS.forEach(function (p) { f.body.appendChild(deviceRow(p)); });
+                // Two ways in, and then the devices in their place. The
+                // same two steps the download card takes, because a parent
+                // who reads About and a parent who opens the card should not
+                // be walked through two different things.
+                if (sec.tiers) {
+                    var ways = el('div', 'ns-list ns-ways');
+                    var picks = el('div', 'ns-list ns-picks');
+                    picks.hidden = true;
+                    sec.tiers.forEach(function (t, i) {
+                        var w = el('button', 'ns-tier' + (i === 0 ? ' ns-tier-first' : ''));
+                        w.type = 'button';
+                        var head = el('div', 'ns-tier-head');
+                        head.appendChild(el('span', 'ns-tier-name', t.name));
+                        if (t.badge) head.appendChild(el('span', 'ns-tier-badge', t.badge));
+                        w.appendChild(head);
+                        t.lines.forEach(function (l) { w.appendChild(el('span', 'ns-tier-line', l)); });
+                        w.addEventListener('click', function () {
+                            ways.hidden = true;
+                            picks.hidden = false;
+                        });
+                        ways.appendChild(w);
+                    });
+                    picks.appendChild(el('p', 'ns-step', 'Which device will your child use?'));
+                    PLATFORMS.forEach(function (p) { picks.appendChild(deviceRow(p)); });
+                    var back = el('button', 'ns-back', 'Back');
+                    back.type = 'button';
+                    back.addEventListener('click', function () {
+                        picks.hidden = true;
+                        ways.hidden = false;
+                    });
+                    picks.appendChild(back);
+                    f.body.appendChild(ways);
+                    f.body.appendChild(picks);
+                }
                 body.appendChild(f);
             });
         }
@@ -427,7 +474,7 @@
                             }
                             f.body.appendChild(sec);
                         });
-                    }, doc.baked);
+                    }, doc.baked, true);
                 });
                 body.appendChild(f);
             });
