@@ -2,10 +2,11 @@
   "_about": [
     "The two rows at the top of notsus.net, above the twelve categories.",
     "",
-    "These are not a new editorial list. They are exactly what the browser puts",
-    "on its own home screen, read off src/index.html: the Learn section and the",
-    "Create section, in their order. The website is a replica of that screen, so",
-    "a visitor should meet the same tiles a child meets when they open the app.",
+    "Adam set this order on 2026-11-08. Until then these rows were exactly what",
+    "the browser puts on its own home screen, read off src/index.html, and they",
+    "are no longer: same sites, different order. The app's home screen has not",
+    "been touched, so the two now differ. If they should match, src/index.html",
+    "is the file to change, and that ships in the app.",
     "",
     "Every name here must also be in docs/catalog/featured.json, and the website",
     "build fails if one is not. A site appears twice on the page, once up here",
@@ -17,7 +18,8 @@
     "Google Docs (UTILITY), because a child thinks in 'making things', not in",
     "our filing. That is the point of the rows.",
     "",
-    "Written 2026-11-06. If the app's home screen changes, change this to match."
+    "scripts/sync-catalog.sh copies this file into the website, so this is the",
+    "one to edit. Changing the website's own copy is undone by the next sync."
   ],
 
   "rows": [
@@ -27,11 +29,11 @@
       "emoji": "📚",
       "apps": [
         "Khan Academy",
-        "Perplexity",
-        "Wikipedia",
         "National Geographic Kids",
         "Storyline Online",
-        "Windy"
+        "Wikipedia",
+        "Windy",
+        "Perplexity"
       ]
     },
     {
@@ -39,15 +41,15 @@
       "label": "Create",
       "emoji": "🎨",
       "apps": [
-        "Scratch",
-        "Replit",
         "Tinkercad",
+        "Canva",
+        "Scratch",
         "Photopea",
         "CapCut",
+        "Replit",
         "Google Docs",
-        "Google Sheets",
         "Google Slides",
-        "Canva"
+        "Google Sheets"
       ]
     }
   ]

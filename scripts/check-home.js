@@ -252,6 +252,52 @@ check(`the footer reads ${FOOTER_ORDER.join(', ')}`,
 // that the widget carries every one of them.
 check('the written footer is kept, and says why',
   /<!-- The footer a crawler reads/.test(html));
+// Adam set the order of the two rows on 2026-11-08. They are the first
+// fifteen tiles anybody sees, so they are not left to whatever order the
+// catalogue happens to be in.
+{
+  const ORDER = {
+    LEARN: ['Khan Academy', 'Nat Geo Kids', 'Storyline Online', 'Wikipedia', 'Windy', 'Perplexity'],
+    CREATE: ['Tinkercad', 'Canva', 'Scratch', 'Photopea', 'CapCut', 'Replit',
+             'Google Docs', 'Google Slides', 'Google Sheets'],
+  };
+  for (const [key, want] of Object.entries(ORDER)) {
+    const m = new RegExp(`data-picks="${key}"([\\s\\S]*?)</section>`).exec(html);
+    const got = m ? [...m[1].matchAll(/<span class="app-name">([^<]+)</g)].map((x) => x[1]) : [];
+    check(`${key} reads ${want.join(', ')}`, got.join('|') === want.join('|'),
+      `it reads ${got.join(', ')}`);
+  }
+}
+
+// Google Docs, Sheets and Slides all carried the same multicoloured G,
+// because that is the favicon google.com serves and all three were fetched
+// from it. Three products, three marks.
+{
+  const crypto = require('crypto');
+  const dir = path.join(ROOT, 'home', 'icons');
+  const sum = (f) => crypto.createHash('md5').update(fs.readFileSync(path.join(dir, f))).digest('hex');
+  const g = ['google-docs.png', 'google-sheets.png', 'google-slides.png'];
+  for (const f of g) check(`${f} is there`, fs.existsSync(path.join(dir, f)));
+  if (g.every((f) => fs.existsSync(path.join(dir, f)))) {
+    check('Docs, Sheets and Slides each have their own mark',
+      new Set(g.map(sum)).size === 3,
+      'at least two of them are the same image');
+  }
+
+  // Any other two tiles sharing an image. Two pairs are meant to: one
+  // organisation with two entries in the catalogue has one logo.
+  const ALLOWED = [
+    ['code-org-for-pre-readers.svg', 'code-org.svg'],
+    ['nasa-climate-kids.png', 'nasa-kids-club.png'],
+  ].map((p) => p.join('|'));
+  const byHash = {};
+  for (const f of fs.readdirSync(dir)) (byHash[sum(f)] = byHash[sum(f)] || []).push(f);
+  const dupes = Object.values(byHash).filter((v) => v.length > 1).map((v) => v.sort().join('|'));
+  check('no two sites share a logo unless they are the same organisation',
+    dupes.every((d) => ALLOWED.includes(d)),
+    dupes.filter((d) => !ALLOWED.includes(d)).join('  '));
+}
+
 check('nothing in the footer points at the page that was removed',
   !html.includes('/tools'));
 check('the about page is reachable, and by a page address',
