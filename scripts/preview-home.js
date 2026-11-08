@@ -24,8 +24,13 @@ function dataUri(rel) {
 
 html = html.replace(/<link rel="stylesheet" href="[^"]*">/, `<style>\n${read('home/home.css')}\n</style>`);
 html = html.replace(/<script src="[^"]*home\.js[^"]*" defer><\/script>/, `<script>\n${read('home/home.js')}\n</script>`);
+// The footer widget. Its script reaches for its own stylesheet by URL when it
+// cannot find one, which a file with no server behind it cannot answer, so
+// both go in here and the link keeps the attribute that tells it to stop.
+html = html.replace(/<link rel="stylesheet" href="[^"]*footer-dock\.css[^"]*" data-ns-dock>/, `<style data-ns-dock>\n${read('home/footer-dock.css')}\n</style>`);
+html = html.replace(/<script src="[^"]*footer-dock\.js[^"]*" defer data-ns-dock><\/script>/, `<script data-ns-dock>\n${read('scripts/footer-dock.js')}\n</script>`);
 html = html.replace(/<link rel="icon"[^>]*>\n?/, '').replace(/<link rel="apple-touch-icon"[^>]*>\n?/, '');
-html = html.replace(/src="\/public\/logo-120\.png\?v=[a-f0-9]+"/g, `src="${dataUri('public/logo-120.png')}"`);
+html = html.replace(/src="\/public\/logo-120\.png(\?v=[a-f0-9]+)?"/g, `src="${dataUri('public/logo-120.png')}"`);
 html = html.replace(/src="\/(home\/icons\/[^"?]+)\?v=[a-f0-9]+"/g, (_, rel) => `src="${dataUri(rel)}"`);
 html = html.replace(/<title>[^<]*<\/title>/, '<title>NotSus Home Screen</title>');
 

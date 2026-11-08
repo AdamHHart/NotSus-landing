@@ -209,6 +209,7 @@ const html = `<!DOCTYPE html>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.notsus.net/">
 <link rel="stylesheet" href="${stamp('home/home.css')}">
+<link rel="stylesheet" href="${stamp('home/footer-dock.css')}" data-ns-dock>
 ${turnstileKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>' : ''}
 </head>
 <body>
@@ -333,6 +334,10 @@ ${catalog.categoryOrder.map(section).filter(Boolean).join('\n')}
 
 </main>
 
+<!-- The footer a crawler reads, and the footer a visitor with no JavaScript
+     gets. On screen it is replaced by the widget in the bottom right corner,
+     which scripts/footer-dock.js builds and home/footer-dock.css hides this
+     one for. Every link below is in that widget too. -->
 <footer class="site-footer">
   <div class="footer-top">
     <img src="${stamp('public/logo-120.png')}" width="44" height="44" alt="" loading="lazy">
@@ -359,6 +364,7 @@ ${footerSocial}
 
 <script id="miss-data" type="application/json">${JSON.stringify(missData)}</script>
 <script src="${stamp('home/home.js')}" defer></script>
+<script src="${stamp('scripts/footer-dock.js')}" defer data-ns-dock></script>
 </body>
 </html>
 `;

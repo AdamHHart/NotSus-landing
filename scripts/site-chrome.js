@@ -23,7 +23,12 @@
     // The footer carries one more, in front: the page about the person who
     // built this. It is not in the menu, which sits over a page a child is
     // using.
-    const FOOTER_EXTRA = { href: '/about', label: 'Adam' };
+    //
+    // Labelled 'About'. It was 'Adam' for a day, which was a misreading of
+    // the order Adam gave for these links rather than a name he asked to put
+    // on one, and a visitor has no way to know who Adam is before they have
+    // clicked it.
+    const FOOTER_EXTRA = { href: '/about', label: 'About' };
 
     const SOCIAL_LINKS = [
         { name: 'LinkedIn', url: 'https://www.linkedin.com/company/notsus', label: 'NotSus on LinkedIn' },
@@ -69,9 +74,24 @@
         }
     }
 
+    // One footer for the whole site, as a widget in the bottom right corner.
+    // Every page loads this file, so loading it from here is what makes the
+    // footer the same object on all of them. It hides whatever footer the
+    // page already has, which stays in the HTML for crawlers and for anyone
+    // without JavaScript.
+    function loadFooterDock() {
+        if (document.querySelector('script[data-ns-dock]')) return;
+        const s = document.createElement('script');
+        s.src = '/scripts/footer-dock.js';
+        s.setAttribute('data-ns-dock', '');
+        s.defer = true;
+        document.head.appendChild(s);
+    }
+
     function init() {
         applySiteNav();
         injectFooterSocial();
+        loadFooterDock();
     }
 
     if (document.readyState === 'loading') {

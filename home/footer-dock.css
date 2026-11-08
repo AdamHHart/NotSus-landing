@@ -1,0 +1,336 @@
+/* home/footer-dock.css
+ *
+ * One footer for the whole site, as a widget.
+ *
+ * Before this, the home page ended in a tall stack of links and /about ended
+ * in a different, shorter one. Three links overlapped, three did not, and the
+ * socials were orange on one page and grey on the other, so a visitor who
+ * moved between them could not learn where anything was. This file is loaded
+ * by scripts/site-chrome.js, which every page already loads, so there is now
+ * one footer and it is the same object everywhere.
+ *
+ * It is built to match the download card on the home page: same width, same
+ * gradient, same border, same radius, same shadow, same round arrow chips.
+ * The card sits top right and this sits bottom right, in the same column.
+ *
+ * Every value it needs is declared on .ns-dock-root below rather than taken
+ * from the page. home.css and styles.css carry different tokens, and a footer
+ * that reads whichever it lands next to is a footer that looks like two
+ * different footers again.
+ */
+
+.ns-dock-root {
+  --d-ground: #1a1a1a;
+  --d-surface: #2d2a2a;
+  --d-raised: #3a3737;
+  --d-primary: #00A86B;
+  --d-primary-hi: #1fc988;
+  --d-cream: #fff3b1;
+  --d-text: #ffffff;
+  --d-text-2: #e0e0e0;
+  --d-muted: #989797;
+  --d-border: rgba(255, 255, 255, 0.2);
+  --d-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --d-fast: 140ms ease;
+
+  /* The card on the home page is 348px and sits 1.25rem from the right. The
+     dock is the same, so the two line up in one column down the right edge. */
+  --d-w: 348px;
+  --d-gap: 1.25rem;
+
+  /* On a phone the card becomes a bar along the bottom of the screen, and its
+     height changes as it opens. footer-dock.js measures it and writes it here
+     so the dock always sits clear of it. Zero on pages with no card. */
+  --d-cta-h: 0px;
+
+  position: fixed;
+  right: var(--d-gap);
+  bottom: var(--d-gap);
+  z-index: 80;
+  width: var(--d-w);
+  font-family: var(--d-font);
+  line-height: 1.5;
+  /* The root is only an anchor. Clicks pass through to the page between the
+     trigger and the panel. */
+  pointer-events: none;
+}
+.ns-dock-root * { box-sizing: border-box; }
+.ns-dock-root a { text-decoration: none; }
+
+/* The old footers, once the dock is up. They stay in the HTML so the links are
+   still there for a crawler and for anyone with no JavaScript, who gets the
+   plain footer and a page that works. */
+html.ns-docked body > footer,
+html.ns-docked .site-footer { display: none; }
+
+/* ------------------------------------------------------------- the trigger */
+
+/* Shut, the dock is one line: the mark, the name, and a chip that points up.
+   It reads as the bottom half of the same object as the card above it. */
+.ns-dock-trigger {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  font-family: inherit;
+  text-align: left;
+  color: var(--d-text);
+  background: linear-gradient(180deg, var(--d-raised) 0%, var(--d-surface) 62%);
+  border: 1px solid var(--d-border);
+  border-radius: 18px;
+  padding: 0.55rem 0.55rem 0.55rem 0.7rem;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  transition: transform var(--d-fast), border-color var(--d-fast), background var(--d-fast);
+}
+.ns-dock-trigger:hover { transform: translateY(-2px); border-color: var(--d-primary); }
+.ns-dock-trigger:active { transform: translateY(0) scale(0.995); }
+.ns-dock-trigger[hidden] { display: none; }
+
+.ns-dock-mark { display: block; border-radius: 50%; flex: 0 0 auto; }
+.ns-dock-words { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; }
+.ns-dock-name { font-size: 0.9rem; font-weight: 800; color: var(--d-cream); line-height: 1.2; }
+.ns-dock-sub {
+  font-size: 0.72rem;
+  color: var(--d-muted);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The same round target the card uses on everything pressable. */
+.ns-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--d-text-2);
+  transition: background var(--d-fast), color var(--d-fast), transform var(--d-fast);
+}
+.ns-chip svg { width: 15px; height: 15px; }
+.ns-dock-trigger:hover .ns-chip { background: var(--d-primary); color: #06120d; transform: translateY(-2px); }
+
+/* --------------------------------------------------------------- the panel */
+
+.ns-panel {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: min(68svh, 560px);
+  background: linear-gradient(180deg, var(--d-raised) 0%, var(--d-surface) 62%);
+  border: 1px solid var(--d-border);
+  border-radius: 18px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+  /* Up from under the fold, the way the card comes down from behind the
+     header. Same half second, same easing, so they are one family. */
+  transform: translateY(16px);
+  opacity: 0;
+  transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1), opacity 500ms ease-out;
+}
+.ns-panel.is-in { transform: translateY(0); opacity: 1; }
+.ns-panel[hidden] { display: none; }
+
+.ns-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 0.8rem 0.6rem 1rem;
+  flex: 0 0 auto;
+}
+.ns-panel-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--d-cream);
+  flex: 1 1 auto;
+}
+.ns-panel-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  flex: 0 0 auto;
+  font-family: inherit;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--d-text-2);
+  background: rgba(255, 255, 255, 0.07);
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background var(--d-fast), color var(--d-fast);
+}
+.ns-panel-close:hover { background: rgba(255, 255, 255, 0.16); color: var(--d-text); }
+
+/* What scrolls. The order of the blocks inside it is set in footer-dock.js:
+   the way to reach a person first, then the things to read, and the legal
+   lines last, so the first view holds the part somebody opened this for. */
+.ns-panel-body {
+  /* A flex item will not shrink below the height of its own content unless
+     it is told it may, and without that the panel grows past its max-height
+     instead of scrolling inside it. This is the same rule that made the
+     tiles stop matching each other when one name was too long. */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.ns-block { display: flex; flex-direction: column; gap: 0.4rem; }
+.ns-block-title {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--d-muted);
+}
+.ns-block-line {
+  margin: 0 0 0.15rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--d-text-2);
+}
+
+/* The one filled button in here, for the one thing worth pressing: the
+   address a person writes to. It is the card's own primary button. */
+.ns-cta-mail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  width: 100%;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #06120d;
+  background: var(--d-primary);
+  border-radius: 999px;
+  padding: 0.4rem 0.4rem 0.4rem 1.1rem;
+  min-height: 44px;
+  box-shadow: 0 6px 18px rgba(0, 168, 107, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  transition: background var(--d-fast), box-shadow var(--d-fast), transform var(--d-fast);
+}
+.ns-cta-mail .ns-chip { background: rgba(6, 18, 13, 0.85); color: var(--d-primary-hi); }
+.ns-cta-mail:hover {
+  background: var(--d-primary-hi);
+  box-shadow: 0 10px 26px rgba(0, 168, 107, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  transform: translateY(-1px);
+}
+.ns-cta-mail:hover .ns-chip { transform: translateX(3px); }
+
+/* Every other row. The card's device row, exactly: a bar on a dark ground
+   with a coloured left edge, so a list of six reads as a list and not as six
+   competing buttons. */
+.ns-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--d-text);
+  background: var(--d-ground);
+  border: 1px solid var(--d-border);
+  border-left: 3px solid var(--d-row, var(--d-border));
+  border-radius: 10px;
+  padding: 0.5rem 0.7rem;
+  min-height: 42px;
+  transition: background var(--d-fast), border-color var(--d-fast), transform var(--d-fast);
+}
+.ns-row:hover { background: var(--d-raised); transform: translateX(2px); }
+.ns-row-icon { width: 18px; height: 18px; flex: 0 0 auto; color: var(--d-row, var(--d-muted)); }
+.ns-row-name { font-size: 0.85rem; font-weight: 700; min-width: 0; }
+.ns-row-note {
+  margin-left: auto;
+  padding-left: 0.5rem;
+  font-size: 0.68rem;
+  color: var(--d-muted);
+  white-space: nowrap;
+}
+
+/* The socials are five short words and do not deserve five full rows. */
+.ns-pills { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.ns-pill {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--d-text-2);
+  background: var(--d-ground);
+  border: 1px solid var(--d-border);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  transition: background var(--d-fast), color var(--d-fast), border-color var(--d-fast);
+}
+.ns-pill:hover { background: var(--d-primary); border-color: var(--d-primary); color: #06120d; }
+
+/* The legal lines. Present, reachable, and not asking for attention. */
+.ns-fine { display: flex; flex-wrap: wrap; gap: 0.15rem 0.75rem; }
+.ns-fine a {
+  font-size: 0.74rem;
+  color: var(--d-muted);
+  border-bottom: 1px solid transparent;
+}
+.ns-fine a:hover { color: var(--d-text-2); border-bottom-color: var(--d-muted); }
+
+.ns-copy {
+  margin: 0.2rem 0 0;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  color: var(--d-muted);
+}
+
+/* ---------------------------------------------------------------- a phone */
+
+/* Down here the card is already a bar across the bottom of the screen, so the
+   dock cannot be. The trigger rides above whatever height the card currently
+   is, and the panel opens as a sheet over the page with a scrim behind it,
+   which is the only way to give it room to be read. */
+@media (max-width: 760px) {
+  .ns-dock-root {
+    --d-gap: 0.6rem;
+    right: var(--d-gap);
+    left: var(--d-gap);
+    bottom: calc(var(--d-cta-h) + var(--d-gap));
+    width: auto;
+  }
+  .ns-dock-trigger { margin-left: auto; width: auto; max-width: 100%; }
+  .ns-dock-sub { display: none; }
+
+  .ns-panel {
+    position: fixed;
+    left: var(--d-gap);
+    right: var(--d-gap);
+    bottom: var(--d-gap);
+    width: auto;
+    max-height: 82svh;
+    z-index: 90;
+  }
+  .ns-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    border: 0;
+    z-index: 85;
+    opacity: 0;
+    transition: opacity 300ms ease-out;
+  }
+  .ns-scrim.is-in { opacity: 1; }
+  .ns-scrim[hidden] { display: none; }
+}
+
+/* The scrim is for the sheet only. On a wide screen the panel is a widget in
+   the corner and the page behind it stays live. */
+@media (min-width: 761px) {
+  .ns-scrim { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-panel, .ns-scrim { transition: none; }
+  .ns-dock-trigger:hover, .ns-row:hover, .ns-cta-mail:hover { transform: none; }
+}

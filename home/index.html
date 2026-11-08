@@ -12,6 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.notsus.net/">
 <link rel="stylesheet" href="/home/home.css?v=e372324263">
+<link rel="stylesheet" href="/home/footer-dock.css?v=dd36c0fb96" data-ns-dock>
 
 </head>
 <body>
@@ -1094,6 +1095,10 @@
 
 </main>
 
+<!-- The footer a crawler reads, and the footer a visitor with no JavaScript
+     gets. On screen it is replaced by the widget in the bottom right corner,
+     which scripts/footer-dock.js builds and home/footer-dock.css hides this
+     one for. Every link below is in that widget too. -->
 <footer class="site-footer">
   <div class="footer-top">
     <img src="/public/logo-120.png?v=9596b9b317" width="44" height="44" alt="" loading="lazy">
@@ -1102,7 +1107,7 @@
   </div>
 
   <nav class="footer-links" aria-label="Site">
-      <a href="/about">Adam</a>
+      <a href="/about">About</a>
       <a href="/downloads">Download Browser</a>
       <a href="/about#contact-section">Contact Us</a>
       <a href="/resources">Resources</a>
@@ -1129,5 +1134,6 @@
 
 <script id="miss-data" type="application/json">{"notCarried":{"minecraft":["Tinkercad","Scratch"],"roblox":["Scratch","MakeCode Arcade","PixelPad"],"fortnite":["MakeCode Arcade","Godot Engine"],"youtube":["TED-Ed","PBS Learning Media"],"tiktok":["CapCut","Brush Ninja"],"photoshop":["Photopea","Krita"],"illustrator":["Canva","Photopea"],"chatgpt":["Perplexity"],"google":["Kiddle","DuckDuckGo"],"among us":["MakeCode Arcade","Scratch"],"discord":[],"snapchat":[],"instagram":[]},"missLine":"We do not have {asked}. These let you do something like it:","emptyLine":"We do not have {asked}, and there is nothing here like it.","downloadLine":"Looking for something that is not here? In the NotSus browser, a parent can add any site."}</script>
 <script src="/home/home.js?v=56d0554378" defer></script>
+<script src="/scripts/footer-dock.js?v=e22addd393" defer data-ns-dock></script>
 </body>
 </html>

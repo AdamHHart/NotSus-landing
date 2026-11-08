@@ -229,25 +229,33 @@ const header = html.slice(html.indexOf('<header'), html.indexOf('</header>'));
 const headerOutsideCard = header.slice(0, header.indexOf('<div id="cta"'));
 check('the header holds the logo bar and the card, and no navigation',
   (headerOutsideCard.match(/<a /g) || []).length === 1 && /class="brand"/.test(headerOutsideCard));
-// The about page is "Adam" in the footer since 2026-11-07, and it is not in
-// the menu at all.
-for (const label of ['Adam', 'Blog', 'Radio']) {
+// The about page sits in the footer and not in the menu. Its label was
+// 'Adam' for a day, which read the order Adam gave for these links as a name
+// he wanted on one of them. A visitor cannot know who Adam is until they
+// have been to the page, so it says About.
+for (const label of ['About', 'Blog', 'Radio']) {
   check(`"${label}" is in the footer, not the header`,
     !header.includes(`>${label}<`) && html.indexOf(`>${label}<`) > html.indexOf('</header>'));
 }
 // Tools for Kids and Resources were dropped on 2026-11-07: the home page is
 // the tools page now, and Resources pointed at an anchor rather than a page.
 // Adam's order, 2026-11-07.
-const FOOTER_ORDER = ['Adam', 'Download Browser', 'Contact Us', 'Resources', 'Radio', 'Blog'];
+const FOOTER_ORDER = ['About', 'Download Browser', 'Contact Us', 'Resources', 'Radio', 'Blog'];
 const footerBlock = html.slice(html.indexOf('aria-label="Site"'), html.indexOf('aria-label="Legal"'));
 const footerLabels = (footerBlock.match(/>([^<]+)<\/a>/g) || []).map((m) => m.slice(1, -4));
 check(`the footer reads ${FOOTER_ORDER.join(', ')}`,
   footerLabels.join('|') === FOOTER_ORDER.join('|'),
   `it reads ${footerLabels.join(', ')}`);
+// The written footer below is no longer what a visitor sees: the widget in
+// the bottom right is. It stays in the HTML so a crawler reads these links
+// and so the page works with no JavaScript, and scripts/check-dock.js checks
+// that the widget carries every one of them.
+check('the written footer is kept, and says why',
+  /<!-- The footer a crawler reads/.test(html));
 check('nothing in the footer points at the page that was removed',
   !html.includes('/tools'));
 check('the about page is reachable, and by a page address',
-  html.includes('<a href="/about">Adam</a>'));
+  html.includes('<a href="/about">About</a>'));
 for (const name of ['LinkedIn', 'YouTube', 'Instagram', 'TikTok', 'X']) {
   check(`the footer carries ${name}`, new RegExp(`aria-label="NotSus on ${name}"`).test(html));
 }

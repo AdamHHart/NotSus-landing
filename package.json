@@ -16,7 +16,8 @@
     "fetch:icons": "node scripts/fetch-icons.js",
     "preview:home": "node scripts/preview-home.js",
     "check:routes": "node scripts/check-routes.js",
-    "check:about": "node scripts/check-about.js"
+    "check:about": "node scripts/check-about.js",
+    "check:dock": "node scripts/check-dock.js"
   },
   "engines": {
     "node": "20.x"
