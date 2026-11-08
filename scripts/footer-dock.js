@@ -50,6 +50,9 @@
 
     // Rewritten by scripts/preview-home.js, which builds a copy of this
     // page that is opened from somewhere other than notsus.net.
+    // Every post is a file, so its address ends in .html, the way
+    // scripts/blog-index.js writes it on /blog/. Without that the widget
+    // offered nine links that all answered 'Cannot GET'.
     var BLOG_BASE = '/blog/';
 
     /**
@@ -384,7 +387,7 @@
                 more.type = 'button';
                 var draw = function (n) {
                     all.slice(shown, shown + n).forEach(function (p) {
-                        posts.appendChild(row({ href: BLOG_BASE + p.slug, icon: ICON.pen, name: p.title, colour: '#00A86B', blank: true }));
+                        posts.appendChild(row({ href: BLOG_BASE + p.slug + '.html', icon: ICON.pen, name: p.title, colour: '#00A86B', blank: true }));
                     });
                     shown = Math.min(shown + n, all.length);
                     if (shown >= all.length) { more.remove ? more.remove() : null; }

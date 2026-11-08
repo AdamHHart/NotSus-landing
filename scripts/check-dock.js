@@ -328,7 +328,15 @@ for (const [label, withCard] of [['home page', true], ['every other page', false
     ok(`${label}: which loads them here, not on another page`,
       listed().length === posts.length, `${listed().length} of ${posts.length}`);
     ok(`${label}: each by its own address`,
-      posts.every((p) => listed().includes('/blog/' + p.slug)));
+      posts.every((p) => listed().includes('/blog/' + p.slug + '.html')));
+    // The address has to be a file that is there. The check used to assert
+    // the link matched the slug, which it did, and nine links all answered
+    // 'Cannot GET' because a post is <slug>.html and the widget dropped the
+    // extension. An address nobody has opened is not an address.
+    listed().forEach((href) => {
+      const rel = href.replace(/^\//, '').split('?')[0];
+      ok(`${label}: ${rel} is a file that exists`, fs.existsSync(path.join(ROOT, rel)));
+    });
     ok(`${label}: and by its own title`,
       posts.every((p) => blog.textContent.includes(p.title)));
     ok(`${label}: the button goes once they are all out`,
@@ -476,6 +484,30 @@ for (const [label, withCard] of [['home page', true], ['every other page', false
       && n.attrs.target !== '_blank');
     ok(`${label}: nothing in ${key} takes the page away`, leaves.length === 0,
       leaves.map((n) => n.attrs.href).join(', '));
+  }
+
+  // Every address a widget offers, against something that answers it.
+  //
+  // check:routes covers the routes the server declares and this covers the
+  // rest, because the blog links were neither: nine of them, all pointing at
+  // a file whose name they had dropped the extension from, and nothing
+  // noticed until somebody clicked one.
+  {
+    const ROUTES = ['/about', '/downloads', '/resources', '/privacy', '/terms',
+      '/delete-account/', '/podcast/', '/blog/'];
+    for (const a of links) {
+      const key = a.getAttribute('data-panel');
+      const panel = bodyOf(key);
+      panel.hrefs()
+        .filter((h) => h.startsWith('/'))
+        .forEach((h) => {
+          const clean = h.split('?')[0].split('#')[0];
+          const known = ROUTES.includes(clean)
+            || /^\/download\/[a-zA-Z]+$/.test(clean)
+            || fs.existsSync(path.join(ROOT, clean.replace(/^\//, '')));
+          ok(`${label}: ${key} offers ${h}, and something answers it`, known);
+        });
+    }
   }
 
   // It is about the product, not about a person.
