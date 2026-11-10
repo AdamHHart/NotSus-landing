@@ -68,7 +68,7 @@
           icon: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18.5h2"/>' },
         { platform: 'android', label: 'Android', note: 'not on Play yet', colour: '#4ade80',
           icon: '<rect x="5" y="7" width="14" height="12" rx="3"/><path d="M8 7 6.5 4M16 7l1.5-3M9.5 12h.01M14.5 12h.01"/>' },
-        { platform: 'linux', label: 'Linux', note: '', colour: '#fbbf24',
+        { platform: 'linux', label: 'Linux', note: 'AppImage', colour: '#fbbf24',
           icon: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/>' },
         { platform: 'macIntel', label: 'Mac', note: 'Intel', colour: '#94a3b8',
           icon: '<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M1 20h22"/>' }
