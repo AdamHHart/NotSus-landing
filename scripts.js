@@ -3,13 +3,13 @@ const config = {
     apiUrl: (() => {
         return `${window.location.origin}/api/feedback`;
     })(),
-    downloadUrls: {
-        windows: 'https://download.notsus.net/NotSus_Browser_2.1.1.exe',
-        mac: 'https://download.notsus.net/NotSus_Browser-2.1.1-arm64.dmg',
-        macIntel: 'https://download.notsus.net/NotSus_Browser-2.1.1.dmg',
-        linux: 'https://download.notsus.net/notsusbrowser_2.1.1_amd64.deb'
-    }
 };
+
+// There used to be a copy of the installer addresses here. It still named
+// 2.1.1 after everything else had moved to 2.2.0, and a button pointed at it
+// went straight to the file: past /download/:platform, so past the human
+// check and without counting the download. Every button goes through the
+// server route now, and lib/platforms.js is the only place an address lives.
 
 // Debug logging to see what URL is being used
 console.log('API URL configured as:', config.apiUrl);
@@ -748,7 +748,7 @@ function setupDownloadTracking(emailOrToken, options) {
 
         const downloadUrl = useToken
             ? `/download/${platform}?token=${encodeURIComponent(emailOrToken)}`
-            : (config.downloadUrls[platform] || `/download/${platform}?email=${encodeURIComponent(emailOrToken)}`);
+            : `/download/${platform}`;
         button.setAttribute('href', downloadUrl);
 
         button.addEventListener('click', function(e) {
