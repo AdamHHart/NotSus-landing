@@ -20,7 +20,8 @@
     "check:dock": "node scripts/check-dock.js",
     "check:cta": "node scripts/check-cta.js",
     "build:seo": "node scripts/build-seo.js",
-    "check:seo": "node scripts/check-seo.js"
+    "check:seo": "node scripts/check-seo.js",
+    "check:ratelimit": "node scripts/check-ratelimit.js"
   },
   "engines": {
     "node": "20.x"

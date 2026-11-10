@@ -61,6 +61,29 @@ app.use((req, res, next) => {
 });
 
 /**
+ * The caller's real IP address.
+ *
+ * X-Forwarded-For is written by the client and cannot be trusted: a request
+ * can carry any value, and a different one each time, so anything that counts
+ * or identifies a caller by it counts nobody. Rotating the header walked
+ * straight past the login limiter, the download limiter and the human-check
+ * limiter.
+ *
+ * The site sits behind Cloudflare, which overwrites CF-Connecting-IP with the
+ * address it actually received the connection from, after discarding whatever
+ * the client claimed. That header is the one to trust. The socket address is
+ * the fallback for a local run with no proxy in front; X-Forwarded-For is not
+ * a fallback at all, because a present-but-forged value is worse than none.
+ */
+function clientIp(req) {
+    const cf = req.headers['cf-connecting-ip'];
+    if (cf && cf.trim()) return cf.trim();
+    return (req.socket && req.socket.remoteAddress)
+        || (req.connection && req.connection.remoteAddress)
+        || 'unknown';
+}
+
+/**
  * A small fixed-window limiter, in memory.
  *
  * In memory is honest about what it is: the site runs as one Render instance,
@@ -73,9 +96,7 @@ function rateLimit({ windowMs, max, message }) {
     const hits = new Map();
     return (req, res, next) => {
         const now = Date.now();
-        const key = req.headers['x-forwarded-for']?.split(',')[0].trim()
-            || req.socket.remoteAddress
-            || 'unknown';
+        const key = clientIp(req);
         const entry = hits.get(key);
         if (!entry || now > entry.resetAt) {
             hits.set(key, { count: 1, resetAt: now + windowMs });
@@ -710,7 +731,7 @@ app.post('/api/verify-human', verifyLimiter, async (req, res) => {
         const body = new URLSearchParams({
             secret: TURNSTILE_SECRET_KEY,
             response: token,
-            remoteip: (req.headers['x-forwarded-for'] || '').split(',')[0].trim(),
+            remoteip: clientIp(req),
         });
         const result = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
             method: 'POST',
@@ -987,7 +1008,7 @@ app.get('/download/:platform', downloadLimiter, async (req, res) => {
         await getDb().query(`
             INSERT INTO app_downloads (platform, email, download_time, user_agent, ip_address)
             VALUES ($1, $2, CURRENT_TIMESTAMP, $3, $4)
-        `, [platform, email, req.headers['user-agent'], req.headers['x-forwarded-for'] || req.connection.remoteAddress]);
+        `, [platform, email, req.headers['user-agent'], clientIp(req)]);
 
         await getDb().query(`
             INSERT INTO download_tracking (email, platform, action, browser_name, browser_version, os_name, os_version, user_agent)
