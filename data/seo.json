@@ -14,9 +14,7 @@
     "rather than selling the browser. Around 150 characters, because that is",
     "roughly where Google stops printing."
   ],
-
   "site": "https://www.notsus.net",
-
   "pages": {
     "index.html": {
       "path": "/about",
@@ -49,12 +47,17 @@
       "description": "How to delete your family account and everything in it, in the app or by writing to us. What goes straight away, and what is kept."
     },
     "android/index.html": {
-      "path": "/android",
+      "path": "/android/",
       "title": "NotSus for Android tablets | NotSus",
       "description": "Get NotSus on an Android tablet before it is on the Play Store. Tell us your device and we will send you the build and the setup steps."
     }
   },
-
+  "generated": {
+    "/downloads": {
+      "title": "Download NotSus for Mac, Windows, iPad or Android",
+      "description": "Get the NotSus browser for your child's device. Free, no account and no email. Pick Mac, Windows, Android or iPad and the download starts."
+    }
+  },
   "posts": {
     "90s-computer-experience-for-kids": {
       "title": "The 90s Computer Experience for Kids | NotSus",

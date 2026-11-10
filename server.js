@@ -633,6 +633,11 @@ app.get('/verify-email', async (req, res) => {
 
 const { PLATFORMS, DOWNLOAD_URLS, IPAD_MAILTO } = require('./lib/platforms');
 
+// /downloads is built here rather than written to disk, so scripts/build-seo.js
+// cannot reach it. Its title and description live in the same file as every
+// other page's, and check-seo.js fails if the two ever drift.
+const SEO_DOWNLOADS = require('./data/seo.json').generated['/downloads'];
+
 /* ------------------------------------------------------------------ human */
 
 /*
@@ -770,7 +775,15 @@ function downloadsPage(token, { verified = false } = {}) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download NotSus | NotSus.net</title>
+    <title>${SEO_DOWNLOADS.title}</title>
+    <meta name="description" content="${SEO_DOWNLOADS.description}">
+    <link rel="canonical" href="${BASE_URL}/downloads">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="${SEO_DOWNLOADS.title}">
+    <meta property="og:description" content="${SEO_DOWNLOADS.description}">
+    <meta property="og:url" content="${BASE_URL}/downloads">
+    <meta property="og:image" content="${BASE_URL}/public/logo-120.png">
+    <meta name="twitter:card" content="summary">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JP7D4XPL7X"></script>
     <script>
         window.dataLayer = window.dataLayer || [];

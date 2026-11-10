@@ -147,10 +147,47 @@ for (const a of articles) {
       ok(`the sitemap lists ${urlPath}`, locs.includes(SITE + urlPath));
     }
     ok('every address in it is on this site', locs.every((l) => l.startsWith(SITE + '/')));
-    ok('and none of them is a redirect',
-      !locs.some((l) => l === `${SITE}/resources` || l === `${SITE}/tools` || l === `${SITE}/home`),
-      'a sitemap should list where a page is, not where it forwards from');
+    // Not a list of addresses known to forward: that only ever catches the
+    // ones already thought of. /android sat in the sitemap as a 301 for a
+    // whole deploy because the blocklist did not happen to name it. This
+    // checks the mechanism instead. express.static answers a request for a
+    // directory with a 301 to the same address plus a slash, so any address
+    // that names a directory holding an index.html has to carry that slash.
+    for (const loc of locs) {
+      const rel = loc.slice(SITE.length).replace(/^\/+/, '');
+      if (rel === '') continue;
+      const bare = rel.replace(/\/$/, '');
+      const isDir = fs.existsSync(path.join(ROOT, bare))
+        && fs.statSync(path.join(ROOT, bare)).isDirectory()
+        && fs.existsSync(path.join(ROOT, bare, 'index.html'));
+      if (!isDir) continue;
+      ok(`${loc} is the address the server serves, not one it forwards from`,
+        rel.endsWith('/'),
+        'express.static sends a 301 to the trailing slash; list the address it lands on');
+    }
     ok('no duplicates', new Set(locs).size === locs.length);
+
+    // /downloads is a template string in server.js, so build-seo.js never
+    // sees it. It shipped with no canonical and no description at all.
+    const server = read('server.js');
+    const gen = seo.generated['/downloads'];
+    ok('seo.json carries the copy for the generated /downloads page', !!gen);
+    if (gen) {
+      ok('/downloads is in the sitemap', locs.includes(`${SITE}/downloads`));
+      ok('server.js takes that page\'s title from seo.json',
+        server.includes('<title>${SEO_DOWNLOADS.title}</title>'),
+        'a second hand-written title drifts from the one checked here');
+      ok('and its description', server.includes('content="${SEO_DOWNLOADS.description}"'));
+      ok('and declares its canonical', server.includes('href="${BASE_URL}/downloads"'));
+      ok('its title is short enough to survive the results page', gen.title.length <= 60,
+        `${gen.title.length} characters`);
+      ok('its description is a usable length',
+        gen.description.length >= 80 && gen.description.length <= 170,
+        `${gen.description.length} characters`);
+      ok('no other page claims that title',
+        ![...Object.values(seo.pages), ...Object.values(seo.posts)]
+          .some((m) => m.title === gen.title));
+    }
   }
 }
 
