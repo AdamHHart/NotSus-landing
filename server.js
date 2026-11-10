@@ -848,7 +848,7 @@ function downloadsPage(token, { verified = false } = {}) {
         <div class="dl-grid${gate ? ' is-locked' : ''}" id="dl-grid">
             ${links.map(({ href, label, note, platform, colour, icon }) => `<a href="${href}" style="--dl-colour: ${colour}" onclick="gtag('event', 'installer_download', { event_label: '${label}', app_platform: '${platform}' });"><svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icon}</svg><span class="dl-label">${label}</span>${note ? `<span class="dl-note">${note}</span>` : ''}</a>`).join('\n            ')}
         </div>
-        <p class="dl-help">On an Android tablet, your tablet will warn you because the app did not come from the Play Store. <a href="/android">The steps are here</a>.</p>
+        <p class="dl-help">On an Android tablet, your tablet will warn you because the app did not come from the Play Store. <a href="/android/">The steps are here</a>.</p>
         <p class="download-now-back"><a href="/" style="color: var(--secondary-accent);">Back to home</a></p>
     </main>
     ${gate ? `<script>
