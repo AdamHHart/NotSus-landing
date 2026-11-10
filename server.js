@@ -1003,11 +1003,20 @@ app.get('/download/:platform', downloadLimiter, async (req, res) => {
 
 // Health check endpoint
 app.get('/health', async (req, res) => {
+    // Whether a setting is present, never what it is. The human check went on
+    // sitting silently off after the keys were added to Render, and there was
+    // no way to tell from outside which of the three was missing.
+    const config = {
+        humanCheck: humanCheckEnabled(),
+        turnstileSiteKey: Boolean(TURNSTILE_SITE_KEY),
+        turnstileSecretKey: Boolean(TURNSTILE_SECRET_KEY),
+        jwtSecret: Boolean(process.env.JWT_SECRET),
+    };
     try {
         await getDb().query('SELECT 1');
-        res.json({ status: 'healthy' });
+        res.json({ status: 'healthy', config });
     } catch (err) {
-        res.status(503).json({ status: 'unhealthy', error: err.message });
+        res.status(503).json({ status: 'unhealthy', error: err.message, config });
     }
 });
 
