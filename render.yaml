@@ -6,6 +6,16 @@ services:
     buildCommand: npm install && node scripts/patch-gopd.js && npm rebuild bcrypt --build-from-source && npm run build:home && npm run build:seo && npm run check:home && npm run check:about && npm run check:routes && npm run check:cta && npm run check:dock && npm run check:seo
     startCommand: npm run migrate && npm start
     nodeVersion: 20.x
+    # A push to main is a deploy. Every deploy in this repository was a manual
+    # click, and the live site spent most of 10 November several commits
+    # behind: downloads kept pointing at 2.1.1 after the files had moved, and
+    # a fix for buttons that skipped the human check sat pushed but not
+    # serving. The build runs every check before it swaps, so a push that
+    # breaks something fails the build rather than reaching anyone.
+    #
+    # Render's dashboard setting wins over this file, so it has to be on in
+    # both: Settings -> Build & Deploy -> Auto-Deploy -> Yes.
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
