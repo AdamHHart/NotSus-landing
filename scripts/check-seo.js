@@ -191,6 +191,38 @@ for (const a of articles) {
   }
 }
 
+// Every script and stylesheet a real page loads carries a content hash.
+//
+// The thing this exists to stop happening again: on 2026-11-10 the live site
+// served a scripts.js from eight days earlier, with download addresses that
+// went straight to the installer, past the human check and without counting.
+// The deploy had landed. The file name had not changed, so Cloudflare and
+// every returning browser kept the copy they already had, and express.static
+// had served that copy as immutable for a year.
+{
+  const crypto = require('crypto');
+  const stamp = (assetPath) => {
+    const abs = path.join(ROOT, assetPath.replace(/^\//, ''));
+    if (!fs.existsSync(abs)) return null;
+    return crypto.createHash('sha256').update(fs.readFileSync(abs)).digest('hex').slice(0, 10);
+  };
+
+  for (const [rel] of pages) {
+    const html = read(rel);
+    const refs = [...html.matchAll(/(?:src|href)="(\/[^"?]+\.(?:js|css))(\?v=([a-f0-9]+))?"/g)];
+    for (const [, assetPath, query, got] of refs) {
+      const want = stamp(assetPath);
+      if (!want) continue; // not a file we ship
+      ok(`${rel} loads ${assetPath} with a stamp`, !!query,
+        'without one a returning visitor keeps the copy they already have');
+      if (query) {
+        ok(`${rel}'s stamp for ${assetPath} matches the file`, got === want,
+          `page says ${got}, the file hashes to ${want}; run npm run build:seo`);
+      }
+    }
+  }
+}
+
 // robots.txt.
 {
   const file = path.join(ROOT, 'robots.txt');

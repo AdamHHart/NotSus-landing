@@ -142,12 +142,57 @@ function addFooterNav(html, selfPath) {
   return html.slice(0, at) + nav + html.slice(at);
 }
 
+// ------------------------------------------------------ cache-busting stamps
+
+// Every script and stylesheet a page loads gets ?v=<hash of its contents>.
+//
+// Without it a returning visitor keeps the copy they already have. On
+// 2026-11-07 the navigation was fixed three times and none of it reached
+// Adam's browser, because scripts/site-chrome.js was being served
+// immutable for a year. server.js was corrected that day, but the file name
+// never changed, so Cloudflare and every browser that already held it went
+// on serving the old one: on 2026-11-10 the edge was still handing out a
+// scripts.js from eight days earlier, with the download addresses that
+// skipped the human check.
+//
+// A new hash is a new address, which no cache can answer from an old copy.
+// server.js serves a stamped address as immutable, which is then correct:
+// that exact content really never changes.
+
+const crypto = require('crypto');
+const stampCache = new Map();
+
+function stampOf(assetPath) {
+  if (stampCache.has(assetPath)) return stampCache.get(assetPath);
+  const abs = path.join(ROOT, assetPath.replace(/^\//, ''));
+  let stamp = null;
+  if (fs.existsSync(abs) && fs.statSync(abs).isFile()) {
+    stamp = crypto.createHash('sha256')
+      .update(fs.readFileSync(abs)).digest('hex').slice(0, 10);
+  }
+  stampCache.set(assetPath, stamp);
+  return stamp;
+}
+
+function stampAssets(html) {
+  // Both the unstamped form and one carrying an old hash, so a changed file
+  // gets a new address rather than keeping a stale one.
+  return html.replace(
+    /((?:src|href)=")(\/[^"?]+\.(?:js|css))(\?v=[a-f0-9]+)?(")/g,
+    (whole, before, assetPath, _old, after) => {
+      const stamp = stampOf(assetPath);
+      if (!stamp) return whole; // not a file we ship; leave it alone
+      return `${before}${assetPath}?v=${stamp}${after}`;
+    });
+}
+
 // --------------------------------------------------------------- the pages
 
 let touched = 0;
 const urls = [];
 
 function write(rel, html, before) {
+  html = stampAssets(html);
   if (html !== before) { fs.writeFileSync(path.join(ROOT, rel), html); touched++; }
 }
 
