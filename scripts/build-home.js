@@ -205,7 +205,7 @@ const html = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NotSus.net - ${total} free tools and libraries for kids</title>
-<meta name="description" content="${total} free websites for children to learn, make and look things up. Chosen by hand, no ads to click through, nothing to sign up for. The same list that opens inside the NotSus browser.">
+<meta name="description" content="${total} free websites for children to learn, make and look things up. Hand picked, with no ads to click through and nothing to sign up for.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:title" content="NotSus.net - free tools and libraries for kids">

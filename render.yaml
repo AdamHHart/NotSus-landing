@@ -3,7 +3,7 @@ services:
   - type: web
     name: notsus-web
     env: node
-    buildCommand: npm install && node scripts/patch-gopd.js && npm rebuild bcrypt --build-from-source && npm run build:home && npm run check:home && npm run check:about && npm run check:routes && npm run check:cta && npm run check:dock
+    buildCommand: npm install && node scripts/patch-gopd.js && npm rebuild bcrypt --build-from-source && npm run build:home && npm run build:seo && npm run check:home && npm run check:about && npm run check:routes && npm run check:cta && npm run check:dock && npm run check:seo
     startCommand: npm run migrate && npm start
     nodeVersion: 20.x
     envVars:

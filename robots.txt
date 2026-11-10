@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Nothing here is for a crawler, and /admin holds a dashboard.
+Disallow: /admin
+Disallow: /api/
+Disallow: /download/
+
+Sitemap: https://www.notsus.net/sitemap.xml

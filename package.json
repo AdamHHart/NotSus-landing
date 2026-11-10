@@ -12,13 +12,15 @@
     "build:home": "node scripts/build-home.js",
     "sync:catalog": "bash scripts/sync-catalog.sh",
     "check:home": "node scripts/check-home.js",
-    "prestart": "node scripts/build-home.js || echo \"build-home failed; serving the committed home/index.html\"",
+    "prestart": "node scripts/build-home.js && node scripts/build-seo.js || echo \"build failed; serving the committed files\"",
     "fetch:icons": "node scripts/fetch-icons.js",
     "preview:home": "node scripts/preview-home.js",
     "check:routes": "node scripts/check-routes.js",
     "check:about": "node scripts/check-about.js",
     "check:dock": "node scripts/check-dock.js",
-    "check:cta": "node scripts/check-cta.js"
+    "check:cta": "node scripts/check-cta.js",
+    "build:seo": "node scripts/build-seo.js",
+    "check:seo": "node scripts/check-seo.js"
   },
   "engines": {
     "node": "20.x"

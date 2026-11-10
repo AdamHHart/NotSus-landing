@@ -1,0 +1,96 @@
+{
+  "_about": [
+    "Titles and descriptions, per page. scripts/build-seo.js writes them into",
+    "the HTML; this is the file to edit, not the pages.",
+    "",
+    "A title is what Google prints as the blue link, so it is under 60",
+    "characters and every one is different. All nine posts shared the single",
+    "title 'NotSus.net - The Better Browser for Kids' until 2026-11-10, which",
+    "is why none of them ranked: to a search engine they read as nine copies",
+    "of one page.",
+    "",
+    "A description is the grey text under the link. Google ignores it when it",
+    "does not match the search, so these say what the piece actually says",
+    "rather than selling the browser. Around 150 characters, because that is",
+    "roughly where Google stops printing."
+  ],
+
+  "site": "https://www.notsus.net",
+
+  "pages": {
+    "index.html": {
+      "path": "/about",
+      "title": "About NotSus: a custom internet for your kids",
+      "description": "Internet media is built to hold your child's attention. NotSus is a browser with no feed and nothing to sell them, built as a library, a school and a workshop."
+    },
+    "blog/index.html": {
+      "path": "/blog/",
+      "title": "The NotSus Blog: children, screens and attention",
+      "description": "Writing for parents on how screens are built to hold a child's attention, and what to do about it at home. Nine articles, no sign up."
+    },
+    "podcast/index.html": {
+      "path": "/podcast/",
+      "title": "The NotSus Podcast: growing up online",
+      "description": "Conversations with kids, parents and teachers about social media, AI and endless entertainment, and what it takes to raise a capable adult."
+    },
+    "docs/PrivacyPolicy.html": {
+      "path": "/privacy",
+      "title": "Privacy Policy | NotSus",
+      "description": "What NotSus collects, what it never collects, and how a parent can see or delete any of it. Written for families in British Columbia and across Canada."
+    },
+    "docs/TandC.html": {
+      "path": "/terms",
+      "title": "Terms of Service | NotSus",
+      "description": "The terms for parents and guardians using NotSus, in plain language. Governed by the laws of British Columbia."
+    },
+    "delete-account/index.html": {
+      "path": "/delete-account/",
+      "title": "Delete your NotSus account | NotSus",
+      "description": "How to delete your family account and everything in it, in the app or by writing to us. What goes straight away, and what is kept."
+    },
+    "android/index.html": {
+      "path": "/android",
+      "title": "NotSus for Android tablets | NotSus",
+      "description": "Get NotSus on an Android tablet before it is on the Play Store. Tell us your device and we will send you the build and the setup steps."
+    }
+  },
+
+  "posts": {
+    "90s-computer-experience-for-kids": {
+      "title": "The 90s Computer Experience for Kids | NotSus",
+      "description": "Computers used to run out of things to do, so kids got bored and went outside. How to give your child that same relationship with a screen."
+    },
+    "Why-Kid-Safe-Search-Engines-Still-Fail-the-Creativity-Test": {
+      "title": "Why Kid-Safe Search Engines Fail the Creativity Test",
+      "description": "Filters block the bad things and stop there. What a child still misses when safety is the only job a search engine was built to do."
+    },
+    "adhd-and-the-attention-economy": {
+      "title": "ADHD and the Attention Economy: an unfair fight",
+      "description": "Infinite scroll and variable rewards are hard for any child to resist. For a child with ADHD they turn a difficult fight into a biological one."
+    },
+    "attention-economy-and-brainrot": {
+      "title": "Is Your Child Consuming Brainrot? | NotSus",
+      "description": "Your child already knows those repetitive videos are meaningless. What they cost is the patience to sit with something slower. A guide for parents."
+    },
+    "dopamine-loops": {
+      "title": "How Dopamine Loops and Screen Addiction Work",
+      "description": "Your child locks in, then melts down the moment the tablet goes off. How that loop is built, and why it is not a failure of your parenting."
+    },
+    "from-minecraft-to-masterpiece": {
+      "title": "From Minecraft to Masterpiece | NotSus",
+      "description": "A child deep in Minecraft or Roblox is showing you something worth building on. How to turn hours in a game into skills that carry outside it."
+    },
+    "how-do-i-get-my-kids-off-screens": {
+      "title": "How Do I Get My Kids Off Screens? | NotSus",
+      "description": "Counting down from five and bracing for the meltdown. Why handing back a tablet is so hard, and what to change so your child puts it down."
+    },
+    "screen-quality-vs-time": {
+      "title": "Screen Quality Matters More Than Screen Time",
+      "description": "An hour coding and an hour scrolling both read as one hour on a timer. A better question to ask about what your child does on a screen."
+    },
+    "shifting-from-lockdown-to-guardrails": {
+      "title": "Shifting from Lockdown to Guardrails | NotSus",
+      "description": "Monitoring apps hold for a few days, then your child finds the way around. Guardrails last longer because they do not have to be fought."
+    }
+  }
+}
