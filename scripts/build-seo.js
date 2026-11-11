@@ -119,6 +119,7 @@ const FOOTER_LINKS = [
   ['/resources', 'Resources'],
   ['/podcast/', 'Radio'],
   ['/blog/', 'Blog'],
+  ['/faq', 'FAQ'],
   ['/privacy', 'Privacy Policy'],
   ['/terms', 'Terms of Service'],
   ['/delete-account/', 'Delete your account'],

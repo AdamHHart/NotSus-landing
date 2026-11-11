@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids safe browser: common questions | NotSus</title>
+    <meta name="description" content="Answers about NotSus, the safe browser for kids: how it blocks websites, safe search, screen time limits, the devices it runs on, and the price.">
+    <link rel="stylesheet" href="/styles.css?v=f74172b0b2">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <style>
+        :root {
+            --ns-ground: #1a1a1a;
+            --ns-surface: #2d2a2a;
+            --ns-surface-raised: #3a3737;
+            --ns-primary: #00A86B;
+            --ns-primary-hi: #1fc988;
+            --ns-cream: #fff3b1;
+            --ns-text: #ffffff;
+            --ns-text-2: #e0e0e0;
+            --ns-muted: #989797;
+            --ns-border: rgba(255, 255, 255, 0.2);
+        }
+        body > header { background: var(--ns-ground) !important; border-bottom: 0 !important; }
+
+        .faq-main {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 7rem 1.25rem 5rem;
+            color: var(--ns-text);
+        }
+        .faq-main h1 {
+            font-size: 2rem;
+            line-height: 1.2;
+            margin: 0 0 0.5rem;
+            color: var(--ns-text);
+        }
+        .faq-lead {
+            color: var(--ns-text-2);
+            font-size: 1.05rem;
+            margin: 0 0 2.5rem;
+        }
+        .faq-item {
+            border: 1px solid var(--ns-border);
+            border-radius: 14px;
+            background: var(--ns-surface);
+            margin: 0 0 0.9rem;
+            overflow: hidden;
+        }
+        .faq-item h2 {
+            margin: 0;
+            font-size: 1.15rem;
+        }
+        .faq-item h2 button {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: 0;
+            color: var(--ns-text);
+            font: inherit;
+            font-weight: 600;
+            padding: 1.1rem 1.25rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+        }
+        .faq-item h2 button:hover { color: var(--ns-primary-hi); }
+        .faq-item .faq-sign { color: var(--ns-primary); flex: 0 0 auto; font-weight: 700; }
+        .faq-answer {
+            padding: 0 1.25rem 1.2rem;
+            color: var(--ns-text-2);
+            line-height: 1.6;
+        }
+        .faq-answer p { margin: 0 0 0.75rem; }
+        .faq-answer p:last-child { margin-bottom: 0; }
+        .faq-cta {
+            margin: 2.5rem 0 0;
+            padding: 1.5rem;
+            border: 1px solid var(--ns-border);
+            border-radius: 14px;
+            background: var(--ns-surface-raised);
+            text-align: center;
+        }
+        .faq-cta a {
+            display: inline-block;
+            margin-top: 0.75rem;
+            padding: 0.7rem 1.4rem;
+            border-radius: 999px;
+            background: var(--ns-primary);
+            color: #0a0a0a;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .faq-cta a:hover { background: var(--ns-primary-hi); }
+
+        /* No JavaScript: show every answer open, so a crawler and a reader both
+           get the full text. The script below collapses them for a visitor. */
+        .faq-answer { display: block; }
+        html.faq-js .faq-answer { display: none; }
+        html.faq-js .faq-item.is-open .faq-answer { display: block; }
+    </style>
+    <link rel="canonical" href="https://www.notsus.net/faq">
+    <meta property="og:title" content="Kids safe browser: common questions | NotSus">
+    <meta property="og:description" content="Answers about NotSus, the safe browser for kids: how it blocks websites, safe search, screen time limits, the devices it runs on, and the price.">
+    <meta property="og:url" content="https://www.notsus.net/faq">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://www.notsus.net/public/logo-120.png">
+    <meta name="twitter:card" content="summary">
+</head>
+<body>
+    <main class="faq-main">
+        <h1>Questions parents ask about NotSus</h1>
+        <p class="faq-lead">NotSus is a safe browser for kids. Here is how it works, what it costs, and the devices it runs on.</p>
+
+        <div class="faq-item">
+            <h2><button type="button" aria-expanded="true">Is NotSus a safe browser for kids?<span class="faq-sign" aria-hidden="true">+</span></button></h2>
+            <div class="faq-answer">
+                <p>Yes. NotSus only opens websites that are on an approved list, so the rest of the internet does not load. There are no ads and nothing to sign up for. Safe search is locked on, so kids cannot search their way to something they should not see.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <h2><button type="button" aria-expanded="true">How does NotSus block websites?<span class="faq-sign" aria-hidden="true">+</span></button></h2>
+            <div class="faq-answer">
+                <p>It works the opposite way to a normal browser. Instead of trying to block bad sites one at a time, which never keeps up, NotSus only lets your kids open sites that are on the allowed list. Everything else simply does not open. On the custom version, parents can add or remove sites themselves.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <h2><button type="button" aria-expanded="true">Does NotSus have safe search?<span class="faq-sign" aria-hidden="true">+</span></button></h2>
+            <div class="faq-answer">
+                <p>Yes. Safe search is turned on and locked, so your child cannot switch it off. Searches run through kid safe search, not the open web.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <h2><button type="button" aria-expanded="true">Can I set screen time limits?<span class="faq-sign" aria-hidden="true">+</span></button></h2>
+            <div class="faq-answer">
+                <p>Yes, on the custom kids browser. You choose how long your kids can use it, and you and your kids can both see how their time was spent.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <h2><button type="button" aria-expanded="true">Which devices does it work on?<span class="faq-sign" aria-hidden="true">+</span></button></h2>
+            <div class="faq-answer">
+                <p>NotSus runs on Mac, Windows, and Linux computers today. iPad and Android tablets are in early access: you can download the Android app now, and you can ask us for iPad access at contact@notsus.net. The tablet apps are coming to the app stores soon.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <h2><button type="button" aria-expanded="true">Is it free?<span class="faq-sign" aria-hidden="true">+</span></button></h2>
+            <div class="faq-answer">
+                <p>The basic kids browser is free. Your kids can browse educational tools and sites as they wish, and we do not collect any data.</p>
+                <p>The custom kids browser lets parents choose which websites are allowed, set time limits, and lets you and your kids track usage and what they accomplish. It is $7 a month, or $80 for life for early users.</p>
+            </div>
+        </div>
+
+        <div class="faq-cta">
+            <p>Ready to try it?</p>
+            <a href="/downloads">Download NotSus</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-tagline">The better browser for kids.</div>
+            <div class="footer-copyright">© 2026 NotSus Education Inc. All rights reserved.</div>
+        </div>
+    <nav class="site-footer-nav" aria-label="Site"><a href="/">Free websites for kids</a><a href="/about">About NotSus</a><a href="/downloads">Download the browser</a><a href="/resources">Resources</a><a href="/podcast/">Radio</a><a href="/blog/">Blog</a><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Service</a><a href="/delete-account/">Delete your account</a></nav></footer>
+
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is NotSus a safe browser for kids?","acceptedAnswer":{"@type":"Answer","text":"Yes. NotSus only opens websites that are on an approved list, so the rest of the internet does not load. There are no ads and nothing to sign up for. Safe search is locked on, so kids cannot search their way to something they should not see."}},{"@type":"Question","name":"How does NotSus block websites?","acceptedAnswer":{"@type":"Answer","text":"It works the opposite way to a normal browser. Instead of trying to block bad sites one at a time, which never keeps up, NotSus only lets your kids open sites that are on the allowed list. Everything else simply does not open. On the custom version, parents can add or remove sites themselves."}},{"@type":"Question","name":"Does NotSus have safe search?","acceptedAnswer":{"@type":"Answer","text":"Yes. Safe search is turned on and locked, so your child cannot switch it off. Searches run through kid safe search, not the open web."}},{"@type":"Question","name":"Can I set screen time limits?","acceptedAnswer":{"@type":"Answer","text":"Yes, on the custom kids browser. You choose how long your kids can use it, and you and your kids can both see how their time was spent."}},{"@type":"Question","name":"Which devices does it work on?","acceptedAnswer":{"@type":"Answer","text":"NotSus runs on Mac, Windows, and Linux computers today. iPad and Android tablets are in early access: you can download the Android app now, and you can ask us for iPad access at contact@notsus.net. The tablet apps are coming to the app stores soon."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"The basic kids browser is free. Your kids can browse educational tools and sites as they wish, and we do not collect any data. The custom kids browser lets parents choose which websites are allowed, set time limits, and lets you and your kids track usage and what they accomplish. It is $7 a month, or $80 for life for early users."}}]}</script>
+
+    <script>
+        // Progressive enhancement: collapse the answers only when JS runs, so a
+        // crawler and a no-script reader still get the full text.
+        (function () {
+            document.documentElement.classList.add('faq-js');
+            var items = document.querySelectorAll('.faq-item');
+            items.forEach(function (item, i) {
+                var btn = item.querySelector('button');
+                var sign = item.querySelector('.faq-sign');
+                var open = i === 0;
+                var set = function (state) {
+                    open = state;
+                    item.classList.toggle('is-open', open);
+                    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    if (sign) sign.textContent = open ? '−' : '+';
+                };
+                set(open);
+                btn.addEventListener('click', function () { set(!open); });
+            });
+        })();
+    </script>
+
+    <script src="/scripts/site-chrome.js?v=be4c7f0fca"></script>
+    <script src="/scripts.js?v=c4d1daf2db"></script>
+</body>
+</html>

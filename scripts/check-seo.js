@@ -83,7 +83,7 @@ for (const [rel, urlPath] of pages) {
 // widget is JavaScript. This is the list a crawler reads.
 {
   const CANON = ['/', '/about', '/downloads', '/resources', '/podcast/', '/blog/',
-    '/privacy', '/terms', '/delete-account/'];
+    '/faq', '/privacy', '/terms', '/delete-account/'];
   for (const [rel, urlPath] of pages) {
     if (rel === 'home/index.html') continue; // it is generated with its own
     const html = read(rel);

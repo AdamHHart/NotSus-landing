@@ -249,6 +249,10 @@ app.get('/about', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+app.get('/faq', (req, res) => {
+    res.sendFile(path.join(__dirname, 'faq.html'));
+});
+
 
 
 app.get('/blog', (req, res) => {

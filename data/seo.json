@@ -21,6 +21,11 @@
       "title": "About NotSus: a custom internet for your kids",
       "description": "Internet media is built to hold your child's attention. NotSus is a browser with no feed and nothing to sell them, built as a library, a school and a workshop."
     },
+    "faq.html": {
+      "path": "/faq",
+      "title": "Kids safe browser: common questions | NotSus",
+      "description": "Answers about NotSus, the safe browser for kids: how it blocks websites, safe search, screen time limits, the devices it runs on, and the price."
+    },
     "blog/index.html": {
       "path": "/blog/",
       "title": "The NotSus Blog: children, screens and attention",
