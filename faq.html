@@ -11,55 +11,65 @@
     <style>
         :root {
             --ns-ground: #1a1a1a;
-            --ns-surface: #2d2a2a;
-            --ns-surface-raised: #3a3737;
+            --ns-surface: #262323;
+            --ns-raised: #332f2f;
             --ns-primary: #00A86B;
             --ns-primary-hi: #1fc988;
             --ns-cream: #fff3b1;
             --ns-text: #ffffff;
-            --ns-text-2: #e0e0e0;
+            --ns-text-2: #d8d6d6;
             --ns-muted: #989797;
-            --ns-border: rgba(255, 255, 255, 0.2);
+            --ns-border: rgba(255, 255, 255, 0.14);
+            --ns-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
+        html, body { background: var(--ns-ground); }
         body > header { background: var(--ns-ground) !important; border-bottom: 0 !important; }
 
         .faq-main {
-            max-width: 760px;
+            max-width: 720px;
             margin: 0 auto;
-            padding: 7rem 1.25rem 5rem;
+            padding: 6.5rem 1.25rem 5rem;
+            font-family: var(--ns-sans);
             color: var(--ns-text);
         }
-        .faq-main h1 {
-            font-size: 2rem;
-            line-height: 1.2;
-            margin: 0 0 0.5rem;
-            color: var(--ns-text);
+        .faq-head { text-align: center; margin: 0 0 2.75rem; }
+        .faq-head h1 {
+            font-family: var(--ns-sans);
+            font-size: clamp(1.7rem, 5vw, 2.3rem);
+            line-height: 1.15;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            margin: 0 0 0.6rem;
+            color: var(--ns-cream);
         }
         .faq-lead {
+            font-family: var(--ns-sans);
             color: var(--ns-text-2);
             font-size: 1.05rem;
-            margin: 0 0 2.5rem;
+            line-height: 1.5;
+            margin: 0 auto;
+            max-width: 34rem;
         }
         .faq-item {
             border: 1px solid var(--ns-border);
-            border-radius: 14px;
+            border-radius: 16px;
             background: var(--ns-surface);
-            margin: 0 0 0.9rem;
+            margin: 0 0 0.75rem;
             overflow: hidden;
+            transition: border-color 0.15s, background 0.15s;
         }
-        .faq-item h2 {
-            margin: 0;
-            font-size: 1.15rem;
-        }
+        .faq-item.is-open { border-color: color-mix(in srgb, var(--ns-primary) 45%, transparent); background: var(--ns-raised); }
+        .faq-item h2 { margin: 0; font-size: 1.08rem; }
         .faq-item h2 button {
             width: 100%;
             text-align: left;
             background: none;
             border: 0;
             color: var(--ns-text);
-            font: inherit;
-            font-weight: 600;
-            padding: 1.1rem 1.25rem;
+            font-family: var(--ns-sans);
+            font-size: 1.08rem;
+            font-weight: 650;
+            padding: 1.15rem 1.3rem;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
@@ -67,36 +77,51 @@
             align-items: center;
         }
         .faq-item h2 button:hover { color: var(--ns-primary-hi); }
-        .faq-item .faq-sign { color: var(--ns-primary); flex: 0 0 auto; font-weight: 700; }
-        .faq-answer {
-            padding: 0 1.25rem 1.2rem;
-            color: var(--ns-text-2);
-            line-height: 1.6;
+        .faq-sign {
+            color: var(--ns-primary);
+            flex: 0 0 auto;
+            font-size: 1.4rem;
+            line-height: 1;
+            font-weight: 400;
         }
-        .faq-answer p { margin: 0 0 0.75rem; }
+        .faq-answer { padding: 0 1.3rem 1.25rem; }
+        .faq-answer p {
+            font-family: var(--ns-sans);
+            color: var(--ns-text-2);
+            font-size: 1rem;
+            line-height: 1.65;
+            margin: 0 0 0.8rem;
+        }
         .faq-answer p:last-child { margin-bottom: 0; }
+
         .faq-cta {
-            margin: 2.5rem 0 0;
-            padding: 1.5rem;
+            margin: 2.75rem 0 0;
+            padding: 1.75rem 1.5rem;
             border: 1px solid var(--ns-border);
-            border-radius: 14px;
-            background: var(--ns-surface-raised);
+            border-radius: 16px;
+            background: var(--ns-surface);
             text-align: center;
+        }
+        .faq-cta p {
+            font-family: var(--ns-sans);
+            color: var(--ns-text);
+            font-size: 1.1rem;
+            font-weight: 650;
+            margin: 0 0 1rem;
         }
         .faq-cta a {
             display: inline-block;
-            margin-top: 0.75rem;
-            padding: 0.7rem 1.4rem;
+            padding: 0.75rem 1.6rem;
             border-radius: 999px;
             background: var(--ns-primary);
             color: #0a0a0a;
-            font-weight: 700;
+            font-family: var(--ns-sans);
+            font-weight: 750;
             text-decoration: none;
+            transition: background 0.15s, transform 0.15s;
         }
-        .faq-cta a:hover { background: var(--ns-primary-hi); }
+        .faq-cta a:hover { background: var(--ns-primary-hi); transform: translateY(-1px); }
 
-        /* No JavaScript: show every answer open, so a crawler and a reader both
-           get the full text. The script below collapses them for a visitor. */
         .faq-answer { display: block; }
         html.faq-js .faq-answer { display: none; }
         html.faq-js .faq-item.is-open .faq-answer { display: block; }
@@ -111,8 +136,10 @@
 </head>
 <body>
     <main class="faq-main">
-        <h1>Questions parents ask about NotSus</h1>
-        <p class="faq-lead">NotSus is a safe browser for kids. Here is how it works, what it costs, and the devices it runs on.</p>
+        <div class="faq-head">
+            <h1>Questions parents ask about NotSus</h1>
+            <p class="faq-lead">NotSus is a safe browser for kids. Here is how it works, what it costs, and the devices it runs on.</p>
+        </div>
 
         <div class="faq-item">
             <h2><button type="button" aria-expanded="true">Is NotSus a safe browser for kids?<span class="faq-sign" aria-hidden="true">+</span></button></h2>

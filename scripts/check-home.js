@@ -240,7 +240,7 @@ for (const label of ['About', 'Blog', 'Radio']) {
 // Tools for Kids and Resources were dropped on 2026-11-07: the home page is
 // the tools page now, and Resources pointed at an anchor rather than a page.
 // Adam's order, 2026-11-07.
-const FOOTER_ORDER = ['About', 'Download Browser', 'Contact Us', 'Resources', 'Radio', 'Blog'];
+const FOOTER_ORDER = ['About', 'Download Browser', 'Contact Us', 'Resources', 'Radio', 'Blog', 'FAQ'];
 const footerBlock = html.slice(html.indexOf('aria-label="Site"'), html.indexOf('aria-label="Legal"'));
 const footerLabels = (footerBlock.match(/>([^<]+)<\/a>/g) || []).map((m) => m.slice(1, -4));
 check(`the footer reads ${FOOTER_ORDER.join(', ')}`,

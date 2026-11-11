@@ -207,11 +207,11 @@ const home = fs.readFileSync(path.join(ROOT, 'home', 'index.html'), 'utf8');
 
 console.log('The footer, and the widget each item opens');
 
-const ITEMS = ['About', 'Download', 'Contact', 'Resources', 'Radio', 'Blog', 'Follow', 'Legal'];
+const ITEMS = ['About', 'Download', 'Contact', 'Resources', 'Radio', 'Blog', 'FAQ', 'Follow', 'Legal'];
 // Every page a footer item can send somebody to with no JavaScript, checked
 // against scripts/check-routes.js and against the live site.
 const DESTINATIONS = ['/about', '/downloads', 'mailto:contact@notsus.net', '/resources',
-  '/podcast/', '/blog/', '/privacy', '/terms', '/delete-account/'];
+  '/podcast/', '/blog/', '/faq', '/privacy', '/terms', '/delete-account/'];
 
 for (const [label, withCard] of [['home page', true], ['every other page', false]]) {
   const doc = run(dockJs, withCard);
@@ -494,7 +494,7 @@ for (const [label, withCard] of [['home page', true], ['every other page', false
   // noticed until somebody clicked one.
   {
     const ROUTES = ['/about', '/downloads', '/resources', '/privacy', '/terms',
-      '/delete-account/', '/podcast/', '/blog/'];
+      '/delete-account/', '/podcast/', '/blog/', '/faq'];
     for (const a of links) {
       const key = a.getAttribute('data-panel');
       const panel = bodyOf(key);

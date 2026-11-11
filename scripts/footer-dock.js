@@ -129,6 +129,25 @@
         }
     ];
 
+    // The same six answers as the /faq page, as folds in the widget.
+
+    var FAQ = [
+
+        { q: 'Is NotSus a safe browser for kids?', a: ['Yes. NotSus only opens websites that are on an approved list, so the rest of the internet does not load. There are no ads and nothing to sign up for. Safe search is locked on, so kids cannot search their way to something they should not see.'] },
+
+        { q: 'How does NotSus block websites?', a: ['It works the opposite way to a normal browser. Instead of trying to block bad sites one at a time, which never keeps up, NotSus only lets your kids open sites that are on the allowed list. Everything else simply does not open. On the custom version, parents can add or remove sites themselves.'] },
+
+        { q: 'Does NotSus have safe search?', a: ['Yes. Safe search is turned on and locked, so your child cannot switch it off. Searches run through kid safe search, not the open web.'] },
+
+        { q: 'Can I set screen time limits?', a: ['Yes, on the custom kids browser. You choose how long your kids can use it, and you and your kids can both see how their time was spent.'] },
+
+        { q: 'Which devices does it work on?', a: ['NotSus runs on Mac, Windows, and Linux computers today. iPad and Android tablets are in early access: you can download the Android app now, and you can ask us for iPad access at contact@notsus.net. The tablet apps are coming to the app stores soon.'] },
+
+        { q: 'Is it free?', a: ['The basic kids browser is free. Your kids can browse educational tools and sites as they wish, and we do not collect any data.', 'The custom kids browser lets parents choose which websites are allowed, set time limits, and lets you and your kids track usage and what they accomplish. It is $7 a month, or $80 for life for early users.'] }
+
+    ];
+
+
     var ADDRESS = '© 2026 NotSus Education Inc. All rights reserved. 2015 Main Street, Vancouver, BC, Canada.';
 
     /**
@@ -169,6 +188,7 @@
             key: 'blog', label: 'Blog', href: '/blog/', title: 'Blog',
             articles: true
         },
+        { key: 'faq', label: 'FAQ', href: '/faq', title: 'FAQ', faq: true },
         { key: 'follow', label: 'Follow', href: SOCIAL[0].url, title: 'Follow', pills: SOCIAL },
         { key: 'legal', label: 'Legal', href: '/privacy', title: 'Legal', legal: true, copy: ADDRESS }
     ];
@@ -444,6 +464,25 @@
                 if (shown < all.length) body.appendChild(more);
             }, 'ns-episodes');
         }
+
+        // The FAQ, as folds, so it reads like About and Legal and wears the
+
+        // same widget styling instead of a page of its own.
+
+        if (item.faq) {
+
+            FAQ.forEach(function (qa) {
+
+                var f = fold(qa.q);
+
+                qa.a.forEach(function (t) { f.body.appendChild(el('p', 'ns-small', t)); });
+
+                body.appendChild(f);
+
+            });
+
+        }
+
 
         // The policies themselves, in the widget. Each one opens into its own
         // numbered sections, which is how both documents are written, and the

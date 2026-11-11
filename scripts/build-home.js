@@ -193,7 +193,7 @@ const total = catalog.apps.length;
 // Adam first, then the menu's own five, in the order site-chrome.js keeps
 // them. Reading that file rather than retyping it means the footer and the
 // menu cannot fall out of step.
-const footerNav = [footerExtra, ...nav]
+const footerNav = [footerExtra, ...nav, { href: '/faq', label: 'FAQ' }]
   .map(({ href, label }) => `      <a href="${esc(href)}">${esc(label)}</a>`)
   .join('\n');
 const footerSocial = social
