@@ -204,12 +204,12 @@ const html = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NotSus.net - ${total} free tools and libraries for kids</title>
-<meta name="description" content="${total} free websites for children to learn, make and look things up. Hand picked, with no ads to click through and nothing to sign up for.">
+<title>Safe browser for kids, free with no ads | NotSus</title>
+<meta name="description" content="NotSus is a free, safe web browser for kids. It blocks the open internet, limits screen time, and opens ${total} hand-picked sites with no ads.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<meta property="og:title" content="NotSus.net - free tools and libraries for kids">
-<meta property="og:description" content="${total} hand-picked free websites for children. Search by what you want to do.">
+<meta property="og:title" content="A safe browser for kids | NotSus">
+<meta property="og:description" content="Free kids browser with website blocking, safe search and screen time limits. ${total} hand-picked sites, no ads.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.notsus.net/">
 <link rel="stylesheet" href="${stamp('home/home.css')}">

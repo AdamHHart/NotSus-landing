@@ -251,6 +251,18 @@ for (const post of articles) {
       ],
     },
     { '@context': 'https://schema.org', '@type': 'WebSite', name: 'NotSus.net', url: SITE },
+      {
+        '@context': 'https://schema.org', '@type': 'SoftwareApplication',
+        name: 'NotSus', applicationCategory: 'BrowserApplication',
+        operatingSystem: 'Windows, macOS, Linux, iPadOS, Android',
+        description: 'A safe web browser for kids. Parental controls that block the open '
+          + 'internet, a locked safe search, and screen time limits. Free.',
+        url: SITE,
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        publisher: { '@type': 'Organization', name: 'NotSus Education Inc.' },
+        keywords: 'kids browser, safe browser for kids, parental controls, '
+          + 'website blocker, kid safe search, family browser, screen time for kids',
+      },
   ];
   html = setTag(html, /<script type="application\/ld\+json">\[[\s\S]*?<\/script>/,
     `<script type="application/ld+json">${JSON.stringify(ld)}</script>`);
