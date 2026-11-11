@@ -13,6 +13,7 @@ http.createServer((req, res) => {
   let p = decodeURIComponent(req.url.split('?')[0]);
   if (p === '/') p = '/home/index.html';
   if (p === '/about') p = '/index.html';
+  if (p === '/faq') p = '/faq.html';
   if (p === '/privacy') p = '/docs/PrivacyPolicy.html';
   if (p === '/terms') p = '/docs/TandC.html';
   if (p.endsWith('/')) p += 'index.html';
