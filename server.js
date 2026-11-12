@@ -539,52 +539,79 @@ app.get('/api/admin/feedback', lazyAuthenticateToken, lazyRequireAdmin, async (r
 });
 
 // NEW: Admin endpoint to view download statistics
+// A rough browser and OS from a user-agent string, for the downloads table.
+// Not exhaustive: enough to tell a parent on Windows from one on a Mac.
+function parseUserAgent(ua) {
+    ua = ua || '';
+    let os = 'Unknown';
+    if (/Windows/i.test(ua)) os = 'Windows';
+    else if (/Mac OS X|Macintosh/i.test(ua)) os = 'macOS';
+    else if (/Android/i.test(ua)) os = 'Android';
+    else if (/iPhone|iPad|iPod/i.test(ua)) os = 'iOS';
+    else if (/Linux/i.test(ua)) os = 'Linux';
+    let browser = 'Unknown';
+    if (/Edg\//i.test(ua)) browser = 'Edge';
+    else if (/OPR\/|Opera/i.test(ua)) browser = 'Opera';
+    else if (/Chrome\//i.test(ua)) browser = 'Chrome';
+    else if (/Firefox\//i.test(ua)) browser = 'Firefox';
+    else if (/Safari\//i.test(ua)) browser = 'Safari';
+    return { os, browser };
+}
+
 app.get('/api/admin/downloads', lazyAuthenticateToken, lazyRequireAdmin, async (req, res) => {
+    // Reads app_downloads, not download_tracking. Since the email gate was
+    // removed on 2026-11-06, almost every download is anonymous and lands only
+    // in app_downloads; download_tracking now holds just the rare tokened ones.
+    // The old dashboard read download_tracking and so showed almost nothing.
     try {
-        // Get download statistics
-        const statsQuery = `
-            SELECT 
-                platform,
-                action,
-                COUNT(*) as count,
-                MAX(created_at) as last_attempt
-            FROM download_tracking
-            GROUP BY platform, action
-            ORDER BY platform, action
-        `;
-
-        const statsResult = await getDb().query(statsQuery);
-
-        // Get recent download attempts
-        const recentQuery = `
+        const byPlatform = await getDb().query(`
+            SELECT platform, COUNT(*)::int AS count, MAX(download_time) AS last_download
+            FROM app_downloads
+            GROUP BY platform
+            ORDER BY count DESC
+        `);
+        const totals = await getDb().query(`
             SELECT
-                id,
-                email,
-                platform,
-                action,
-                browser_name,
-                browser_version,
-                os_name,
-                os_version,
-                created_at
-            FROM download_tracking
-            ORDER BY created_at DESC
+                COUNT(*)::int AS total,
+                COUNT(*) FILTER (WHERE download_time >= CURRENT_DATE)::int AS today,
+                COUNT(*) FILTER (WHERE download_time >= CURRENT_DATE - INTERVAL '7 days')::int AS week
+            FROM app_downloads
+        `);
+        const recent = await getDb().query(`
+            SELECT id, platform, email, download_time AS created_at, user_agent, ip_address
+            FROM app_downloads
+            ORDER BY download_time DESC
             LIMIT 50
-        `;
+        `);
 
-        const recentResult = await getDb().query(recentQuery);
+        const recentRows = recent.rows.map((r) => {
+            const ua = parseUserAgent(r.user_agent);
+            return {
+                id: r.id,
+                email: r.email,
+                platform: r.platform,
+                action: 'download',
+                created_at: r.created_at,
+                browser_name: ua.browser,
+                browser_version: '',
+                os_name: ua.os,
+                os_version: '',
+            };
+        });
 
         res.json({
             success: true,
-            stats: statsResult.rows,
-            recent: recentResult.rows
+            stats: {
+                total: totals.rows[0].total,
+                today: totals.rows[0].today,
+                week: totals.rows[0].week,
+                byPlatform: byPlatform.rows,
+            },
+            recent: recentRows,
         });
     } catch (err) {
         console.error('Error fetching download stats:', err);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch download statistics'
-        });
+        res.status(500).json({ success: false, error: 'Failed to fetch download statistics' });
     }
 });
 
@@ -988,9 +1015,9 @@ app.get('/download/:platform', downloadLimiter, async (req, res) => {
         if (!looksLikeABot(req.headers['user-agent'])) {
             try {
                 await getDb().query(`
-                    INSERT INTO app_downloads (platform, email, download_time, user_agent)
-                    VALUES ($1, NULL, CURRENT_TIMESTAMP, $2)
-                `, [platform, req.headers['user-agent']]);
+                    INSERT INTO app_downloads (platform, email, download_time, user_agent, ip_address)
+                      VALUES ($1, NULL, CURRENT_TIMESTAMP, $2, $3)
+                  `, [platform, req.headers['user-agent'], clientIp(req)]);
             } catch (err) {
                 console.error('Could not record an anonymous download:', err.message);
             }

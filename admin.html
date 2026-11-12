@@ -473,7 +473,7 @@
                     currentDownloads = data.recent || [];
 
                     // Calculate stats
-                    const totalDownloads = data.recent ? data.recent.length : 0;
+                    const totalDownloads = (data.stats && typeof data.stats.total === 'number') ? data.stats.total : (data.recent ? data.recent.length : 0);
                     const windowsDownloads = data.recent ? data.recent.filter(d => d.platform === 'windows').length : 0;
                     const macDownloads = data.recent ? data.recent.filter(d => d.platform === 'mac').length : 0;
 
