@@ -629,8 +629,18 @@ app.get('/api/admin/traffic', lazyAuthenticateToken, lazyRequireAdmin, async (re
         res.json({ success: true, configured: true, ...data });
     } catch (err) {
         console.error('GA traffic error:', err.message);
-        res.status(502).json({ success: false, configured: true,
-            error: 'Could not read Google Analytics right now.' });
+        // Return 200 with success:false, not a 5xx. Render replaces a 5xx body
+        // with its own HTML error page, and the dashboard then tries to parse
+        // HTML as JSON. A 200 keeps the message intact.
+        let message = 'Could not read Google Analytics right now.';
+        if (/PERMISSION_DENIED|sufficient permissions/i.test(err.message)) {
+            message = 'The service account is not a Viewer on this GA property yet. '
+                + 'Add notsus-ga-reader@voiceboard.iam.gserviceaccount.com as Viewer, '
+                + 'and check GA_PROPERTY_ID matches that property.';
+        } else if (/API has not been used|disabled/i.test(err.message)) {
+            message = 'The Google Analytics Data API is not enabled on the project yet.';
+        }
+        res.json({ success: false, configured: true, error: message });
     }
 });
 
