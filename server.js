@@ -615,6 +615,25 @@ app.get('/api/admin/downloads', lazyAuthenticateToken, lazyRequireAdmin, async (
     }
 });
 
+// Website traffic from Google Analytics, read-only, for the dashboard. The
+// numbers come from GA4, which already tracks every page; this just reads them
+// back. When GA is not configured the dashboard shows a note instead.
+app.get('/api/admin/traffic', lazyAuthenticateToken, lazyRequireAdmin, async (req, res) => {
+    const ga = require('./lib/ga');
+    if (!ga.isConfigured()) {
+        return res.json({ success: true, configured: false });
+    }
+    try {
+        const days = Math.min(Math.max(parseInt(req.query.days, 10) || 28, 1), 365);
+        const data = await ga.traffic(days);
+        res.json({ success: true, configured: true, ...data });
+    } catch (err) {
+        console.error('GA traffic error:', err.message);
+        res.status(502).json({ success: false, configured: true,
+            error: 'Could not read Google Analytics right now.' });
+    }
+});
+
 // Admin endpoint to export all completed downloads (full historical data)
 app.get('/api/admin/downloads/export', lazyAuthenticateToken, lazyRequireAdmin, async (req, res) => {
     try {

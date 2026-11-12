@@ -226,6 +226,7 @@
             <div class="tabs">
                 <div class="tab active" data-tab="feedback">Feedback Submissions</div>
                 <div class="tab" data-tab="downloads">Download Tracking</div>
+                <div class="tab" data-tab="traffic">Website Traffic</div>
             </div>
 
             <div id="feedbackTab" class="tab-content active">
@@ -293,6 +294,22 @@
                     </tbody>
                 </table>
             </div>
+
+              <div id="trafficTab" class="tab-content">
+                  <p id="trafficNote" style="display:none; opacity:0.8; margin:0 0 1rem;"></p>
+                  <div class="stats">
+                      <div class="stat-card"><div class="stat-number" id="tVisitors">-</div><div>Visitors (28 days)</div></div>
+                      <div class="stat-card"><div class="stat-number" id="tSessions">-</div><div>Sessions</div></div>
+                      <div class="stat-card"><div class="stat-number" id="tAvgTime">-</div><div>Avg. time on site</div></div>
+                      <div class="stat-card"><div class="stat-number" id="tViews">-</div><div>Page views</div></div>
+                  </div>
+                  <h3 style="margin:1.5rem 0 0.5rem;">Top countries</h3>
+                  <table><thead><tr><th>Country</th><th>Visitors</th><th>Sessions</th></tr></thead><tbody id="trafficCountries"></tbody></table>
+                  <h3 style="margin:1.5rem 0 0.5rem;">Devices</h3>
+                  <table><thead><tr><th>Device</th><th>Visitors</th></tr></thead><tbody id="trafficDevices"></tbody></table>
+                  <h3 style="margin:1.5rem 0 0.5rem;">Top pages</h3>
+                  <table><thead><tr><th>Page</th><th>Views</th><th>Visitors</th></tr></thead><tbody id="trafficPages"></tbody></table>
+              </div>
         </div>
     </div>
 
@@ -371,7 +388,9 @@
                 // Refresh data based on active tab
                 if (tabName === 'downloads') {
                     refreshDownloadData();
-                }
+                } else if (tabName === 'traffic') {
+                      refreshTrafficData();
+                  }
             });
         });
 
@@ -442,6 +461,46 @@
                 if (err.message === 'Authentication failed') {
                     logout();
                 }
+            }
+        }
+
+        function fmtTime(seconds) {
+            seconds = Math.round(seconds || 0);
+            const m = Math.floor(seconds / 60), ss = seconds % 60;
+            return m > 0 ? `${m}m ${ss}s` : `${ss}s`;
+        }
+
+        async function refreshTrafficData() {
+            if (!authToken) { showLogin(); return; }
+            const note = document.getElementById('trafficNote');
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/traffic?days=28`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (response.status === 401 || response.status === 403) throw new Error('Authentication failed');
+                const data = await response.json();
+
+                if (!data.configured) {
+                    note.style.display = 'block';
+                    note.textContent = 'Google Analytics is not connected yet. Set GA_PROPERTY_ID and GA_SERVICE_ACCOUNT_B64 in the server environment.';
+                    return;
+                }
+                if (!data.success) throw new Error(data.error || 'Could not load traffic');
+                note.style.display = 'none';
+
+                const o = data.overview || {};
+                document.getElementById('tVisitors').textContent = (o.activeUsers || 0).toLocaleString();
+                document.getElementById('tSessions').textContent = (o.sessions || 0).toLocaleString();
+                document.getElementById('tAvgTime').textContent = fmtTime(o.avgSessionSeconds);
+                document.getElementById('tViews').textContent = (o.pageViews || 0).toLocaleString();
+
+                const rows = (arr, cols) => arr.map(r => '<tr>' + cols.map(c => `<td>${c(r)}</td>`).join('') + '</tr>').join('') || '<tr><td colspan="3" style="text-align:center;">No data yet</td></tr>';
+                document.getElementById('trafficCountries').innerHTML = rows(data.countries || [], [r => r.country || '-', r => (r.users||0).toLocaleString(), r => (r.sessions||0).toLocaleString()]);
+                document.getElementById('trafficDevices').innerHTML = rows(data.devices || [], [r => r.device || '-', r => (r.users||0).toLocaleString()]);
+                document.getElementById('trafficPages').innerHTML = rows(data.topPages || [], [r => r.path || '-', r => (r.views||0).toLocaleString(), r => (r.users||0).toLocaleString()]);
+            } catch (err) {
+                note.style.display = 'block';
+                note.textContent = 'Could not load traffic: ' + err.message;
             }
         }
 
